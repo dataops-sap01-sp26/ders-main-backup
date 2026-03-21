@@ -1,0 +1,5 @@
+@EndUserText.label: 'Service Definition for GL Account Balances'
+define service ZSD_RPT_GL_ACCOUNT_BALANCES {
+  expose ZC_RPT_GL_ACCOUNT_BALANCES as Report;
+  expose ZC_RPT_GL_ACCOUNT_BALANCES_I as ReportItem;
+}

@@ -1,0 +1,147 @@
+managed implementation in class zbp_r_drs_job_config unique;
+strict ( 2 );
+with draft;
+
+define behavior for ZR_DRS_JOB_CONFIG alias DrsJobConfig
+persistent table zdrs_job_config
+draft table zdrs_job_configd
+etag master LocalLastChangedAt
+lock master total etag LastChangedAt
+authorization master ( global )
+{
+  field ( readonly )
+  JobUuid,
+  JobId,
+  JobTemplateName,
+  JobName,
+  JobCount,
+  JobStatus,
+  JobStatusText,
+  Tmzone,
+  Message,
+  CreatedBy,
+  CreatedAt,
+  LastChangedBy,
+  LastChangedAt,
+  LocalLastChangedAt;
+
+  field ( numbering : managed )
+  JobUuid;
+
+  field ( mandatory )
+  JobText,
+  SubscrId;
+
+  create;
+  update ( features : instance );
+  delete;
+
+  // Draft actions
+  draft action Edit;
+  draft action Activate;
+  draft action Discard;
+  draft action Resume;
+  draft determine action Prepare
+  {
+    validation validateRunType;
+    validation validateDescription;
+    validation validateSubscrId;
+    validation validateRunSettings;
+  }
+
+  // Custom actions
+  action ( features : instance ) scheduleJob result [1] $self;
+  action ( features : instance ) cancelJob result [1] $self;
+  action ( features : instance ) refreshStatus result [1] $self;
+
+  // Validations
+  validation validateDescription on save { create; update; field JobText; }
+  validation validateRunType on save { create; update; field RunType; }
+  validation validateSubscrId on save { create; update; field SubscrId; }
+  validation validateRunSettings on save { create; field RunType, StartTimestamp, EndTimestamp, MaxIterations, PeriodicGranularity, PeriodicValue, MonthDay, MonthWeekNumber; }
+
+  // Determinations
+  determination setDefaultValues on modify { create; }
+
+  // Association
+  association _File { create; with draft; }
+
+  mapping for zdrs_job_config
+  {
+    JobUuid = job_uuid;
+    JobId = job_id;
+    SubscrId = subscr_id;
+    SubscrUuid = subscr_uuid;
+    RunType = run_type;
+    JobText = job_text;
+    JobTemplateName = job_template_name;
+    JobName = job_name;
+    JobCount = job_count;
+    StartImmediately = start_immediately;
+    StartTimestamp = start_timestamp;
+    IsPeriodic = is_periodic;
+    PeriodicGranularity = periodic_granularity;
+    PeriodicValue = periodic_value;
+    Tmzone = tmzone;
+    EndTimestamp = end_timestamp;
+    EndInfoType = end_info_type;
+    MaxIterations = max_iterations;
+    OnMonday = on_monday;
+    OnTuesday = on_tuesday;
+    OnWednesday = on_wednesday;
+    OnThursday = on_thursday;
+    OnFriday = on_friday;
+    OnSaturday = on_saturday;
+    OnSunday = on_sunday;
+    MonthDay = month_day;
+    UseWorkingDays = use_working_days;
+    ShiftDirection = shift_direction;
+    MonthWeekNumber = month_week_number;
+    ExceptionCalendarId = exception_calendar_id;
+    ExceptionRestrictionCode = exception_restriction_code;
+    JobStatus = job_status;
+    JobStatusText = job_status_text;
+    Message = message;
+    CreatedBy = created_by;
+    CreatedAt = created_at;
+    LastChangedBy = last_changed_by;
+    LastChangedAt = last_changed_at;
+    LocalLastChangedAt = local_last_changed_at;
+  }
+}
+
+define behavior for ZI_DRS_FILE alias DrsFile
+persistent table zdrs_file
+draft table zdrs_file_d
+etag master CreatedAt
+lock dependent by _JobConfig
+authorization dependent by _JobConfig
+{
+  field ( readonly )
+  FileUuid,
+  JobUuid,
+  FileName,
+  MimeType,
+  FileContent,
+  FileSize,
+  CreatedBy,
+  CreatedAt;
+
+  field ( numbering : managed )
+  FileUuid;
+
+  // Association
+  association _JobConfig { with draft; }
+
+  mapping for zdrs_file
+  {
+    FileUuid = file_uuid;
+    JobUuid = job_uuid;
+    FileName = file_name;
+    MimeType = mime_type;
+    FileContent = file_content;
+    FileSize = file_size;
+    CreatedBy = created_by;
+    CreatedAt = created_at;
+  }
+}

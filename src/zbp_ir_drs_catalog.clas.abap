@@ -1,0 +1,12 @@
+CLASS zbp_ir_drs_catalog DEFINITION
+  PUBLIC
+  ABSTRACT
+  FINAL
+  FOR BEHAVIOR OF zir_drs_catalog.
+
+ENDCLASS.
+
+
+CLASS zbp_ir_drs_catalog IMPLEMENTATION.
+ENDCLASS.
+

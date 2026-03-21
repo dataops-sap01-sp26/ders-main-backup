@@ -1,0 +1,63 @@
+CLASS ZCL_DYNAMIC_FIELD_JOB_CONFIG DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC.
+
+  PUBLIC SECTION.
+    INTERFACES IF_SADL_EXIT_CALC_ELEMENT_READ.
+ENDCLASS.
+
+CLASS ZCL_DYNAMIC_FIELD_JOB_CONFIG IMPLEMENTATION.
+
+  METHOD IF_SADL_EXIT_CALC_ELEMENT_READ~CALCULATE.
+
+    DATA LT_DATA TYPE STANDARD TABLE OF ZC_DRS_JOB_CONFIG
+                 WITH DEFAULT KEY.
+
+    LT_DATA = CORRESPONDING #( IT_ORIGINAL_DATA ).
+
+    LOOP AT LT_DATA ASSIGNING FIELD-SYMBOL(<LS_DATA>).
+
+      " Ẩn/Hiện GL-01: Chỉ hiện khi có SubsctId VÀ ReportId = 'GL-01'
+     <LS_DATA>-HIDEGL01 =
+       COND ABAP_BOOLEAN(
+          WHEN <LS_DATA>-SubscrId IS NOT INITIAL AND <LS_DATA>-ReportId = 'GL-01'
+          THEN ABAP_FALSE
+          ELSE ABAP_TRUE
+        ).
+
+      " Ẩn/Hiện AP-01: Chỉ hiện khi có SubsctId VÀ ReportId = 'AP-01'
+*      <LS_DATA>-HIDEGL02 =
+*        COND ABAP_BOOLEAN(
+*          WHEN <LS_DATA>-SubscrId IS NOT INITIAL AND <LS_DATA>-ReportId = 'GL-02'
+*          THEN ABAP_FALSE
+*         ELSE ABAP_TRUE
+*       ).
+
+    ENDLOOP.
+
+    CT_CALCULATED_DATA = CORRESPONDING #( LT_DATA ).
+
+  ENDMETHOD.
+
+  METHOD IF_SADL_EXIT_CALC_ELEMENT_READ~GET_CALCULATION_INFO.
+
+    " Khai báo field nào cần đọc để tính virtual element
+    LOOP AT IT_REQUESTED_CALC_ELEMENTS
+     ASSIGNING FIELD-SYMBOL(<LS_ELEM>).
+
+      CASE <LS_ELEM>.
+        WHEN 'HIDEGL01' OR 'HIDEGL02'.
+          " Báo cho framework biết: Để tính được cờ ẩn/hiện, tôi cần 2 field này từ Database
+          " Phải dùng INSERT INTO TABLE thay vì APPEND vì ET_REQUESTED_ORIG_ELEMENTS là SORTED_TABLE
+          " Khai báo chuỗi string bằng dấu `` hoặc || để tránh lỗi incompatible type với kiểu char
+          INSERT |SUBSCRID| INTO TABLE ET_REQUESTED_ORIG_ELEMENTS.
+          INSERT |SUBSCRUUID| INTO TABLE ET_REQUESTED_ORIG_ELEMENTS.
+          INSERT |REPORTID| INTO TABLE ET_REQUESTED_ORIG_ELEMENTS.
+      ENDCASE.
+
+    ENDLOOP.
+
+  ENDMETHOD.
+
+ENDCLASS.

@@ -1,0 +1,26 @@
+// ═══════════════════════════════════════════════════════════════════════════════
+// PROJECTION BEHAVIOR: Report Catalog
+// ═══════════════════════════════════════════════════════════════════════════════
+projection;
+strict ( 2 );
+use draft;
+
+define behavior for ZCR_DRS_CATALOG alias Catalog
+{
+  use create;
+  use update;
+  use delete;
+
+  // Draft actions
+  use action Edit;
+  use action Activate;
+  use action Discard;
+  use action Resume;
+  use action Prepare;
+
+  // Custom actions (US-E1-007)
+  use action activateReport;
+  use action deactivateReport;
+  use action copyReport;
+  use action previewReport;
+}

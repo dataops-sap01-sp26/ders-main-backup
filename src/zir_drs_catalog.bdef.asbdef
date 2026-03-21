@@ -1,0 +1,94 @@
+// ═══════════════════════════════════════════════════════════════════════════════
+// BEHAVIOR DEFINITION: Report Catalog
+// PURPOSE: CRUD + Activate/Deactivate actions (US-E1-007)
+// NAMING: Same name as root entity per FPT convention
+// ═══════════════════════════════════════════════════════════════════════════════
+managed implementation in class ZBP_IR_DRS_CATALOG unique;
+strict ( 2 );
+with draft;
+
+define behavior for ZIR_DRS_CATALOG alias Catalog
+persistent table zdrs_catalog
+draft table zdrs_d_catalog
+lock master total etag LastChangedAt
+authorization master ( global )
+etag master LocalLastChangedAt
+
+{
+  // ─────────────────────────────────────────────────────────────────────────────
+  // STANDARD OPERATIONS
+  // ─────────────────────────────────────────────────────────────────────────────
+  create;
+  update;
+  delete;
+
+  // ─────────────────────────────────────────────────────────────────────────────
+  // FIELD CONTROL
+  // ─────────────────────────────────────────────────────────────────────────────
+  field ( mandatory : create, readonly : update )
+  ReportId;
+
+  field ( readonly )
+  CreatedBy,
+  CreatedAt,
+  LastChangedBy,
+  LastChangedAt,
+  LocalLastChangedAt;
+
+  // ─────────────────────────────────────────────────────────────────────────────
+  // DRAFT ACTIONS
+  // ─────────────────────────────────────────────────────────────────────────────
+  draft action Edit;
+  draft action Activate;
+  draft action Discard;
+  draft action Resume;
+  draft determine action Prepare;
+
+  // ─────────────────────────────────────────────────────────────────────────────
+  // CUSTOM ACTIONS (US-E1-007: Admin Activate/Deactivate)
+  // ─────────────────────────────────────────────────────────────────────────────
+  // Activate Report - Makes it visible to users
+  action activateReport result [1] $self;
+
+  // Deactivate Report - Hides from users
+  action deactivateReport result [1] $self;
+
+  // Copy Report Configuration
+  action copyReport result [1] $self;
+
+  // Preview Report - Navigate to CDS preview (non-instance action alternative)
+  // Returns CDS view name for frontend navigation
+  action previewReport result [1] $self;
+
+  // ─────────────────────────────────────────────────────────────────────────────
+  // VALIDATIONS
+  // ─────────────────────────────────────────────────────────────────────────────
+  validation validateReportClass on save { create; update; field ReportClass; }
+  validation validateCdsView on save { create; update; field CdsViewName; }
+
+  // ─────────────────────────────────────────────────────────────────────────────
+  // DETERMINATIONS
+  // ─────────────────────────────────────────────────────────────────────────────
+  determination setDefaults on modify { create; }
+
+  // ─────────────────────────────────────────────────────────────────────────────
+  // MAPPING
+  // ─────────────────────────────────────────────────────────────────────────────
+  mapping for zdrs_catalog
+  {
+    ReportId = report_id;
+    ModuleId = module_id;
+    ReportName = report_name;
+    Description = description;
+    LongText = long_text;
+    CdsViewName = cds_view_name;
+    ReportClass = report_class;
+    IsActive = is_active;
+    SortOrder = sort_order;
+    CreatedBy = created_by;
+    CreatedAt = created_at;
+    LastChangedBy = last_changed_by;
+    LastChangedAt = last_changed_at;
+    LocalLastChangedAt = local_last_changed_at;
+  }
+}

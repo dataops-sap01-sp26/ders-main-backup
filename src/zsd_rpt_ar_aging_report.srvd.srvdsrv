@@ -1,0 +1,5 @@
+@EndUserText.label: 'Service Definition AR Aging Report'
+define service ZSD_RPT_AR_AGING_REPORT {
+  expose ZC_RPT_AR_AGING_REPORT as Report;
+  expose ZC_RPT_AR_AGING_REPORT_I as ReportItem;
+}

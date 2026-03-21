@@ -1,0 +1,42 @@
+projection;
+strict ( 2 );
+use draft;
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// PROJECTION: Subscription (Fiori UI)
+// COMPOSITION: ParamGL01 is child entity
+// ═══════════════════════════════════════════════════════════════════════════════
+define behavior for ZC_DRS_SUBSCR alias Subscription
+{
+  use create;
+  use update;
+  use delete;
+
+  // Draft actions
+  use action Edit;
+  use action Activate;
+  use action Discard;
+  use action Resume;
+  use action Prepare;
+
+  // Custom actions
+  use action copySubscription;
+  use action pauseSubscription;
+  use action resumeSubscription;
+  use action createReportParams;
+
+  // Composition child - ParamGL01
+  use association _ParamGL01 { create; with draft; }
+  // use association _ParamAR01 { create; with draft; }  -- TODO: Enable later
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// CHILD PROJECTION: GL01 Parameters
+// ═══════════════════════════════════════════════════════════════════════════════
+define behavior for ZC_DRS_PARAM_GL01 alias ParamGL01
+{
+  use update;
+  use delete;
+
+  use association _Subscription { with draft; }
+}
