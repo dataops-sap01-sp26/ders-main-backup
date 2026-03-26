@@ -1,0 +1,85 @@
+@Metadata.layer: #CORE
+@UI: {
+  headerInfo: {
+    typeName: 'AR Report Parameter',
+    typeNamePlural: 'AR Report Parameters',
+    title: { type: #STANDARD, value: 'CompanyCode' },
+    description: { value: 'CompanyCode' }
+  }
+}
+annotate entity ZC_DRS_PARAM_AR02
+    with 
+{
+    @UI.facet: [
+      {
+        id: 'AR02ParamDetails',
+        purpose: #STANDARD,
+        type: #IDENTIFICATION_REFERENCE,
+        label: 'Parameter Details',
+        position: 10
+      }
+    ]
+
+  @UI.hidden: true
+  SubscrUuid;
+
+  @UI.hidden: true
+  SubscrId;
+
+  @UI: {
+    lineItem:       [ { position: 10, importance: #HIGH } ],
+    identification: [ { position: 10 } ],
+    fieldGroup:     [ { qualifier: 'SubscriptionParams', position: 10 } ]
+  }
+  @EndUserText.label: 'Company Code'
+  CompanyCode;
+
+  @UI: {
+    lineItem:       [ { position: 20, importance: #HIGH } ],
+    identification: [ { position: 20 } ],
+    fieldGroup:     [ { qualifier: 'SubscriptionParams', position: 20 } ]
+  }
+  @EndUserText.label: 'Customer Range'
+  CustomerRange;
+
+@UI: {
+    lineItem:       [ { position: 30, importance: #HIGH } ],
+    identification: [ { position: 30 } ],
+    fieldGroup:     [ { qualifier: 'SubscriptionParams', position: 30 } ]
+  }
+  @EndUserText.label: 'Fiscal Year'
+  FiscalYear;
+
+  @UI: {
+    lineItem:       [ { position: 40, importance: #HIGH } ],
+    identification: [ { position: 40 } ],
+    fieldGroup:     [ { qualifier: 'SubscriptionParams', position: 40 } ]
+  }
+  @EndUserText.label: 'Fiscal Period'
+  FiscalPeriod;
+
+  @UI: {
+    lineItem:       [ { position: 50, importance: #HIGH } ],
+    identification: [ { position: 50 } ],
+    fieldGroup:     [ { qualifier: 'SubscriptionParams', position: 50 } ]
+  }
+  @EndUserText.label: 'Posting Date'
+  PostingDate;
+
+  @UI: {
+    lineItem:       [ { position: 60, importance: #MEDIUM } ],
+    identification: [ { position: 60 } ],
+    fieldGroup:     [ { qualifier: 'SubscriptionParams', position: 60 } ]
+  }
+  @EndUserText.label: 'Currency'
+  Currency;
+
+  @UI: {
+  lineItem:       [ { position: 70, importance: #LOW } ],
+  identification: [ { position: 70 } ],
+  fieldGroup:     [ { qualifier: 'SubscriptionParams', position: 70 } ]
+  }
+  @EndUserText.label: 'Max Rows'
+  MaxRows;
+    
+}

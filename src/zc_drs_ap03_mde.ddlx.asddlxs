@@ -9,7 +9,7 @@
 
 @UI.presentationVariant: [{
     sortOrder: [{ by: 'Bucket_Over_90', direction: #DESC }],
-    visualizations: [{ type: #AS_LINEITEM }] -- Bỏ #AS_CHART nếu bạn chưa định nghĩa @UI.chart
+    visualizations: [{ type: #AS_LINEITEM }] 
 }]
 
 annotate view ZI_RPT_AP03 with
@@ -71,4 +71,7 @@ annotate view ZI_RPT_AP03 with
   @UI.lineItem: [{ position: 90 }]
   @EndUserText.label: 'Over 90 Days'
   Bucket_Over_90;
+  
+  @UI.hidden: true
+  NetDueDate;
 }
