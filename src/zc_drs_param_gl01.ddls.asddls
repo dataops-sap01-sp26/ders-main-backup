@@ -24,5 +24,5 @@ define view entity ZC_DRS_PARAM_GL01 as projection on ZI_DRS_PARAM_GL01
     MaxRows,
     
     /* Associations */
-    _Subscription : redirected to parent ZC_DRS_SUBSCR
+    _Subscription : redirected to parent ZCR_DRS_SUBSCR
 }

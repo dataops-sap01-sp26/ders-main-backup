@@ -1,0 +1,338 @@
+@Metadata.layer: #CORE
+@UI: {
+  headerInfo: {
+    typeName: 'Job Config',
+    typeNamePlural: 'Job Config',
+    title: { type: #STANDARD, value: 'JobId' },
+    description: { value: 'JobText' }
+  }
+}
+annotate entity ZCR_DRS_JOB_CONFIG with
+{
+  @UI.facet: [
+   {
+      id: 'GeneralSettings',
+      purpose: #STANDARD,
+      type: #FIELDGROUP_REFERENCE,
+      targetQualifier: 'GeneralSettings',
+      label: 'General Settings',
+      position: 10
+    },
+    {
+      id: 'ScheduleSettings',
+      purpose: #STANDARD,
+      type: #FIELDGROUP_REFERENCE,
+      targetQualifier: 'ScheduleSettings',
+      label: 'Schedule Settings',
+      position: 20
+    },
+    {
+      id: 'PeriodicSettings',
+      purpose: #STANDARD,
+      type: #FIELDGROUP_REFERENCE,
+      targetQualifier: 'PeriodicSettings',
+      label: 'Periodic Settings',
+      position: 30
+    },
+    {
+      id: 'WeekdaySettings',
+      purpose: #STANDARD,
+      type: #FIELDGROUP_REFERENCE,
+      targetQualifier: 'WeekdaySettings',
+      label: 'Weekday & Week-of-Month (W, WM)',
+      position: 40
+    },
+    {
+      id: 'MonthlySettings',
+      purpose: #STANDARD,
+      type: #FIELDGROUP_REFERENCE,
+      targetQualifier: 'MonthlySettings',
+      label: 'Monthly Day (MO only)',
+      position: 50
+    },
+    {
+      id: 'JobStatus',
+      purpose: #STANDARD,
+      type: #FIELDGROUP_REFERENCE,
+      targetQualifier: 'JobStatus',
+      label: 'Job Status',
+      position: 60
+    },
+    {
+      id: 'ReportFiles',
+      purpose: #STANDARD,
+      type: #LINEITEM_REFERENCE,
+      label: 'Report Files',
+      position: 65,
+      targetElement: '_File'
+    },
+    {
+      id: 'AdminData',
+      purpose: #STANDARD,
+      type: #FIELDGROUP_REFERENCE,
+      targetQualifier: 'AdminData',
+      label: 'Administrative Data',
+      position: 70
+    }
+  ]
+
+  @UI.hidden: true
+  JobUuid;
+
+  @UI: {
+    lineItem: [ { position: 5, importance: #HIGH } ],
+    selectionField: [ { position: 5 } ]
+  }
+  @EndUserText.label: 'Job ID'
+  JobId;
+
+  @UI: {
+    lineItem: [
+      { position: 10, importance: #HIGH },
+      { type: #FOR_ACTION, dataAction: 'scheduleJob', label: 'Schedule Job' },
+      { type: #FOR_ACTION, dataAction: 'cancelJob', label: 'Cancel Job' },
+      { type: #FOR_ACTION, dataAction: 'refreshStatus', label: 'Refresh Status' }
+    ],
+    identification: [
+      { type: #FOR_ACTION, dataAction: 'scheduleJob',   label: 'Schedule Job',   position: 10 },
+      { type: #FOR_ACTION, dataAction: 'cancelJob',     label: 'Cancel Job',     position: 20 },
+      { type: #FOR_ACTION, dataAction: 'refreshStatus', label: 'Refresh Status', position: 30 }
+    ],
+    selectionField: [ { position: 10 } ]
+  }
+  JobText;
+
+  @UI: {
+    lineItem: [ { position: 20, importance: #HIGH } ],
+    selectionField: [ { position: 20 } ],
+    fieldGroup: [ { qualifier: 'GeneralSettings', position: 10 } ]
+  }
+  @EndUserText.label: 'Run Type'
+  @Consumption.valueHelpDefinition: [{
+    entity: { name: 'ZI_VH_DRS_RUN_TYPE', element: 'Value' },
+    useForValidation: true
+  }]
+  RunType;
+
+  @UI: {
+  lineItem: [ { position: 30, importance: #HIGH } ],
+  selectionField: [ { position: 30 } ],
+  fieldGroup: [ { qualifier: 'GeneralSettings', position: 30 } ]
+  }
+  @EndUserText.label: 'Subcription ID'
+  @Consumption.valueHelpDefinition: [{
+    entity: { name: 'ZCR_DRS_SUBSCR', element: 'SubscrId' },
+    useForValidation: true,
+    additionalBinding: [{
+    localElement: 'SubscrUuid',
+    element: 'SubscrUuid',
+    usage: #RESULT
+     }]
+  }]
+  SubscrId;
+
+  @UI.hidden: true
+  JobTemplateName;
+
+  @UI.hidden: true
+  StartImmediately;
+
+  @UI: {
+    fieldGroup: [ { qualifier: 'ScheduleSettings', position: 20 } ]
+  }
+  @EndUserText.label: 'Start Timestamp'
+  StartTimestamp;
+
+  @UI: {
+    fieldGroup: [ { qualifier: 'ScheduleSettings', position: 30 } ]
+  }
+  Tmzone;
+
+  @UI.hidden: true
+  IsPeriodic;
+
+  @UI: {
+    fieldGroup: [ { qualifier: 'PeriodicSettings', position: 20 } ]
+  }
+  @EndUserText.label: 'Recurrence Pattern'
+  @Consumption.valueHelpDefinition: [{
+  entity: { name: 'ZI_VH_DRS_PERIODIC_GRANULARITY', element: 'Value' },
+  useForValidation: true
+  }]
+  PeriodicGranularity;
+
+  @UI: {
+    fieldGroup: [ { qualifier: 'PeriodicSettings', position: 30 } ]
+  }
+  @EndUserText.label: 'Periodic Value'
+  PeriodicValue;
+
+  @UI: {
+    fieldGroup: [ { qualifier: 'PeriodicSettings', position: 50 } ]
+  }
+  @EndUserText.label: 'End Timestamp'
+  EndTimestamp;
+
+  @UI.hidden: true
+  EndInfoType;
+
+  @UI: {
+    fieldGroup: [ { qualifier: 'PeriodicSettings', position: 60 } ]
+  }
+  @EndUserText.label: 'Max Iterations'
+  MaxIterations;
+
+  @UI: {
+    fieldGroup: [ { qualifier: 'PeriodicSettings', position: 70 } ]
+  }
+  @EndUserText.label: 'Exception Calendar ID'
+  @Consumption.valueHelpDefinition: [{
+  entity: { name: 'ZI_VH_DRS_CALENDAR_ID', element: 'FactoryCalendar' },
+  useForValidation: true
+  }]
+  ExceptionCalendarId;
+
+  @UI: {
+    fieldGroup: [ { qualifier: 'PeriodicSettings', position: 80 } ]
+  }
+  @EndUserText.label: 'Restriction Code'
+  @Consumption.valueHelpDefinition: [{
+  entity: { name: 'ZI_VH_DRS_START_RESTRICTION', element: 'Value' },
+  useForValidation: true
+  }]
+  ExceptionRestrictionCode;
+
+  @UI: {
+    fieldGroup: [ { qualifier: 'WeekdaySettings', position: 10 } ]
+  }
+  @EndUserText.label: 'Monday'
+  OnMonday;
+
+  @UI: {
+    fieldGroup: [ { qualifier: 'WeekdaySettings', position: 20 } ]
+  }
+  @EndUserText.label: 'Tuesday'
+  OnTuesday;
+
+  @UI: {
+    fieldGroup: [ { qualifier: 'WeekdaySettings', position: 30 } ]
+  }
+  @EndUserText.label: 'Wednesday'
+  OnWednesday;
+
+  @UI: {
+    fieldGroup: [ { qualifier: 'WeekdaySettings', position: 40 } ]
+  }
+  @EndUserText.label: 'Thursday'
+  OnThursday;
+
+  @UI: {
+    fieldGroup: [ { qualifier: 'WeekdaySettings', position: 50 } ]
+  }
+  @EndUserText.label: 'Friday'
+  OnFriday;
+
+  @UI: {
+    fieldGroup: [ { qualifier: 'WeekdaySettings', position: 60 } ]
+  }
+  @EndUserText.label: 'Saturday'
+  OnSaturday;
+
+  @UI: {
+    fieldGroup: [ { qualifier: 'WeekdaySettings', position: 70 } ]
+  }
+  @EndUserText.label: 'Sunday'
+  OnSunday;
+
+  @UI: {
+    fieldGroup: [ { qualifier: 'WeekdaySettings', position: 80 } ]
+  }
+  @EndUserText.label: 'Week of Month (1-5)'
+  MonthWeekNumber;
+
+  @UI: {
+    fieldGroup: [ { qualifier: 'MonthlySettings', position: 10 } ]
+  }
+  @EndUserText.label: 'Day of Month (1-31)'
+  MonthDay;
+
+  @UI: {
+    fieldGroup: [ { qualifier: 'MonthlySettings', position: 20 } ]
+  }
+  @EndUserText.label: 'Use Working Days'
+  UseWorkingDays;
+
+  @UI: {
+    fieldGroup: [ { qualifier: 'MonthlySettings', position: 30 } ]
+  }
+  @EndUserText.label: 'Shift Direction'
+  @Consumption.valueHelpDefinition: [{
+  entity: { name: 'ZI_VH_DRS_SHIFT_DIRECTION', element: 'Value' },
+  useForValidation: true
+  }]
+  ShiftDirection;
+
+  @UI: {
+    lineItem: [ { position: 50, importance: #HIGH } ],
+    fieldGroup: [ { qualifier: 'JobStatus', position: 10 } ]
+  }
+  JobName;
+
+  @UI: {
+    fieldGroup: [ { qualifier: 'JobStatus', position: 20 } ]
+  }
+  JobCount;
+
+  @UI: {
+    lineItem: [ { position: 60, importance: #HIGH, criticality: 'JobStatusCriticality' } ],
+    fieldGroup: [ { qualifier: 'JobStatus', position: 30, criticality: 'JobStatusCriticality' } ]
+  }
+  JobStatus;
+
+  @UI.hidden: true
+  JobStatusCriticality;
+
+  @UI: {
+    lineItem: [ { position: 70, importance: #MEDIUM } ],
+    fieldGroup: [ { qualifier: 'JobStatus', position: 40 } ]
+  }
+  @EndUserText.label: 'Status Text'
+  JobStatusText;
+
+  @UI: {
+    fieldGroup: [ { qualifier: 'JobStatus', position: 50 } ]
+  }
+  @EndUserText.label: 'Message'
+  Message;
+
+  @UI: {
+    fieldGroup: [ { qualifier: 'AdminData', position: 10 } ]
+  }
+  @EndUserText.label: 'Created By'
+  CreatedBy;
+
+  @UI: {
+    lineItem: [ { position: 80, importance: #MEDIUM } ],
+    fieldGroup: [ { qualifier: 'AdminData', position: 20 } ]
+  }
+  @EndUserText.label: 'Created At'
+  CreatedAt;
+
+  @UI: {
+    fieldGroup: [ { qualifier: 'AdminData', position: 30 } ]
+  }
+  @EndUserText.label: 'Last Changed By'
+  LastChangedBy;
+
+  @UI: {
+    fieldGroup: [ { qualifier: 'AdminData', position: 40 } ]
+  }
+  @EndUserText.label: 'Last Changed At'
+  LastChangedAt;
+
+  @UI: {
+    fieldGroup: [ { qualifier: 'AdminData', position: 50 } ]
+  }
+  @EndUserText.label: 'Local Last Changed At'
+  LocalLastChangedAt;
+}

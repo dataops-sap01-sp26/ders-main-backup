@@ -1,0 +1,84 @@
+@Metadata.layer: #CORE
+
+@UI.headerInfo: {
+    typeName: 'Customer Open Items',
+    typeNamePlural: 'Customer Open Items',
+    title: { value: 'Customer' },
+    description: { value: 'CustomerName' }
+}
+
+
+annotate view ZI_RPT_AR01 with
+{
+  -------------------------------------------------------
+  -- FACETS (Cấu hình hiển thị trang Object Page)
+  -------------------------------------------------------
+  @UI.facet: [
+     
+    {
+        id: 'Summary',
+        type: #IDENTIFICATION_REFERENCE,
+        label: 'Summary Information',
+        position: 10
+    },
+    {
+        id: 'Items',
+        type: #LINEITEM_REFERENCE,
+        label: 'Detailed Items',
+        position: 20,
+        targetElement: '_Items' -- Trỏ đến composition _Items
+    }
+  ]
+ 
+  -------------------------------------------------------
+  -- FIELD ANNOTATIONS
+  -------------------------------------------------------
+  @UI.hidden: true
+  CompanyTotalAmount;
+  
+  @UI.selectionField: [{ position: 10 }]
+  @UI.identification: [{ position: 10 }]
+  Ledger;
+  
+  @UI.selectionField: [{ position: 20 }]
+  @UI.identification: [{ position: 20 }]
+  SourceLedger;
+
+  @UI.lineItem: [{ position: 10 }]
+  @UI.selectionField: [{ position: 30 }]
+  @UI.identification: [{ position: 30 }]
+  @EndUserText.label: 'Company Code'
+  @Consumption.filter: { selectionType: #SINGLE, multipleSelections: false }
+  CompanyCode;
+
+  @UI.lineItem: [{ position: 20 }]
+  @UI.selectionField: [{ position: 40 }]
+  @UI.identification: [{ position: 40 }]
+  @EndUserText.label: 'Customer'
+  Customer;
+
+  @UI.lineItem: [{ position: 30 }]
+  @EndUserText.label: 'Customer Name'
+  CustomerName;
+
+  @UI.lineItem: [{ position: 40 }]
+  @UI.identification: [{ position: 40 }]
+  @UI.dataPoint: { title: 'Total Amount (Filtered)', visualization: #NUMBER } 
+  @EndUserText.label: 'Total Open Amount'
+  TotalOpenAmount;
+
+  @UI.lineItem: [{ position: 50 }]
+  @UI.identification: [{ position: 50 }]
+  @EndUserText.label: 'Currency'
+  LocalCurrency;
+
+  @UI.lineItem: [{ position: 60 }]
+  @UI.identification: [{ position: 60 }]
+  @EndUserText.label: 'Max Days Overdue'
+  MaxDaysOverdue;
+  
+  @UI.lineItem: [{ position: 70 }]
+  @UI.identification: [{ position: 70 }]
+  @EndUserText.label: 'Net Due Date'
+  NetDueDate;
+}

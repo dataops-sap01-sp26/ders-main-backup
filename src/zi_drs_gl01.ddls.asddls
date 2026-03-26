@@ -1,11 +1,7 @@
-// ═══════════════════════════════════════════════════════════════════════════════
-// INTERFACE CDS: G/L Account Balances Data
-// PURPOSE: Query G/L balances from ACDOCA (Universal Journal)
-// NOTE: For S/4HANA - uses ACDOCA. For ECC, use BSEG/BKPF instead.
-// ═══════════════════════════════════════════════════════════════════════════════
+
 @AbapCatalog.viewEnhancementCategory: [#NONE]
 @AccessControl.authorizationCheck: #CHECK
-@EndUserText.label: 'G/L Account Balances - Data'
+@EndUserText.label: 'G/L Account Balances'
 @Metadata.ignorePropagatedAnnotations: true
 
 @Analytics.dataCategory: #CUBE

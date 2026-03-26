@@ -1,5 +1,0 @@
-@EndUserText.label: 'Service Definition for Vendor Open Items'
-define service ZSD_RPT_VENDOR_OPEN_ITEMS {
-  expose ZC_RPT_VENDOR_OPEN_ITEMS as Report;
-  expose ZC_RPT_VENDOR_OPEN_ITEMS_I as ReportItem;
-}

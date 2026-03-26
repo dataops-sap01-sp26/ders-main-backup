@@ -3,18 +3,14 @@
 @EndUserText.label: 'Shift Direction Value Help'
 @Metadata.ignorePropagatedAnnotations: true
 @ObjectModel.resultSet.sizeCategory: #XS
-define view entity ZI_VH_DRS_SHIFT_DIRECTION as select from I_Language
-{
-  key cast( '1' as abap.char(1) ) as Value,
-      cast( 'Begining of month' as abap.char(30) ) as ShiftDirectionText
+@ObjectModel.usageType:{
+    serviceQuality: #X,
+    sizeCategory: #S,
+    dataClass: #CUSTOMIZING
 }
-where
-  Language = $session.system_language
-
-union all select from I_Language
+define view entity ZI_VH_DRS_SHIFT_DIRECTION
+  as select from zdrs_shiftdir_vt
 {
-  key cast( '2' as abap.char(1) ) as Value,
-      cast( 'Ending of month' as abap.char(30) ) as ShiftDirectionText
+  key value         as Value,
+      shift_dir_text as ShiftDirectionText
 }
-where
-  Language = $session.system_language

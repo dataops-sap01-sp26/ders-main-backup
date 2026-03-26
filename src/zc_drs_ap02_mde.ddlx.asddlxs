@@ -1,0 +1,79 @@
+@Metadata.layer: #CORE
+
+@UI.headerInfo: {
+   typeName: 'Vendor Balance',
+   typeNamePlural: 'Vendor Balances',
+   title: { value: 'Supplier' },
+   description: { value: 'SupplierName' }
+}
+
+annotate view ZI_RPT_AP02 with
+{
+  -------------------------------------------------------
+  -- FACETS
+  -------------------------------------------------------
+  @UI.facet: [
+    { id: 'General', type: #IDENTIFICATION_REFERENCE, label: 'General Information', position: 10 },
+    { id: 'Items', type: #LINEITEM_REFERENCE, label: 'Journal Entry Items', position: 20, targetElement: '_Items' }
+  ]
+
+  -------------------------------------------------------
+  -- FIELDS
+  -------------------------------------------------------
+  @UI.lineItem: [{ position: 10 }]
+  @UI.identification: [{ position: 10 }]
+  @UI.selectionField: [{ position: 10 }]
+  @EndUserText.label: 'Company Code'
+  @Consumption.filter: { selectionType: #SINGLE, multipleSelections: false }
+  CompanyCode;
+
+  @UI.lineItem: [{ position: 20 }]
+  @UI.identification: [{ position: 20 }]
+  @UI.selectionField: [{ position: 20 }]
+  @EndUserText.label: 'Supplier'
+  Supplier;
+
+  @UI.lineItem: [{ position: 25 }]
+  @UI.identification: [{ position: 30 }]
+  @UI.selectionField: [{ position: 30 }]
+  @EndUserText.label: 'Fiscal Year'
+  FiscalYear;
+
+  @UI.lineItem: [{ position: 26 }]
+  @UI.identification: [{ position: 40 }]
+  @UI.selectionField: [{ position: 40 }]
+  @EndUserText.label: 'Posting Date'
+  PostingDate;
+
+  @UI.lineItem: [{ position: 30 }]
+  @EndUserText.label: 'Supplier Name'
+  SupplierName;
+
+  @UI.lineItem: [{ position: 40 }]
+  @EndUserText.label: 'Address'
+  Address;
+
+  @UI.lineItem: [{ position: 50 }]
+  @EndUserText.label: 'Local Currency'
+  LocalCurrency;
+
+  @UI.lineItem: [{ position: 60 }]
+  @EndUserText.label: 'Opening Balance'
+  OpeningBalance;
+
+  @UI.lineItem: [{ position: 70 }]
+  @EndUserText.label: 'Debit Amount'
+  Debit;
+
+  @UI.lineItem: [{ position: 80 }]
+  @EndUserText.label: 'Credit Amount'
+  Credit;
+
+  @UI.lineItem: [{ position: 90 }]
+  @EndUserText.label: 'Period Activity'
+  PeriodActivity;
+
+  @UI.lineItem: [{ position: 100 }]
+  @EndUserText.label: 'Closing Balance'
+  ClosingBalance;
+}

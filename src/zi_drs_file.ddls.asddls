@@ -3,7 +3,8 @@
 @EndUserText.label: 'File Root Entity'
 define view entity ZI_DRS_FILE
   as select from zdrs_file as File
-  association to parent ZR_DRS_JOB_CONFIG as _JobConfig on $projection.JobUuid = _JobConfig.JobUuid
+  association to parent ZIR_DRS_JOB_CONFIG as _JobConfig on $projection.JobUuid = _JobConfig.JobUuid
+   association [0..*] to zi_drs_job_history as _JobHistory on $projection.FileUuid = _JobHistory.FileUuid
 {
   key file_uuid    as FileUuid,
       job_uuid     as JobUuid,
@@ -24,5 +25,6 @@ define view entity ZI_DRS_FILE
       created_at   as CreatedAt,
       
       // Association
-      _JobConfig
+      _JobConfig,
+      _JobHistory
 }

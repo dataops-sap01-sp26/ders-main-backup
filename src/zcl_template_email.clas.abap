@@ -6,7 +6,7 @@ CLASS zcl_template_email DEFINITION
   PUBLIC SECTION.
       CLASS-METHODS render_email
           IMPORTING
-            is_job           TYPE zdrs_job_config
+            iv_job_uuid           TYPE zdrs_job_config-job_uuid
 *            iv_file_size_mb  TYPE f OPTIONAL " Truyền dung lượng file (MB) vào đây
 *            iv_download_link TYPE string OPTIONAL
           RETURNING
@@ -38,18 +38,28 @@ CLASS zcl_template_email IMPLEMENTATION.
           lv_file_size  TYPE p LENGTH 8 DECIMALS 2,
           lv_download_link TYPE string.
 
+    " Get file from zdrs_file
+    SELECT SINGLE *
+      FROM zdrs_job_config
+      WHERE job_uuid = @iv_job_uuid
+      INTO @DATA(ls_job).
+
+    IF sy-subrc <> 0.
+      RETURN. " Return if data not found
+    ENDIF.
+
     " ==========================================
     " 1. FETCH DỮ LIỆU TỪ BẢNG SUBSCRIPTION & FILE
     " ==========================================
     " Lấy thông tin báo cáo (Tên, Định dạng, Report ID...)
     SELECT SINGLE * FROM zdrs_subscr
       INTO @ls_subscr
-      WHERE subscr_uuid = @is_job-subscr_uuid.
+      WHERE subscr_uuid = @ls_job-subscr_uuid.
 
     " Lấy thông tin file kết quả
     SELECT SINGLE * FROM zdrs_file
       INTO @ls_file
-      WHERE job_uuid = @is_job-job_uuid.
+      WHERE job_uuid = @ls_job-job_uuid.
 
      IF ls_file-file_size < 1024.
         lv_file_size_disp = |{ ls_file-file_size } B|.
@@ -73,13 +83,13 @@ CLASS zcl_template_email IMPLEMENTATION.
     " ==========================================
     " 2. XỬ LÝ LOGIC THỜI GIAN & TRẠNG THÁI
     " ==========================================
-    CONVERT TIME STAMP is_job-start_timestamp TIME ZONE is_job-tmzone INTO DATE lv_start_d TIME lv_start_t.
-    CONVERT TIME STAMP is_job-end_timestamp TIME ZONE is_job-tmzone INTO DATE lv_end_d TIME lv_end_t.
+    CONVERT TIME STAMP ls_job-start_timestamp TIME ZONE ls_job-tmzone INTO DATE lv_start_d TIME lv_start_t.
+    CONVERT TIME STAMP ls_job-end_timestamp TIME ZONE ls_job-tmzone INTO DATE lv_end_d TIME lv_end_t.
 
     TRY.
         cl_abap_tstmp=>subtract(
-          EXPORTING tstmp1 = is_job-end_timestamp
-                    tstmp2 = is_job-start_timestamp
+          EXPORTING tstmp1 = ls_job-end_timestamp
+                    tstmp2 = ls_job-start_timestamp
           RECEIVING r_secs = lv_duration ).
       CATCH cx_parameter_invalid_range cx_parameter_invalid_type.
         lv_duration = 0.
@@ -108,7 +118,7 @@ CLASS zcl_template_email IMPLEMENTATION.
 *    ENDIF.
 
 
-    CASE is_job-run_type.
+    CASE ls_job-run_type.
         WHEN 'I'.
             lv_schedule_info = 'Immediate Run'.
         WHEN 'O'.
@@ -143,13 +153,13 @@ CLASS zcl_template_email IMPLEMENTATION.
     lv_html = lv_html &&
               |<div class="header">| &&
               |<h1>{ ls_subscr-report_id } - { ls_subscr-subscr_name }</h1>| &&
-              |<p>Job ID: { is_job-job_id } \| Company Code: { ls_subscr-bukrs }</p>| &&
+              |<p>Job ID: { ls_job-job_id } \| Company Code: { ls_subscr-bukrs }</p>| &&
               |<div class="status-badge">{ lv_status_icon } { lv_status_text_disp }</div>| &&
               |</div><div class="content">|.
 
     " -- LỖI (Nếu có) --
-    IF is_job-job_status = 'A' AND is_job-message IS NOT INITIAL.
-      lv_html = lv_html && |<div class="error-box"><strong>Error Message:</strong><br>{ is_job-message }</div>|.
+    IF ls_job-job_status = 'A' AND ls_job-message IS NOT INITIAL.
+      lv_html = lv_html && |<div class="error-box"><strong>Error Message:</strong><br>{ ls_job-message }</div>|.
     ENDIF.
 
     " -- BẢNG CHI TIẾT --
@@ -158,8 +168,8 @@ CLASS zcl_template_email IMPLEMENTATION.
               |<tr><td class="td-label">Run Type</td><td class="td-value">{ lv_schedule_info }</td></tr>|.
 
     " 2. Kiểm tra Start Time: Chỉ nối thêm 2 dòng này nếu có dữ liệu
-    IF is_job-start_timestamp IS NOT INITIAL.
-      lv_html = lv_html && |<tr><td class="td-label">Start Time</td><td class="td-value">{ lv_start_string } ({ is_job-tmzone })</td></tr>| &&
+    IF ls_job-start_timestamp IS NOT INITIAL.
+      lv_html = lv_html && |<tr><td class="td-label">Start Time</td><td class="td-value">{ lv_start_string } ({ ls_job-tmzone })</td></tr>| &&
                            |<tr><td class="td-label">Duration</td><td class="td-value">{ lv_duration_text }</td></tr>|.
     ENDIF.
 
@@ -198,7 +208,7 @@ CLASS zcl_template_email IMPLEMENTATION.
     " -- FOOTER --
     lv_html = lv_html &&
               |<div class="footer">| &&
-              |<p>This is an automated message from DERS-Fiori System. Created by: { is_job-created_by }</p>| &&
+              |<p>This is an automated message from DERS-Fiori System. Created by: { ls_job-created_by }</p>| &&
               |<p>Need help? <a href="https://sap.company.com/ders">Open Support Ticket</a></p>| &&
               |</div></div></body></html>|.
 

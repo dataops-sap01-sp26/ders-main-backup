@@ -1,5 +1,0 @@
-@EndUserText.label: 'Service Definition for Vendor Balances'
-define service ZSD_RPT_VENDOR_BALANCES {
-  expose ZC_RPT_VENDOR_BALANCES as Report;
-  expose ZC_RPT_VENDOR_BALANCES_I as ReportItem;
-}

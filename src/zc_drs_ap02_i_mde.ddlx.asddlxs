@@ -1,0 +1,71 @@
+@Metadata.layer: #CORE
+
+@UI.headerInfo: {
+    typeName: 'Journal Entry Item',
+    typeNamePlural: 'Journal Entry Items'
+}
+
+annotate view ZI_RPT_AP02_I with
+{
+  -------------------------------------------------------
+  -- FACETS (Nếu bạn không định nghĩa Object Page cho Item, 
+  -- có thể bỏ phần Identification để gọn Metadata)
+  -------------------------------------------------------
+  @UI.facet: [
+    {
+      id: 'GeneralInfo',
+      type: #IDENTIFICATION_REFERENCE,
+      label: 'Thông tin chi tiết',
+      position: 10
+    }
+  ]
+
+  -------------------------------------------------------
+  -- LINE ITEMS: Thêm type: #STANDARD để chặn Click
+  -------------------------------------------------------
+  
+  @UI.lineItem: [{ position: 10, type: #STANDARD }]
+  @UI.identification: [{ position: 30 }]
+  @EndUserText.label: 'Fiscal Year'
+  FiscalYear;
+
+  @UI.lineItem: [{ position: 20, type: #STANDARD }]
+  @UI.identification: [{ position: 40 }]
+  @EndUserText.label: 'Accounting Document'
+  AccountingDocument;
+
+  @UI.lineItem: [{ position: 30, type: #STANDARD }]
+  @EndUserText.label: 'Item'
+  AccountingDocumentItem;
+
+  @UI.lineItem: [{ position: 40, type: #STANDARD }]
+  @EndUserText.label: 'Posting Date'
+  PostingDate;
+
+  @UI.lineItem: [{ position: 55, type: #STANDARD }]
+  @EndUserText.label: 'Debit'
+  Debit;
+
+  @UI.lineItem: [{ position: 56, type: #STANDARD }]
+  @EndUserText.label: 'Credit'
+  Credit;
+
+  @UI.lineItem: [{ position: 58, type: #STANDARD }]
+  @EndUserText.label: 'Amount'
+  Amount;
+
+  @UI.lineItem: [{ position: 60, type: #STANDARD }]
+  @EndUserText.label: 'Currency'
+  LocalCurrency;
+
+  -------------------------------------------------------
+  -- HIDE KEYS (Ẩn các trường không cần thiết trên bảng)
+  -------------------------------------------------------
+  @UI.hidden: true
+  @UI.identification: [{ position: 10 }]
+  CompanyCode;
+
+  @UI.hidden: true
+  @UI.identification: [{ position: 20 }]
+  Supplier;
+}

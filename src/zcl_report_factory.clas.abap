@@ -41,9 +41,8 @@ CLASS ZCL_REPORT_FACTORY IMPLEMENTATION.
         AND IS_ACTIVE = @ABAP_TRUE
       INTO @RV_CLASS_NAME.
 
-    " Fallback for test/demo if registry table is empty during initial setup:
-    IF SY-SUBRC <> 0 AND IV_REPORT_ID = 'GL-01'.
-      RV_CLASS_NAME = 'ZCL_REPORT_GL01'.
+    IF SY-SUBRC <> 0.
+      RETURN.
     ENDIF.
   ENDMETHOD.
 ENDCLASS.

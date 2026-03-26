@@ -3,7 +3,7 @@
 {
 "FROM":
 [
-"I_LANGUAGE"
+"ZDRS_PER_GRAN_VT"
 ],
 "ASSOCIATED":
 [],

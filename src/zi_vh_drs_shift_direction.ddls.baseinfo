@@ -3,7 +3,7 @@
 {
 "FROM":
 [
-"I_LANGUAGE"
+"ZDRS_SHIFTDIR_VT"
 ],
 "ASSOCIATED":
 [],

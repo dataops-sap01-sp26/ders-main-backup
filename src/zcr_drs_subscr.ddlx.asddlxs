@@ -1,0 +1,156 @@
+@Metadata.layer: #CORE
+@UI: {
+  headerInfo: {
+    typeName: 'Subscription',
+    typeNamePlural: 'Subscriptions',
+    title: { type: #STANDARD, value: 'SubscrName' },
+    description: { value: 'SubscrId' }
+  }
+}
+annotate entity ZCR_DRS_SUBSCR with
+{
+  @UI.facet: [
+    {
+      id: 'GeneralInfo',
+      purpose: #STANDARD,
+      type: #FIELDGROUP_REFERENCE,
+      targetQualifier: 'GeneralInfo',
+      label: 'General Information',
+      position: 10
+    },
+    {
+      id: 'DeliverySettings',
+      purpose: #STANDARD,
+      type: #FIELDGROUP_REFERENCE,
+      targetQualifier: 'DeliverySettings',
+      label: 'Output & Delivery',
+      position: 20
+    },
+    // GL Report Parameters - composition child [0..1]
+    // Uses IDENTIFICATION_REFERENCE (form) instead of LINEITEM_REFERENCE (table)
+    // because OData V4 containment navigation does NOT support $skip/$top
+    // Hidden dynamically: only shown when ReportId = 'GL-01'
+    {
+      id: 'ParamGL01Section',
+      purpose: #STANDARD,
+      type: #IDENTIFICATION_REFERENCE,
+      targetElement: '_ParamGL01',
+      label: 'GL Report Parameters',
+      position: 30,
+      hidden: #(HideParamGL01)
+    },
+     {
+      id: 'ParamAR01Section',
+      purpose: #STANDARD,
+      type: #IDENTIFICATION_REFERENCE,
+      targetElement: '_ParamAR01',
+      label: 'AR Report Parameters',
+      position: 22,
+      hidden: #(HideParamAR01)
+    },
+    {
+      id: 'AdminData',
+      purpose: #STANDARD,
+      type: #FIELDGROUP_REFERENCE,
+      targetQualifier: 'AdminData',
+      label: 'Administrative Data',
+      position: 40
+    }
+  ]
+
+  @UI.hidden: true
+  SubscrUuid;
+
+  @UI: {
+    lineItem:       [ { position: 10, importance: #HIGH } ],
+    fieldGroup:     [ { qualifier: 'GeneralInfo', position: 10 } ],
+    selectionField: [ { position: 10 } ],
+    identification: [
+      { position: 10 },
+      { type: #FOR_ACTION, dataAction: 'createReportParams', label: 'Create Report Parameters', position: 20 },
+      { type: #FOR_ACTION, dataAction: 'pauseSubscription', label: 'Pause', position: 30 },
+      { type: #FOR_ACTION, dataAction: 'resumeSubscription', label: 'Resume', position: 40 },
+      { type: #FOR_ACTION, dataAction: 'copySubscription', label: 'Copy', position: 50 }
+    ]
+  }
+  @EndUserText.label: 'Subscription ID'
+  SubscrId;
+
+  @UI: {
+    lineItem:       [ { position: 20, importance: #HIGH } ],
+    fieldGroup:     [ { qualifier: 'GeneralInfo', position: 20 } ]
+  }
+  @EndUserText.label: 'Description'
+  SubscrName;
+
+  @UI: {
+    lineItem:       [ { position: 30, importance: #HIGH } ],
+    fieldGroup:     [ { qualifier: 'GeneralInfo', position: 30 } ],
+    selectionField: [ { position: 20 } ]
+  }
+  @EndUserText.label: 'Report ID'
+  ReportId;
+
+  @UI: {
+    lineItem:       [ { position: 40, importance: #MEDIUM } ],
+    fieldGroup:     [ { qualifier: 'GeneralInfo', position: 40 } ]
+  }
+  @EndUserText.label: 'Company Code'
+  Bukrs;
+
+  @UI: {
+    lineItem:       [ { position: 50, importance: #MEDIUM } ],
+    fieldGroup:     [ { qualifier: 'DeliverySettings', position: 10 } ]
+  }
+  @EndUserText.label: 'Format'
+  OutputFormat;
+
+  @UI: {
+    lineItem:       [ { position: 60, importance: #MEDIUM } ],
+    fieldGroup:     [ { qualifier: 'DeliverySettings', position: 20 } ]
+  }
+  @EndUserText.label: 'Email To'
+  EmailTo;
+
+  @UI: {
+    lineItem:       [ { position: 70, importance: #LOW } ],
+    fieldGroup:     [ { qualifier: 'DeliverySettings', position: 30 } ]
+  }
+  @EndUserText.label: 'Email CC'
+  EmailCc;
+
+  @UI: {
+    lineItem:       [ { position: 80, importance: #HIGH, criticality: 'StatusCriticality' } ],
+    fieldGroup:     [ { qualifier: 'GeneralInfo', position: 50, criticality: 'StatusCriticality' } ],
+    selectionField: [ { position: 30 } ]
+  }
+  @EndUserText.label: 'Status'
+  Status;
+
+  @UI.hidden: true
+  StatusText;
+
+  @UI.hidden: true
+  StatusCriticality;
+
+  @UI.hidden: true
+  HideParamGL01;
+  
+  @UI.hidden: true
+  HideParamAR01;
+  
+  @UI.fieldGroup: [ { qualifier: 'AdminData', position: 10 } ]
+  @EndUserText.label: 'Created By'
+  CreatedBy;
+
+  @UI.fieldGroup: [ { qualifier: 'AdminData', position: 20 } ]
+  @EndUserText.label: 'Created At'
+  CreatedAt;
+
+  @UI.hidden: true
+  LastChangedBy;
+  @UI.hidden: true
+  LastChangedAt;
+  @UI.hidden: true
+  LocalLastChangedAt;
+}

@@ -1,0 +1,180 @@
+CLASS ZCL_JOB_LOG DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PRIVATE.
+
+  PUBLIC SECTION.
+    CLASS-METHODS:
+      GET_INSTANCE
+        RETURNING VALUE(RO_INSTANCE) TYPE REF TO ZCL_JOB_LOG,
+      CLASS_CONSTRUCTOR.
+
+    METHODS:
+      LOG_JOB_START
+        IMPORTING
+          IS_JOB_INFO               TYPE IF_APJ_RT_JOB_NOTIF_EXIT=>TS_JOB_STEP_INFO
+          IV_JOB_CATALOG_ENTRY_NAME TYPE APJ_JOB_CATALOG_ENTRY_NAME
+          IV_JOB_TEMPLATE_NAME      TYPE APJ_JOB_TEMPLATE_NAME
+          IV_JOB_CONFIG_UUID        TYPE SYSUUID_X16
+          IV_REPORT_ID              TYPE ZDTE_REPORT_ID
+          IV_USER                   TYPE SYUNAME
+        RETURNING
+          VALUE(RV_JOB_HIST_UUID)   TYPE SYSUUID_X16,
+
+      UPDATE_JOB_RESULTS
+        IMPORTING
+          IV_JOB_HIST_UUID  TYPE SYSUUID_X16
+          IV_FILE_UUID      TYPE SYSUUID_X16
+          IV_OUTPUT_FORMAT  TYPE ZDTE_FORMAT_ID,
+
+      LOG_JOB_END
+        IMPORTING
+          IV_JOB_HIST_UUID TYPE SYSUUID_X16
+          IV_STEP_STATUS   TYPE BTCSTATUS OPTIONAL
+          IV_JOB_STATUS    TYPE BTCSTATUS OPTIONAL
+          IV_MESSAGE       TYPE CLIKE OPTIONAL.
+
+  PRIVATE SECTION.
+    CLASS-DATA: GO_INSTANCE TYPE REF TO ZCL_JOB_LOG.
+
+    METHODS:
+      INSERT_JOB_HISTORY
+        IMPORTING IS_JOB_HIST TYPE ZDRS_JOB_HISTORY,
+
+      UPDATE_JOB_HISTORY
+        IMPORTING
+          IV_JOB_HIST_UUID TYPE SYSUUID_X16
+          IV_STATUS        TYPE BTCSTATUS OPTIONAL
+          IV_END_TIMESTAMP TYPE TIMESTAMPL OPTIONAL
+          IV_DURATION_MS   TYPE INT4 OPTIONAL
+          IV_FILE_UUID     TYPE SYSUUID_X16 OPTIONAL
+          IV_OUTPUT_FORMAT TYPE ZDTE_FORMAT_ID OPTIONAL
+          IV_MAX_ROW       TYPE INT4 OPTIONAL
+          IV_MESSAGE       TYPE CLIKE OPTIONAL,
+
+      GET_TIMESTAMP
+        RETURNING VALUE(RV_TIMESTAMP) TYPE TIMESTAMPL.
+
+ENDCLASS.
+
+CLASS ZCL_JOB_LOG IMPLEMENTATION.
+  METHOD CLASS_CONSTRUCTOR.
+  ENDMETHOD.
+
+  METHOD GET_INSTANCE.
+    IF GO_INSTANCE IS NOT BOUND.
+      GO_INSTANCE = NEW #( ).
+    ENDIF.
+    RO_INSTANCE = GO_INSTANCE.
+  ENDMETHOD.
+
+  METHOD LOG_JOB_START.
+    DATA(LV_TIMESTAMP) = GET_TIMESTAMP( ).
+
+    TRY.
+        RV_JOB_HIST_UUID = CL_SYSTEM_UUID=>CREATE_UUID_X16_STATIC( ).
+      CATCH CX_UUID_ERROR.
+        "handle exception
+    ENDTRY.
+
+    DATA(LS_JOB_HIST) = VALUE ZDRS_JOB_HISTORY(
+      JOB_HIST_UUID          = RV_JOB_HIST_UUID
+      JOB_UUID               = IV_JOB_CONFIG_UUID
+      REPORT_ID              = IV_REPORT_ID
+      JOB_NAME               = IS_JOB_INFO-JOB_NAME
+      JOB_COUNT              = IS_JOB_INFO-JOB_COUNT
+      JOB_CATALOG_ENTRY      = IV_JOB_CATALOG_ENTRY_NAME
+      JOB_TEMPLATE_NAME      = IV_JOB_TEMPLATE_NAME
+      JOB_STATUS             = 'R'
+      START_TIMESTAMP        = LV_TIMESTAMP
+      CREATED_BY             = CL_ABAP_CONTEXT_INFO=>GET_USER_TECHNICAL_NAME( )
+      CREATED_AT             = LV_TIMESTAMP
+      LOCAL_LAST_CHANGED_AT  = LV_TIMESTAMP
+    ).
+    INSERT_JOB_HISTORY( LS_JOB_HIST ).
+  ENDMETHOD.
+
+  METHOD UPDATE_JOB_RESULTS.
+    UPDATE_JOB_HISTORY(
+      IV_JOB_HIST_UUID = IV_JOB_HIST_UUID
+      IV_FILE_UUID     = IV_FILE_UUID
+      IV_OUTPUT_FORMAT = IV_OUTPUT_FORMAT
+    ).
+  ENDMETHOD.
+
+  METHOD LOG_JOB_END.
+    DATA(LV_TIMESTAMP) = GET_TIMESTAMP( ).
+
+    SELECT SINGLE START_TIMESTAMP
+      FROM ZDRS_JOB_HISTORY
+      WHERE JOB_HIST_UUID = @IV_JOB_HIST_UUID
+      INTO @DATA(LV_START_TS).
+
+    DATA(LV_DURATION_MS) = COND INT4(
+      WHEN LV_START_TS IS NOT INITIAL
+      THEN CL_ABAP_TSTMP=>SUBTRACT( TSTMP1 = LV_TIMESTAMP TSTMP2 = LV_START_TS ) * 1000
+      ELSE 0
+    ).
+
+    " Enforce a default final status if framework returns empty
+    DATA lv_final_status TYPE btcstatus.
+    lv_final_status = COND #(
+        WHEN IV_JOB_STATUS IS NOT INITIAL THEN IV_JOB_STATUS
+        WHEN IV_STEP_STATUS IS NOT INITIAL THEN IV_STEP_STATUS
+        ELSE 'F'
+    ).
+
+    UPDATE_JOB_HISTORY(
+      IV_JOB_HIST_UUID = IV_JOB_HIST_UUID
+      IV_STATUS        = lv_final_status
+      IV_END_TIMESTAMP = LV_TIMESTAMP
+      IV_DURATION_MS   = LV_DURATION_MS
+      IV_MESSAGE       = COND #( WHEN IV_MESSAGE IS NOT INITIAL THEN IV_MESSAGE )
+    ).
+  ENDMETHOD.
+
+  METHOD INSERT_JOB_HISTORY.
+    INSERT ZDRS_JOB_HISTORY FROM @IS_JOB_HIST.
+    COMMIT WORK.
+  ENDMETHOD.
+
+  METHOD UPDATE_JOB_HISTORY.
+    DATA ls_job_hist TYPE zdrs_job_history.
+
+    SELECT SINGLE * FROM zdrs_job_history
+      WHERE job_hist_uuid = @iv_job_hist_uuid
+      INTO @ls_job_hist.
+
+    IF sy-subrc = 0.
+      IF iv_status IS NOT INITIAL.
+        ls_job_hist-job_status = iv_status.
+      ENDIF.
+      IF iv_end_timestamp IS NOT INITIAL.
+        ls_job_hist-end_timestamp = iv_end_timestamp.
+      ENDIF.
+      IF iv_duration_ms IS NOT INITIAL.
+        ls_job_hist-duration_ms = iv_duration_ms.
+      ENDIF.
+      IF iv_file_uuid IS NOT INITIAL.
+        ls_job_hist-file_uuid = iv_file_uuid.
+      ENDIF.
+      IF iv_output_format IS NOT INITIAL.
+        ls_job_hist-output_format = iv_output_format.
+      ENDIF.
+      IF iv_message IS NOT INITIAL.
+        ls_job_hist-message = iv_message.
+      ENDIF.
+
+      ls_job_hist-local_last_changed_at = get_timestamp( ).
+
+      UPDATE zdrs_job_history FROM @ls_job_hist.
+      COMMIT WORK.
+    ENDIF.
+  ENDMETHOD.
+
+  METHOD GET_TIMESTAMP.
+    GET TIME STAMP FIELD RV_TIMESTAMP.
+  ENDMETHOD.
+
+ENDCLASS.
+

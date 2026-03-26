@@ -1,0 +1,34 @@
+@EndUserText.label: 'Main Service Definition'
+define service ZSD_DRS_MAIN {
+  expose ZCR_DRS_JOB_CONFIG as DrsJobConfig;
+  expose ZC_DRS_JOB_HISTORY as DrsJobHistory;
+  expose ZC_DRS_FILE as DrsFile;
+  expose ZI_VH_DRS_RUN_TYPE as DrsRunTypeVH;
+  expose ZI_VH_DRS_PERIODIC_GRANULARITY as DrsPeriodicGranularityVH;
+  expose ZI_VH_DRS_START_RESTRICTION as DrsStartRestrictionVH;
+  expose ZI_VH_DRS_SHIFT_DIRECTION as DrsShiftDirectionVH;
+  expose ZI_VH_DRS_CALENDAR_ID as DrsCalendarIDVH;
+  expose ZCR_DRS_CATALOG as ReportCatalog;
+  expose ZCR_DRS_SUBSCR as DrsSubscription;
+  expose ZC_DRS_PARAM_GL01 as DrsParamGL01;
+  expose ZC_DRS_PARAM_AR01 as DrsParamAR01;
+  expose ZC_DRS_PARAM_AR02 as DrsParamAR02;
+  expose ZC_DRS_GL01_PREVIEW as DrsGL01Preview;
+  expose ZI_VH_DRS_MODULE as ModuleVH;
+  expose ZI_VH_DRS_FORMAT as FormatVH;
+  expose ZI_RPT_AP01 as VendorOpenItems;
+  expose ZI_RPT_AP01_I as VendorOpenItemsDetail;
+  expose ZI_RPT_AP02 as VendorBalances;
+  expose ZI_RPT_AP02_I as VendorBalancesDetail;
+  expose ZI_RPT_AP03 as APAgingReport;
+  expose ZI_RPT_AP03_I as APAgingReportDetail;
+  expose ZI_RPT_AR01 as CustomerOpenItems;
+  expose ZI_RPT_AR01_I as CustomerOpenItemsDetail;
+  expose ZI_DRS_AR01_TOTAL as DynamicTotal;
+  expose ZI_RPT_AR02 as CustomerBalances;
+  expose ZI_RPT_AR02_I as CustomerBalancesDetail;
+  expose ZI_RPT_AR03 as ARAgingReport;
+  expose ZI_RPT_AR03_I as ARAgingReportDetail;
+  expose ZCR_DRS_GL01 as GLAccountBalances;
+  expose ZC_DRS_GL01_I as GLAccountBalancesDetail;
+}

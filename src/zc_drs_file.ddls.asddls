@@ -19,5 +19,5 @@ define view entity ZC_DRS_FILE
   virtual FileSizeDisplay : abap.char(20),
 
           /* Associations */
-          _JobConfig : redirected to parent ZC_DRS_JOB_CONFIG
+          _JobConfig : redirected to parent ZCR_DRS_JOB_CONFIG
 }

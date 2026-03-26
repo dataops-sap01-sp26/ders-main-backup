@@ -1,5 +1,0 @@
-@EndUserText.label: 'Service Definition for Customer Balances'
-define service ZSD_RPT_CUSTOMER_BALANCES {
-  expose ZC_RPT_CUSTOMER_BALANCES as Report;
-  expose ZC_RPT_CUSTOMER_BALANCES_I as ReportItem;
-}

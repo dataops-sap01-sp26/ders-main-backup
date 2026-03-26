@@ -8,7 +8,7 @@
 // Lifecycle managed by parent (cascade delete when Subscription deleted)
 // ═══════════════════════════════════════════════════════════════════════════════
 define view entity ZI_DRS_PARAM_GL01 as select from zdrs_param_gl01 as ParamGL01
-  association to parent ZR_DRS_SUBSCR as _Subscription 
+  association to parent ZIR_DRS_SUBSCR as _Subscription 
     on $projection.SubscrUuid = _Subscription.SubscrUuid
    and $projection.SubscrId = _Subscription.SubscrId
 {
