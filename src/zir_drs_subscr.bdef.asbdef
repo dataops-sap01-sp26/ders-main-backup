@@ -43,6 +43,10 @@ early numbering
   association _ParamGL01 { create; with draft; }
   association _ParamAR01 { create; with draft; }
   association _ParamAR02 { create; with draft; }
+  association _ParamAR03 { create; with draft; }
+  association _ParamAP01 { create; with draft; }
+  association _ParamAP02 { create; with draft; }
+  association _ParamAP03 { create; with draft; }
 
   // ─────────────────────────────────────────────────────────────────────────────
   // DRAFT ACTIONS
@@ -166,7 +170,8 @@ authorization dependent by _Subscription
     SubscrUuid = subscr_uuid;
     SubscrId = subscr_id;
     CompanyCode = company_code;
-    CustomerRange = customer_range;
+    CustomerFrom = customer_from;
+    CustomerTo  = customer_to;
     keyDate = key_date;
     MaxRows = max_rows;
   }
@@ -202,11 +207,160 @@ authorization dependent by _Subscription
     SubscrUuid = subscr_uuid;
     SubscrId = subscr_id;
     CompanyCode = company_code;
-    CustomerRange = customer_range;
+    CustomerFrom = customer_from;
+    CustomerTo  = customer_to;
     FiscalYear = fiscal_year;
-    FiscalPeriod = fiscal_period;
-    PostingDate = posting_date;
-    Currency = currency;
+//    FiscalPeriod = fiscal_period;
+//    PostingDate = posting_date;
+//    Currency = currency;
+    MaxRows = max_rows;
+  }
+}
+// ═══════════════════════════════════════════════════════════════════════════════
+// CHILD ENTITY: AR03 Parameters (Composition child of Subscription)
+// Lifecycle managed by parent - cascade delete when Subscription deleted
+// ═══════════════════════════════════════════════════════════════════════════════
+define behavior for ZI_DRS_PARAM_AR03 alias ParamAR03
+persistent table zdrs_param_ar03
+draft table zdrs_d_par03
+lock dependent by _Subscription
+authorization dependent by _Subscription
+{
+  // Standard operations
+  update;
+  delete;
+
+  // Key fields - set from parent context, readonly
+  field ( readonly )
+  SubscrUuid,
+  SubscrId;
+
+  // Parent association (required for composition)
+  association _Subscription { with draft; }
+
+
+  // ─────────────────────────────────────────────────────────────────────────────
+  // MAPPINGS
+  // ─────────────────────────────────────────────────────────────────────────────
+  mapping for zdrs_param_ar03
+  {
+    SubscrUuid = subscr_uuid;
+    SubscrId = subscr_id;
+    CompanyCode = company_code;
+    CustomerFrom = customer_from;
+    CustomerTo  = customer_to;
+    keyDate = key_date;
+    MaxRows = max_rows;
+  }
+}
+// ═══════════════════════════════════════════════════════════════════════════════
+// CHILD ENTITY: AP01 Parameters (Composition child of Subscription)
+// Lifecycle managed by parent - cascade delete when Subscription deleted
+// ═══════════════════════════════════════════════════════════════════════════════
+define behavior for ZI_DRS_PARAM_AP01 alias ParamAP01
+persistent table zdrs_param_ap01
+draft table zdrs_d_pap01
+lock dependent by _Subscription
+authorization dependent by _Subscription
+{
+  // Standard operations
+  update;
+  delete;
+
+  // Key fields - set from parent context, readonly
+  field ( readonly )
+  SubscrUuid,
+  SubscrId;
+
+  // Parent association (required for composition)
+  association _Subscription { with draft; }
+
+
+  // ─────────────────────────────────────────────────────────────────────────────
+  // MAPPINGS
+  // ─────────────────────────────────────────────────────────────────────────────
+  mapping for zdrs_param_ap01
+  {
+    SubscrUuid = subscr_uuid;
+    SubscrId = subscr_id;
+    CompanyCode = company_code;
+    VendorFrom = vendor_from;
+    VendorTo = vendor_to;
+    keyDate = key_date;
+    MaxRows = max_rows;
+  }
+}
+// ═══════════════════════════════════════════════════════════════════════════════
+// CHILD ENTITY: AP02 Parameters (Composition child of Subscription)
+// Lifecycle managed by parent - cascade delete when Subscription deleted
+// ═══════════════════════════════════════════════════════════════════════════════
+define behavior for ZI_DRS_PARAM_AP02 alias ParamAP02
+persistent table zdrs_param_ap02
+draft table zdrs_d_pap02
+lock dependent by _Subscription
+authorization dependent by _Subscription
+{
+  // Standard operations
+  update;
+  delete;
+
+  // Key fields - set from parent context, readonly
+  field ( readonly )
+  SubscrUuid,
+  SubscrId;
+
+  // Parent association (required for composition)
+  association _Subscription { with draft; }
+
+
+  // ─────────────────────────────────────────────────────────────────────────────
+  // MAPPINGS
+  // ─────────────────────────────────────────────────────────────────────────────
+  mapping for zdrs_param_ap02
+  {
+    SubscrUuid = subscr_uuid;
+    SubscrId = subscr_id;
+    CompanyCode = company_code;
+    VendorFrom = vendor_from;
+    VendorTo = vendor_to;
+    FiscalYear = fiscal_year;
+    MaxRows = max_rows;
+  }
+}
+// ═══════════════════════════════════════════════════════════════════════════════
+// CHILD ENTITY: AP03 Parameters (Composition child of Subscription)
+// Lifecycle managed by parent - cascade delete when Subscription deleted
+// ═══════════════════════════════════════════════════════════════════════════════
+define behavior for ZI_DRS_PARAM_AP03 alias ParamAP03
+persistent table zdrs_param_ap03
+draft table zdrs_d_pap03
+lock dependent by _Subscription
+authorization dependent by _Subscription
+{
+  // Standard operations
+  update;
+  delete;
+
+  // Key fields - set from parent context, readonly
+  field ( readonly )
+  SubscrUuid,
+  SubscrId;
+
+  // Parent association (required for composition)
+  association _Subscription { with draft; }
+
+
+  // ─────────────────────────────────────────────────────────────────────────────
+  // MAPPINGS
+  // ─────────────────────────────────────────────────────────────────────────────
+  mapping for zdrs_param_ap03
+  {
+    SubscrUuid = subscr_uuid;
+    SubscrId = subscr_id;
+    CompanyCode = company_code;
+    VendorFrom = vendor_from;
+    VendorTo = vendor_to;
+    keyDate = key_date;
     MaxRows = max_rows;
   }
 }

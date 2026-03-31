@@ -68,21 +68,25 @@ CLASS ZCL_REPORT_AR01 IMPLEMENTATION.
 
 
   METHOD QUERY_DATA.
-    SELECT SINGLE * FROM zdrs_param_ar01
+    " 1. Fetch parameters from AR01 table
+    SELECT SINGLE * FROM ZDRS_PARAM_AR01
       WHERE SUBSCR_UUID = @MS_PARAMS-SUBSCR_UUID
       INTO @DATA(LS_SPEC_PARAM).
 
     DATA(LV_MAX) = COND I( WHEN LS_SPEC_PARAM-MAX_ROWS > 0 THEN LS_SPEC_PARAM-MAX_ROWS ELSE 5000 ).
 
-    " 1. Declare a range table for Customer
-    DATA lt_customer_range TYPE RANGE OF kunnr.
-
-    " 2. Fill the range table if a value exists
-    IF ls_spec_param-customer_range IS NOT INITIAL.
-      APPEND VALUE #( sign = 'I' option = 'EQ' low = ls_spec_param-customer_range )
-             TO lt_customer_range.
+    " 2. Prepare Customer Range using from/to fields
+    DATA LT_CUSTOMER_RANGE TYPE RANGE OF KUNNR.
+    IF LS_SPEC_PARAM-CUSTOMER_FROM IS NOT INITIAL.
+      APPEND VALUE #(
+        SIGN   = 'I'
+        OPTION = COND #( WHEN LS_SPEC_PARAM-CUSTOMER_TO IS INITIAL THEN 'EQ' ELSE 'BT' )
+        LOW    = LS_SPEC_PARAM-CUSTOMER_FROM
+        HIGH   = LS_SPEC_PARAM-CUSTOMER_TO
+      ) TO LT_CUSTOMER_RANGE.
     ENDIF.
 
+    " 3. Select Data from AR View
     SELECT FROM ZI_RPT_AR01
       FIELDS Ledger,
              SourceLedger,
@@ -93,14 +97,14 @@ CLASS ZCL_REPORT_AR01 IMPLEMENTATION.
              CompanyTotalAmount,
              LocalCurrency,
              MaxDaysOverdue
-      WHERE ( CompanyCode = @LS_SPEC_PARAM-COMPANY_CODE )
-        AND ( Customer     in @lt_customer_range )
-        AND ( NetDueDate  <= @LS_SPEC_PARAM-key_date )
-      ORDER BY CompanyCode, Customer
-      INTO TABLE @DATA(lt_ar01)
+      WHERE COMPANYCODE = @LS_SPEC_PARAM-COMPANY_CODE
+        AND CUSTOMER    IN @LT_CUSTOMER_RANGE
+        AND NETDUEDATE <= @LS_SPEC_PARAM-KEY_DATE
+      ORDER BY COMPANYCODE, CUSTOMER
+      INTO TABLE @DATA(LT_AR01)
       UP TO @LV_MAX ROWS.
 
-    CREATE DATA ER_DATA LIKE lt_ar01.
+    CREATE DATA ER_DATA LIKE LT_AR01.
     FIELD-SYMBOLS <LT_OUT> TYPE STANDARD TABLE.
     ASSIGN ER_DATA->* TO <LT_OUT>.
     <LT_OUT> = LT_ar01.

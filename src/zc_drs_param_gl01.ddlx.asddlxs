@@ -1,4 +1,4 @@
-@Metadata.layer: #CORE
+    @Metadata.layer: #CORE
 @UI: {
   headerInfo: {
     typeName: 'GL Report Parameter',

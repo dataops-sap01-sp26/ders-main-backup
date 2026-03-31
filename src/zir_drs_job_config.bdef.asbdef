@@ -43,9 +43,13 @@ authorization master ( global )
   draft action Resume;
   draft determine action Prepare
   {
-    validation validateRunType;
     validation validateDescription;
     validation validateSubscrId;
+    validation validateRunType;
+    validation validatePeriodicGranularity;
+    validation validateShiftDirection;
+    validation validateStartRestriction;
+    validation validateCalendarId;
     validation validateRunSettings;
   }
 
@@ -58,6 +62,10 @@ authorization master ( global )
   validation validateDescription on save { create; update; field JobText; }
   validation validateRunType on save { create; update; field RunType; }
   validation validateSubscrId on save { create; update; field SubscrId; }
+  validation validatePeriodicGranularity on save { create; update; field PeriodicGranularity, RunType; }
+  validation validateShiftDirection on save { create; update; field ShiftDirection; }
+  validation validateStartRestriction on save { create; update; field ExceptionRestrictionCode; }
+  validation validateCalendarId on save { create; update; field ExceptionCalendarId; }
   validation validateRunSettings on save { create; field RunType, StartTimestamp, EndTimestamp, MaxIterations, PeriodicGranularity, PeriodicValue, MonthDay, MonthWeekNumber; }
 
   // Determinations
@@ -148,7 +156,7 @@ authorization dependent by _JobConfig
 }
 
 
-define behavior for ZI_DRS_JOB_HISTORY alias DrsJobHistory
+define behavior for zi_drs_job_history alias DrsJobHistory
 persistent table zdrs_job_history
 draft table zdrs_job_histryd
 lock dependent by _JobConfig
@@ -156,32 +164,31 @@ authorization dependent by _JobConfig
 {
 
   field ( readonly )
-    JobHistUuid,
-    JobUuid,
-    ReportId,
-    JobName,
-    JobCount,
-    JobCatalogEntry,
-    JobTemplateName,
-    JobStatus,
-    StartTimestamp,
-    EndTimestamp,
-    DurationMs,
-    FileUuid,
-    OutputFormat,
-    Message,
-    RetryCount,
-    CreatedBy,
-    CreatedAt,
-    LastChangedAt,
-    LocalLastChangedAt;
+  JobHistUuid,
+  JobUuid,
+  ReportId,
+  JobName,
+  JobCount,
+  JobCatalogEntry,
+  JobTemplateName,
+  JobStatus,
+  StartTimestamp,
+  EndTimestamp,
+  DurationMs,
+  FileUuid,
+  OutputFormat,
+  Message,
+  RetryCount,
+  CreatedBy,
+  CreatedAt,
+  LastChangedAt,
+  LocalLastChangedAt;
 
-      field ( numbering : managed )
+  field ( numbering : managed )
   JobHistUuid;
 
   // Actions available to users
-//  action retryJob result [1] $self;         // Retry failed job
-//  action downloadFile result [1] $self;     // Quick download action
+  //  action retryJob result [1] $self;
 
   // Parent association (required for composition)
   association _JobConfig { with draft; }

@@ -2,7 +2,6 @@
 @EndUserText.label: 'Projection View for GL Account Balances'
 @Metadata.ignorePropagatedAnnotations: true
 @Metadata.allowExtensions: true
-@Search.searchable: true
 
 define root view entity ZCR_DRS_GL01
   provider contract transactional_query

@@ -29,6 +29,10 @@ define behavior for ZCR_DRS_SUBSCR alias Subscription
   use association _ParamGL01 { create; with draft; }
   use association _ParamAR01 { create; with draft; }
   use association _ParamAR02 { create; with draft; }
+  use association _ParamAR03 { create; with draft; }
+  use association _ParamAP01 { create; with draft; }
+  use association _ParamAP02 { create; with draft; }
+  use association _ParamAP03 { create; with draft; }
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -55,6 +59,46 @@ define behavior for ZC_DRS_PARAM_AR01 alias ParamAR01
 // CHILD PROJECTION: AR02 Parameters
 // ═══════════════════════════════════════════════════════════════════════════════
 define behavior for ZC_DRS_PARAM_AR02 alias ParamAR02
+{
+  use update;
+  use delete;
+
+  use association _Subscription { with draft; }
+}
+// ═══════════════════════════════════════════════════════════════════════════════
+// CHILD PROJECTION: AR03 Parameters
+// ═══════════════════════════════════════════════════════════════════════════════
+define behavior for ZC_DRS_PARAM_AR03 alias ParamAR03
+{
+  use update;
+  use delete;
+
+  use association _Subscription { with draft; }
+}
+// ═══════════════════════════════════════════════════════════════════════════════
+// CHILD PROJECTION: AP01 Parameters
+// ═══════════════════════════════════════════════════════════════════════════════
+define behavior for ZC_DRS_PARAM_AP01 alias ParamAP01
+{
+  use update;
+  use delete;
+
+  use association _Subscription { with draft; }
+}
+// ═══════════════════════════════════════════════════════════════════════════════
+// CHILD PROJECTION: AP02 Parameters
+// ═══════════════════════════════════════════════════════════════════════════════
+define behavior for ZC_DRS_PARAM_AP02 alias ParamAP02
+{
+  use update;
+  use delete;
+
+  use association _Subscription { with draft; }
+}
+// ═══════════════════════════════════════════════════════════════════════════════
+// CHILD PROJECTION: AP03 Parameters
+// ═══════════════════════════════════════════════════════════════════════════════
+define behavior for ZC_DRS_PARAM_AP03 alias ParamAP03
 {
   use update;
   use delete;

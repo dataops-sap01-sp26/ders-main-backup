@@ -14,7 +14,8 @@ CLASS zcl_drs_subscr_hide IMPLEMENTATION.
     " Declare which DB fields are needed to compute the virtual element
     LOOP AT it_requested_calc_elements ASSIGNING FIELD-SYMBOL(<elem>).
       CASE <elem>.
-        WHEN 'HIDEPARAMGL01' OR 'HIDEPARAMAR01'.
+        WHEN 'HIDEPARAMGL01' OR 'HIDEPARAMAR01' OR 'HIDEPARAMAR02' OR 'HIDEPARAMAR03'
+         OR  'HIDEPARAMAP01' OR 'HIDEPARAMAP02' OR 'HIDEPARAMAP03'.
           INSERT |REPORTID| INTO TABLE et_requested_orig_elements.
       ENDCASE.
     ENDLOOP.
@@ -37,6 +38,38 @@ CLASS zcl_drs_subscr_hide IMPLEMENTATION.
       " Show AR Report Parameters section only when ReportId = 'AR-01'
       <row>-HideParamAR01 = COND abap_boolean(
         WHEN <row>-ReportId = 'AR-01'
+        THEN abap_false    " Show
+        ELSE abap_true     " Hide
+      ).
+
+      " Show AR Report Parameters section only when ReportId = 'AR-02'
+      <row>-HideParamAR02 = COND abap_boolean(
+        WHEN <row>-ReportId = 'AR-02'
+        THEN abap_false    " Show
+        ELSE abap_true     " Hide
+      ).
+      " Show AR Report Parameters section only when ReportId = 'AR-03'
+      <row>-HideParamAR03 = COND abap_boolean(
+        WHEN <row>-ReportId = 'AR-03'
+        THEN abap_false    " Show
+        ELSE abap_true     " Hide
+      ).
+      " Show AP Report Parameters section only when ReportId = 'AP-01'
+      <row>-HideParamAP01 = COND abap_boolean(
+        WHEN <row>-ReportId = 'AP-01'
+        THEN abap_false    " Show
+        ELSE abap_true     " Hide
+      ).
+
+      " Show AP Report Parameters section only when ReportId = 'AP-02'
+      <row>-HideParamAP02 = COND abap_boolean(
+        WHEN <row>-ReportId = 'AP-02'
+        THEN abap_false    " Show
+        ELSE abap_true     " Hide
+      ).
+      " Show AR Report Parameters section only when ReportId = 'AP-03'
+      <row>-HideParamAP03 = COND abap_boolean(
+        WHEN <row>-ReportId = 'AP-03'
         THEN abap_false    " Show
         ELSE abap_true     " Hide
       ).

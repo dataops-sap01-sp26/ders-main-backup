@@ -313,6 +313,54 @@ CLASS lhc_subscription IMPLEMENTATION.
 
     DATA lt_create_ar01 TYPE TABLE FOR CREATE zir_drs_subscr\_ParamAR01.
 
+    " Read existing AR02 params via composition
+    READ ENTITIES OF zir_drs_subscr IN LOCAL MODE
+      ENTITY Subscription BY \_ParamAR02
+        FIELDS ( SubscrUuid ) WITH CORRESPONDING #( keys )
+      RESULT DATA(lt_existing_ar02).
+
+
+    DATA lt_create_ar02 TYPE TABLE FOR CREATE zir_drs_subscr\_ParamAR02.
+
+    " Read existing AR03 params via composition
+    READ ENTITIES OF zir_drs_subscr IN LOCAL MODE
+      ENTITY Subscription BY \_ParamAR03
+        FIELDS ( SubscrUuid ) WITH CORRESPONDING #( keys )
+      RESULT DATA(lt_existing_ar03).
+
+
+    DATA lt_create_ar03 TYPE TABLE FOR CREATE zir_drs_subscr\_ParamAR03.
+    "=======================================================================
+
+    "===================AP Report Parameter==================================
+    " Read existing AP01 params via composition
+    READ ENTITIES OF zir_drs_subscr IN LOCAL MODE
+      ENTITY Subscription BY \_ParamAP01
+        FIELDS ( SubscrUuid ) WITH CORRESPONDING #( keys )
+      RESULT DATA(lt_existing_ap01).
+
+    DATA lt_create_ap01 TYPE TABLE FOR CREATE zir_drs_subscr\_ParamAP01.
+
+    " Read existing AP02 params via composition
+    READ ENTITIES OF zir_drs_subscr IN LOCAL MODE
+      ENTITY Subscription BY \_ParamAP02
+        FIELDS ( SubscrUuid ) WITH CORRESPONDING #( keys )
+      RESULT DATA(lt_existing_ap02).
+
+
+    DATA lt_create_ap02 TYPE TABLE FOR CREATE zir_drs_subscr\_ParamAP02.
+
+    " Read existing AR03 params via composition
+    READ ENTITIES OF zir_drs_subscr IN LOCAL MODE
+      ENTITY Subscription BY \_ParamAP03
+        FIELDS ( SubscrUuid ) WITH CORRESPONDING #( keys )
+      RESULT DATA(lt_existing_ap03).
+
+
+    DATA lt_create_ap03 TYPE TABLE FOR CREATE zir_drs_subscr\_ParamAP03.
+    "=======================================================================
+
+
     LOOP AT lt_subscr ASSIGNING FIELD-SYMBOL(<subscr>).
       CASE <subscr>-ReportId.
         WHEN 'GL-01'.
@@ -340,6 +388,7 @@ CLASS lhc_subscription IMPLEMENTATION.
                 MaxRows     = 1000 ) )        " Default max rows
             ) TO lt_create_gl01.
           ENDIF.
+        "===================AR Report Parameter==================================
         WHEN 'AR-01'.
           " Check if already exists
           READ TABLE lt_existing_ar01 WITH KEY SubscrUuid = <subscr>-SubscrUuid TRANSPORTING NO FIELDS.
@@ -364,6 +413,130 @@ CLASS lhc_subscription IMPLEMENTATION.
                 MaxRows     = 1000 ) )        " Default max rows
             ) TO lt_create_ar01.
           ENDIF.
+         WHEN 'AR-02'.
+          " Check if already exists
+          READ TABLE lt_existing_ar02 WITH KEY SubscrUuid = <subscr>-SubscrUuid TRANSPORTING NO FIELDS.
+          IF sy-subrc = 0.
+            " Already exists - report info message
+            APPEND VALUE #(
+              %tky = CORRESPONDING #( <subscr> )
+              %msg = new_message_with_text(
+                severity = if_abap_behv_message=>severity-information
+                text     = 'AR-02 parameters already exist for this subscription'
+              )
+            ) TO reported-subscription.
+          ELSE.
+            " Create via composition (keys inherited from parent, %cid required)
+            " %is_draft MUST match parent to avoid ACTIVE/DRAFT mixture dump
+            APPEND VALUE #(
+              %tky = CORRESPONDING #( <subscr> )
+              %target = VALUE #( (
+                %cid        = |AR02_{ sy-tabix }|
+                %is_draft   = <subscr>-%is_draft
+                CompanyCode = <subscr>-Bukrs  " Default from subscription
+                MaxRows     = 1000 ) )        " Default max rows
+            ) TO lt_create_ar02.
+          ENDIF.
+          WHEN 'AR-03'.
+          " Check if already exists
+          READ TABLE lt_existing_ar03 WITH KEY SubscrUuid = <subscr>-SubscrUuid TRANSPORTING NO FIELDS.
+          IF sy-subrc = 0.
+            " Already exists - report info message
+            APPEND VALUE #(
+              %tky = CORRESPONDING #( <subscr> )
+              %msg = new_message_with_text(
+                severity = if_abap_behv_message=>severity-information
+                text     = 'AR-03 parameters already exist for this subscription'
+              )
+            ) TO reported-subscription.
+          ELSE.
+            " Create via composition (keys inherited from parent, %cid required)
+            " %is_draft MUST match parent to avoid ACTIVE/DRAFT mixture dump
+            APPEND VALUE #(
+              %tky = CORRESPONDING #( <subscr> )
+              %target = VALUE #( (
+                %cid        = |AR03_{ sy-tabix }|
+                %is_draft   = <subscr>-%is_draft
+                CompanyCode = <subscr>-Bukrs  " Default from subscription
+                MaxRows     = 1000 ) )        " Default max rows
+            ) TO lt_create_ar03.
+          ENDIF.
+          "========================================================================
+
+          "===================AP Report Parameter==================================
+           WHEN 'AP-01'.
+          " Check if already exists
+          READ TABLE lt_existing_ap01 WITH KEY SubscrUuid = <subscr>-SubscrUuid TRANSPORTING NO FIELDS.
+          IF sy-subrc = 0.
+            " Already exists - report info message
+            APPEND VALUE #(
+              %tky = CORRESPONDING #( <subscr> )
+              %msg = new_message_with_text(
+                severity = if_abap_behv_message=>severity-information
+                text     = 'AP-01 parameters already exist for this subscription'
+              )
+            ) TO reported-subscription.
+          ELSE.
+            " Create via composition (keys inherited from parent, %cid required)
+            " %is_draft MUST match parent to avoid ACTIVE/DRAFT mixture dump
+            APPEND VALUE #(
+              %tky = CORRESPONDING #( <subscr> )
+              %target = VALUE #( (
+                %cid        = |AP01_{ sy-tabix }|
+                %is_draft   = <subscr>-%is_draft
+                CompanyCode = <subscr>-Bukrs  " Default from subscription
+                MaxRows     = 1000 ) )        " Default max rows
+            ) TO lt_create_ap01.
+          ENDIF.
+         WHEN 'AP-02'.
+          " Check if already exists
+          READ TABLE lt_existing_ap02 WITH KEY SubscrUuid = <subscr>-SubscrUuid TRANSPORTING NO FIELDS.
+          IF sy-subrc = 0.
+            " Already exists - report info message
+            APPEND VALUE #(
+              %tky = CORRESPONDING #( <subscr> )
+              %msg = new_message_with_text(
+                severity = if_abap_behv_message=>severity-information
+                text     = 'AP-02 parameters already exist for this subscription'
+              )
+            ) TO reported-subscription.
+          ELSE.
+            " Create via composition (keys inherited from parent, %cid required)
+            " %is_draft MUST match parent to avoid ACTIVE/DRAFT mixture dump
+            APPEND VALUE #(
+              %tky = CORRESPONDING #( <subscr> )
+              %target = VALUE #( (
+                %cid        = |AP02_{ sy-tabix }|
+                %is_draft   = <subscr>-%is_draft
+                CompanyCode = <subscr>-Bukrs  " Default from subscription
+                MaxRows     = 1000 ) )        " Default max rows
+            ) TO lt_create_ap02.
+          ENDIF.
+          WHEN 'AP-03'.
+          " Check if already exists
+          READ TABLE lt_existing_ap03 WITH KEY SubscrUuid = <subscr>-SubscrUuid TRANSPORTING NO FIELDS.
+          IF sy-subrc = 0.
+            " Already exists - report info message
+            APPEND VALUE #(
+              %tky = CORRESPONDING #( <subscr> )
+              %msg = new_message_with_text(
+                severity = if_abap_behv_message=>severity-information
+                text     = 'AP-03 parameters already exist for this subscription'
+              )
+            ) TO reported-subscription.
+          ELSE.
+            " Create via composition (keys inherited from parent, %cid required)
+            " %is_draft MUST match parent to avoid ACTIVE/DRAFT mixture dump
+            APPEND VALUE #(
+              %tky = CORRESPONDING #( <subscr> )
+              %target = VALUE #( (
+                %cid        = |AP03_{ sy-tabix }|
+                %is_draft   = <subscr>-%is_draft
+                CompanyCode = <subscr>-Bukrs  " Default from subscription
+                MaxRows     = 1000 ) )        " Default max rows
+            ) TO lt_create_ap03.
+          ENDIF.
+          "========================================================================
 *        WHEN 'GL-02'.
 *          " TODO: Implement GL-02 parameter creation via _ParamGL02
 
@@ -401,6 +574,7 @@ CLASS lhc_subscription IMPLEMENTATION.
       ENDIF.
     ENDIF.
 
+    "===================AR Report Parameter==================================
     " Create AR01 params via composition
     IF lt_create_ar01 IS NOT INITIAL.
       MODIFY ENTITIES OF zir_drs_subscr IN LOCAL MODE
@@ -412,9 +586,9 @@ CLASS lhc_subscription IMPLEMENTATION.
 
       " Add success/failure messages
       IF lt_failed_ar01-paramar01 IS INITIAL.
-        LOOP AT lt_create_ar01 ASSIGNING FIELD-SYMBOL(<created_ar>).
+        LOOP AT lt_create_ar01 ASSIGNING FIELD-SYMBOL(<created_ar01>).
           APPEND VALUE #(
-            %tky = <created_ar>-%tky
+            %tky = <created_ar01>-%tky
             %msg = new_message_with_text(
               severity = if_abap_behv_message=>severity-success
               text     = 'AR-01 parameters created successfully'
@@ -423,6 +597,124 @@ CLASS lhc_subscription IMPLEMENTATION.
         ENDLOOP.
       ENDIF.
     ENDIF.
+
+    " Create AR02 params via composition
+    IF lt_create_ar02 IS NOT INITIAL.
+      MODIFY ENTITIES OF zir_drs_subscr IN LOCAL MODE
+        ENTITY Subscription
+          CREATE BY \_ParamAR02 FROM lt_create_ar02
+        MAPPED DATA(lt_mapped_ar02)
+        FAILED DATA(lt_failed_ar02)
+        REPORTED DATA(lt_reported_ar02).
+
+      " Add success/failure messages
+      IF lt_failed_ar02-paramar02 IS INITIAL.
+        LOOP AT lt_create_ar02 ASSIGNING FIELD-SYMBOL(<created_ar02>).
+          APPEND VALUE #(
+            %tky = <created_ar02>-%tky
+            %msg = new_message_with_text(
+              severity = if_abap_behv_message=>severity-success
+              text     = 'AR-02 parameters created successfully'
+            )
+          ) TO reported-subscription.
+        ENDLOOP.
+      ENDIF.
+    ENDIF.
+
+    " Create AR03 params via composition
+    IF lt_create_ar03 IS NOT INITIAL.
+      MODIFY ENTITIES OF zir_drs_subscr IN LOCAL MODE
+        ENTITY Subscription
+          CREATE BY \_ParamAR03 FROM lt_create_ar03
+        MAPPED DATA(lt_mapped_ar03)
+        FAILED DATA(lt_failed_ar03)
+        REPORTED DATA(lt_reported_ar03).
+
+      " Add success/failure messages
+      IF lt_failed_ar03-paramar03 IS INITIAL.
+        LOOP AT lt_create_ar03 ASSIGNING FIELD-SYMBOL(<created_ar03>).
+          APPEND VALUE #(
+            %tky = <created_ar03>-%tky
+            %msg = new_message_with_text(
+              severity = if_abap_behv_message=>severity-success
+              text     = 'AR-03 parameters created successfully'
+            )
+          ) TO reported-subscription.
+        ENDLOOP.
+      ENDIF.
+    ENDIF.
+    "========================================================================
+
+    "===================AP Report Parameter==================================
+    " Create AP01 params via composition
+    IF lt_create_ap01 IS NOT INITIAL.
+      MODIFY ENTITIES OF zir_drs_subscr IN LOCAL MODE
+        ENTITY Subscription
+          CREATE BY \_ParamAP01 FROM lt_create_ap01
+        MAPPED DATA(lt_mapped_ap01)
+        FAILED DATA(lt_failed_ap01)
+        REPORTED DATA(lt_reported_ap01).
+
+      " Add success/failure messages
+      IF lt_failed_ap01-paramap01 IS INITIAL.
+        LOOP AT lt_create_ap01 ASSIGNING FIELD-SYMBOL(<created_ap01>).
+          APPEND VALUE #(
+            %tky = <created_ap01>-%tky
+            %msg = new_message_with_text(
+              severity = if_abap_behv_message=>severity-success
+              text     = 'AP-01 parameters created successfully'
+            )
+          ) TO reported-subscription.
+        ENDLOOP.
+      ENDIF.
+    ENDIF.
+
+    " Create AP02 params via composition
+    IF lt_create_ap02 IS NOT INITIAL.
+      MODIFY ENTITIES OF zir_drs_subscr IN LOCAL MODE
+        ENTITY Subscription
+          CREATE BY \_ParamAP02 FROM lt_create_ap02
+        MAPPED DATA(lt_mapped_ap02)
+        FAILED DATA(lt_failed_ap02)
+        REPORTED DATA(lt_reported_ap02).
+
+      " Add success/failure messages
+      IF lt_failed_ap02-paramap02 IS INITIAL.
+        LOOP AT lt_create_ap02 ASSIGNING FIELD-SYMBOL(<created_ap02>).
+          APPEND VALUE #(
+            %tky = <created_ap02>-%tky
+            %msg = new_message_with_text(
+              severity = if_abap_behv_message=>severity-success
+              text     = 'AP-02 parameters created successfully'
+            )
+          ) TO reported-subscription.
+        ENDLOOP.
+      ENDIF.
+    ENDIF.
+
+    " Create AP03 params via composition
+    IF lt_create_ap03 IS NOT INITIAL.
+      MODIFY ENTITIES OF zir_drs_subscr IN LOCAL MODE
+        ENTITY Subscription
+          CREATE BY \_ParamAP03 FROM lt_create_ap03
+        MAPPED DATA(lt_mapped_ap03)
+        FAILED DATA(lt_failed_ap03)
+        REPORTED DATA(lt_reported_ap03).
+
+      " Add success/failure messages
+      IF lt_failed_ap03-paramap03 IS INITIAL.
+        LOOP AT lt_create_ap03 ASSIGNING FIELD-SYMBOL(<created_ap03>).
+          APPEND VALUE #(
+            %tky = <created_ap03>-%tky
+            %msg = new_message_with_text(
+              severity = if_abap_behv_message=>severity-success
+              text     = 'AP-03 parameters created successfully'
+            )
+          ) TO reported-subscription.
+        ENDLOOP.
+      ENDIF.
+    ENDIF.
+    "========================================================================
 
     " Return result - re-read to get fresh data
     READ ENTITIES OF zir_drs_subscr IN LOCAL MODE

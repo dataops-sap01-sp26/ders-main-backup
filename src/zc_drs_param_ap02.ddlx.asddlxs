@@ -1,0 +1,69 @@
+@Metadata.layer: #CORE
+@UI: {
+  headerInfo: {
+    typeName: 'Vendor Balance Report Parameter',
+    typeNamePlural: 'Vendor Balacne Report Parameter',
+    title: { type: #STANDARD, value: 'CompanyCode' },
+    description: { value: 'CompanyCode' }
+  }
+}
+annotate entity ZC_DRS_PARAM_AP02
+    with 
+{
+   @UI.facet: [
+      {
+        id: 'AP02ParamDetails',
+        purpose: #STANDARD,
+        type: #IDENTIFICATION_REFERENCE,
+        label: 'Parameter Details',
+        position: 10
+      }
+    ]
+
+  @UI.hidden: true
+  SubscrUuid;
+
+  @UI.hidden: true
+  SubscrId;
+
+  @UI: {
+    lineItem:       [ { position: 10, importance: #HIGH } ],
+    identification: [ { position: 10 } ],
+    fieldGroup:     [ { qualifier: 'SubscriptionParams', position: 10 } ]
+  }
+  @EndUserText.label: 'Company Code'
+  CompanyCode;
+
+  @UI: {
+    lineItem:       [ { position: 20, importance: #HIGH } ],
+    identification: [ { position: 20 } ],
+    fieldGroup:     [ { qualifier: 'SubscriptionParams', position: 20 } ]
+  }
+  @EndUserText.label: 'Vendor From'
+  VendorFrom;
+  
+  @UI: {
+    lineItem:       [ { position: 25, importance: #HIGH } ],
+    identification: [ { position: 25 } ],
+    fieldGroup:     [ { qualifier: 'SubscriptionParams', position: 25 } ]
+  }
+  @EndUserText.label: 'Vendor To'
+  VendorTo;
+
+  @UI: {
+    lineItem:       [ { position: 30, importance: #HIGH } ],
+    identification: [ { position: 30 } ],
+    fieldGroup:     [ { qualifier: 'SubscriptionParams', position: 30 } ]
+  }
+  @EndUserText.label: 'Fiscal Year'
+  FiscalYear;
+
+  @UI: {
+  lineItem:       [ { position: 40, importance: #LOW } ],
+  identification: [ { position: 40 } ],
+  fieldGroup:     [ { qualifier: 'SubscriptionParams', position: 40 } ]
+  }
+  @EndUserText.label: 'Max Rows'
+  MaxRows;
+  
+}

@@ -2,7 +2,6 @@
 @EndUserText.label: 'Interface View for AR Aging Report'
 @Metadata.ignorePropagatedAnnotations: true
 @Metadata.allowExtensions: true
-@Search.searchable: true
 
 define view entity ZI_RPT_AR03
   as select from ZI_RPT_AR03_BASE
@@ -11,12 +10,10 @@ define view entity ZI_RPT_AR03
     on  $projection.CompanyCode = _Items.CompanyCode
     and $projection.Customer    = _Items.Customer
 {
-      @Search.defaultSearchElement: true
       @Consumption.valueHelpDefinition: [{ entity: { name: 'I_CompanyCode', element: 'CompanyCode' } }]
       @Consumption.filter: { mandatory: true, selectionType: #SINGLE, multipleSelections: false }
   key CompanyCode,
 
-      @Search.defaultSearchElement: true
       @Consumption.valueHelpDefinition: [{ entity: { name: 'I_Customer', element: 'Customer' } }]
   key Customer,
 
@@ -32,6 +29,8 @@ define view entity ZI_RPT_AR03
       sum( Bucket_31_60 )   as Bucket_31_60,
       sum( Bucket_61_90 )   as Bucket_61_90,
       sum( Bucket_Over_90 ) as Bucket_Over_90,
+      
+      max(NetDueDate) as NetDueDate,
       
       _Items
 }

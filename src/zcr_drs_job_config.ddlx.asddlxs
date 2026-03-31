@@ -195,7 +195,7 @@ annotate entity ZCR_DRS_JOB_CONFIG with
   @UI: {
     fieldGroup: [ { qualifier: 'PeriodicSettings', position: 80 } ]
   }
-  @EndUserText.label: 'Restriction Code'
+  @EndUserText.label: 'Start Restriction'
   @Consumption.valueHelpDefinition: [{
   entity: { name: 'ZI_VH_DRS_START_RESTRICTION', element: 'Value' },
   useForValidation: true

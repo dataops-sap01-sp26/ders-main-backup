@@ -16,7 +16,8 @@ define view entity ZI_DRS_PARAM_AR01
   key subscr_uuid    as SubscrUuid,
   key subscr_id      as SubscrId,
       company_code   as CompanyCode,
-      customer_range as CustomerRange,
+      customer_from  as CustomerFrom,
+      customer_to    as CustomerTo,
       key_date       as KeyDate,
       max_rows       as MaxRows,
 

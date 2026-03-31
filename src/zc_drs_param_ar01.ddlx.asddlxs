@@ -1,8 +1,8 @@
 @Metadata.layer: #CORE
 @UI: {
   headerInfo: {
-    typeName: 'AR Report Parameter',
-    typeNamePlural: 'AR Report Parameters',
+    typeName: 'Customer Open Item Report Parameter',
+    typeNamePlural: 'Customer Open Item Report Parameter',
     title: { type: #STANDARD, value: 'CompanyCode' },
     description: { value: 'CompanyCode' }
   }
@@ -38,8 +38,17 @@ annotate entity ZC_DRS_PARAM_AR01 with
     identification: [ { position: 20 } ],
     fieldGroup:     [ { qualifier: 'SubscriptionParams', position: 20 } ]
   }
-  @EndUserText.label: 'Customer Range'
-  CustomerRange;
+  @EndUserText.label: 'Customer From'
+  CustomerFrom;
+  
+    @UI: {
+    lineItem:       [ { position: 25, importance: #HIGH } ],
+    identification: [ { position: 25 } ],
+    fieldGroup:     [ { qualifier: 'SubscriptionParams', position: 25 } ]
+  }
+  @EndUserText.label: 'Customer To'
+  CustomerTo;
+
 
   @UI: {
     lineItem:       [ { position: 30, importance: #HIGH } ],

@@ -164,6 +164,117 @@ CLASS zcl_drs_setup_data IMPLEMENTATION.
         last_changed_by = sy-uname
         last_changed_at = lv_ts
         local_last_changed_at = lv_ts )
+
+        ( mandt = sy-mandt
+        report_id     = 'AR-01'
+        module_id     = 'FI'
+        report_name   = 'Customer Open Items'
+        description   = 'Detailed analysis of outstanding customer invoices'
+        long_text     = |Customer Open Items Report| &&
+                        |\n\nIt supports tracking by Company Code, Customer Account, and Aging Period.|
+        cds_view_name = 'ZI_DRS_AR01'
+        report_class  = 'ZCL_DRS_REPORT_AR01'
+        is_active     = abap_true
+        sort_order    = 10
+        created_by    = sy-uname
+        created_at    = lv_ts
+        last_changed_by = sy-uname
+        last_changed_at = lv_ts
+        local_last_changed_at = lv_ts )
+
+        ( mandt = sy-mandt
+        report_id     = 'AR-02'
+        module_id     = 'FI'
+        report_name   = 'Customer Balances'
+        description   = 'Total customer debit and credit balances'
+        long_text     = |Overview of customer account balances.| &&
+
+                        |\n\nProvides a summary of total debit/credit movements | &&
+                        |and ending balances by Company Code and Fiscal Period.|
+
+        cds_view_name = 'ZI_DRS_AR02'
+        report_class  = 'ZCL_DRS_REPORT_AR02'
+        is_active     = abap_true
+        sort_order    = 10
+        created_by    = sy-uname
+        created_at    = lv_ts
+        last_changed_by = sy-uname
+        last_changed_at = lv_ts
+        local_last_changed_at = lv_ts )
+
+        ( mandt = sy-mandt
+        report_id     = 'AR-03'
+        module_id     = 'FI'
+        report_name   = 'AR Aging Report'
+        description   = 'Analysis of customer receivables by age'
+        long_text     = |Categorizes open customer invoices into aging buckets.| &&
+
+                        |\n\nUsed for credit risk assessment and collection | &&
+                        |tracking based on due dates and clearing status.|
+
+        cds_view_name = 'ZI_DRS_AR03'
+        report_class  = 'ZCL_DRS_REPORT_AR03'
+        is_active     = abap_true
+        sort_order    = 10
+        created_by    = sy-uname
+        created_at    = lv_ts
+        last_changed_by = sy-uname
+        last_changed_at = lv_ts
+        local_last_changed_at = lv_ts )
+
+        ( mandt = sy-mandt
+        report_id     = 'AP-01'
+        module_id     = 'FI'
+        report_name   = 'Vendor Open Items'
+        description   = 'Detailed analysis of outstanding customer invoices'
+        long_text     = |Vendor Open Items Report| &&
+        |\n\nSupports tracking of unpaid liabilities by Company Code, Vendor Account, and Aging Period to ensure timely payments.|
+        cds_view_name = 'ZI_DRS_AP01'
+        report_class  = 'ZCL_DRS_REPORT_AP01'
+        is_active     = abap_true
+        sort_order    = 10
+        created_by    = sy-uname
+        created_at    = lv_ts
+        last_changed_by = sy-uname
+        last_changed_at = lv_ts
+        local_last_changed_at = lv_ts )
+
+        ( mandt = sy-mandt
+        report_id     = 'AP-02'
+        module_id     = 'FI'
+        report_name   = 'Vendor Balances'
+        description   = 'Total customer debit and credit balances'
+        long_text     = |Overview of vendor account balances.| &&
+|\n\nProvides a summary of total debit/credit movements, including purchases and payments, and ending balances by Company Code and Fiscal Period.|
+
+        cds_view_name = 'ZI_DRS_AP02'
+        report_class  = 'ZCL_DRS_REPORT_AP02'
+        is_active     = abap_true
+        sort_order    = 10
+        created_by    = sy-uname
+        created_at    = lv_ts
+        last_changed_by = sy-uname
+        last_changed_at = lv_ts
+        local_last_changed_at = lv_ts )
+
+        ( mandt = sy-mandt
+        report_id     = 'AP-03'
+        module_id     = 'FI'
+        report_name   = 'AP Aging Report'
+        description   = 'Analysis of customer receivables by age'
+        long_text     = |Categorizes open vendor invoices into aging buckets.| &&
+|\n\nUsed for cash flow forecasting and payment prioritization based on net due dates and discount eligibility.|
+
+        cds_view_name = 'ZI_DRS_AP03'
+        report_class  = 'ZCL_DRS_REPORT_AP03'
+        is_active     = abap_true
+        sort_order    = 10
+        created_by    = sy-uname
+        created_at    = lv_ts
+        last_changed_by = sy-uname
+        last_changed_at = lv_ts
+        local_last_changed_at = lv_ts )
+
     ).
 
     INSERT zdrs_catalog FROM TABLE @lt_data.

@@ -16,7 +16,10 @@ association [0..1] to ZIR_DRS_CATALOG as _Catalog on $projection.ReportId = _Cat
    composition [0..1] of ZI_DRS_PARAM_GL01 as _ParamGL01
    composition [0..1] of ZI_DRS_PARAM_AR01 as _ParamAR01  -- TODO: Enable later
    composition [0..1] of ZI_DRS_PARAM_AR02 as _ParamAR02
-// composition [0..1] of ZI_DRS_PARAM_AP01 as _ParamAP01  -- Future: AP Payment
+   composition [0..1] of ZI_DRS_PARAM_AR03 as _ParamAR03
+   composition [0..1] of ZI_DRS_PARAM_AP01 as _ParamAP01  -- Future: AP Payment
+   composition [0..1] of ZI_DRS_PARAM_AP02 as _ParamAP02
+   composition [0..1] of ZI_DRS_PARAM_AP03 as _ParamAP03
 // composition [0..1] of ZI_DRS_PARAM_CA01 as _ParamCA01  -- Future: Cash Position
 
 {
@@ -67,5 +70,9 @@ association [0..1] to ZIR_DRS_CATALOG as _Catalog on $projection.ReportId = _Cat
     _Catalog,
     _ParamGL01,
     _ParamAR01, 
-    _ParamAR02 
+    _ParamAR02,
+    _ParamAR03,
+    _ParamAP01,
+    _ParamAP02,
+    _ParamAP03 
 }

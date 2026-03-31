@@ -3,7 +3,7 @@
 @Metadata.ignorePropagatedAnnotations: true
 
 define root view entity ZIR_DRS_GL01
-  -- Bảng nguồn phải là Journal Entry Item (Dữ liệu kế toán)
+
   as select from    I_JournalEntryItem      as J 
     
     left outer join I_GLAccountText  as T on  T.GLAccount    = J.GLAccount

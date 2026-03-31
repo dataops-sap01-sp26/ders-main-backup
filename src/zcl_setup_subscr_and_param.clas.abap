@@ -33,16 +33,25 @@ CLASS ZCL_SETUP_SUBSCR_AND_PARAM IMPLEMENTATION.
     " -----------------------------------------------------------------
     " 1.  Generate Subscription UUIDs
     " -----------------------------------------------------------------
+    " GL01
     DATA LV_UUID1 TYPE SYSUUID_X16.
     DATA LV_UUID2 TYPE SYSUUID_X16.
+
+    " AR01
     DATA LV_UUID3 TYPE SYSUUID_X16.
     DATA LV_UUID4 TYPE SYSUUID_X16.
+
+    " AR02
+    DATA LV_UUID5 TYPE SYSUUID_X16.
+    DATA LV_UUID6 TYPE SYSUUID_X16.
 
     TRY.
         LV_UUID1 = CL_SYSTEM_UUID=>CREATE_UUID_X16_STATIC( ).
         LV_UUID2 = CL_SYSTEM_UUID=>CREATE_UUID_X16_STATIC( ).
         LV_UUID3 = CL_SYSTEM_UUID=>CREATE_UUID_X16_STATIC( ).
         LV_UUID4 = CL_SYSTEM_UUID=>CREATE_UUID_X16_STATIC( ).
+        LV_UUID5 = CL_SYSTEM_UUID=>CREATE_UUID_X16_STATIC( ).
+        LV_UUID6 = CL_SYSTEM_UUID=>CREATE_UUID_X16_STATIC( ).
       CATCH CX_UUID_ERROR INTO DATA(LX_UUID).
         IF IO_OUT IS BOUND.
           IO_OUT->WRITE( |UUID generation failed: { LX_UUID->GET_TEXT( ) }| ).
@@ -118,6 +127,8 @@ CLASS ZCL_SETUP_SUBSCR_AND_PARAM IMPLEMENTATION.
       LOCAL_LAST_CHANGED_AT = LV_TS
     ) TO LT_SUB_HDR.
 
+
+
     INSERT ZDRS_SUBSCR FROM TABLE @LT_SUB_HDR.
 
     " -----------------------------------------------------------------
@@ -157,7 +168,7 @@ CLASS ZCL_SETUP_SUBSCR_AND_PARAM IMPLEMENTATION.
       SUBSCR_UUID   = LV_UUID3
       SUBSCR_ID     = '000003'
       COMPANY_CODE  = 'US00'
-      CUSTOMER_RANGE = '129997'
+      CUSTOMER = '129997'
       KEY_DATE      = SY-DATUM
       MAX_ROWS      = 100
     ) TO LT_PARAM_AR01.
@@ -166,7 +177,7 @@ CLASS ZCL_SETUP_SUBSCR_AND_PARAM IMPLEMENTATION.
       SUBSCR_UUID   = LV_UUID4
       SUBSCR_ID     = '000004'
       COMPANY_CODE  = 'US00'
-      CUSTOMER_RANGE = '129999'
+      CUSTOMER = '129999'
       KEY_DATE      = SY-DATUM
       MAX_ROWS      = 100
     ) TO LT_PARAM_AR01.

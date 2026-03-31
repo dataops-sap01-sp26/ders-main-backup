@@ -55,7 +55,7 @@ annotate entity ZC_DRS_JOB_HISTORY with
 
   @UI: {
     fieldGroup: [ { qualifier: 'ReportFileDetails', position: 10 } ],
-    selectionField: [ { position: 30 } ]
+    selectionField: [ { position: 60 } ]
   }
   @EndUserText.label: 'File Name'
   FileName;
@@ -93,7 +93,7 @@ annotate entity ZC_DRS_JOB_HISTORY with
   @UI: {
     lineItem: [ { position: 10, importance: #HIGH } ],
     fieldGroup: [ { qualifier: 'GeneralInfo', position: 10 } ],
-    selectionField: [ { position: 50 } ]
+    selectionField: [ { position: 40 } ]
   }
   @EndUserText.label: 'Report ID'
   ReportId;
@@ -150,7 +150,7 @@ annotate entity ZC_DRS_JOB_HISTORY with
 
   @UI: {
     fieldGroup: [ { qualifier: 'ExecutionDetails', position: 50 } ],
-    selectionField: [ { position: 40 } ]
+    selectionField: [ { position: 50 } ]
   }
   @EndUserText.label: 'Output Format'
   OutputFormat;
@@ -170,7 +170,7 @@ annotate entity ZC_DRS_JOB_HISTORY with
 
   @UI: {
     fieldGroup: [ { qualifier: 'AdminData', position: 10 } ],
-    selectionField: [ { position: 20 } ]
+    selectionField: [ { position: 30 } ]
   }
   @EndUserText.label: 'Created By'
   CreatedBy;
@@ -178,7 +178,7 @@ annotate entity ZC_DRS_JOB_HISTORY with
   @UI: {
     lineItem: [ { position: 80, importance: #MEDIUM } ],
     fieldGroup: [ { qualifier: 'AdminData', position: 20 } ],
-    selectionField: [ { position: 10 } ]
+    selectionField: [ { position: 20 } ]
   }
   @EndUserText.label: 'Created At'
   CreatedAt;
@@ -200,4 +200,11 @@ annotate entity ZC_DRS_JOB_HISTORY with
   }
   @EndUserText.label: 'Local Last Changed At'
   LocalLastChangedAt;
+
+  @UI: {
+  selectionField: [ { position: 10 } ]
+  }
+  @EndUserText.label: 'Job Date'
+  JobDate;
+
 }

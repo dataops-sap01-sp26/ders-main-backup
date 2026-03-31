@@ -5,7 +5,7 @@
    <DDLS>
     <DDLNAME>ZI_DRS_PARAM_AR01</DDLNAME>
     <DDLANGUAGE>E</DDLANGUAGE>
-    <DDTEXT>Customer Open Items</DDTEXT>
+    <DDTEXT>Customer Open Items Interface Entity</DDTEXT>
     <SOURCE_TYPE>W</SOURCE_TYPE>
    </DDLS>
   </asx:values>

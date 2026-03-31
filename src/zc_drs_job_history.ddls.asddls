@@ -17,10 +17,6 @@ define view entity ZC_DRS_JOB_HISTORY
             }
           _File.FileContent,
           _File.FileSize,
-          @ObjectModel.virtualElement: true
-          @ObjectModel.virtualElementCalculatedBy: 'ABAP:ZCL_FILE_SIZE_CALC_JOB_HISTORY'
-          @EndUserText.label: 'File Size'
-  virtual FileSizeDisplay : abap.char(20),
           _File.CreatedAt as FileCreatedAt,
           _File.CreatedBy as FileCreatedBy,
           ReportId,
@@ -41,6 +37,11 @@ define view entity ZC_DRS_JOB_HISTORY
           LastChangedBy,
           LastChangedAt,
           LocalLastChangedAt,
+          JobDate,
+          @ObjectModel.virtualElement: true
+          @ObjectModel.virtualElementCalculatedBy: 'ABAP:ZCL_FILE_SIZE_CALC_JOB_HISTORY'
+          @EndUserText.label: 'File Size'
+  virtual FileSizeDisplay : abap.char(20),
           /* Associations */
           _Catalog,
           _File      : redirected to ZC_DRS_FILE,

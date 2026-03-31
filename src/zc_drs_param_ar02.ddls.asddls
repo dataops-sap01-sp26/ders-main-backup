@@ -14,7 +14,10 @@ define view entity ZC_DRS_PARAM_AR02 as projection on ZI_DRS_PARAM_AR02
     @Consumption.valueHelpDefinition: [{ entity: { name: 'I_CompanyCodeStdVH', element: 'CompanyCode' } }]
     CompanyCode,
     
-    CustomerRange,
+    
+    CustomerFrom,
+    CustomerTo,
+    
     FiscalYear,
     FiscalPeriod,
     PostingDate,

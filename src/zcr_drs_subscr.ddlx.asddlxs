@@ -44,9 +44,54 @@ annotate entity ZCR_DRS_SUBSCR with
       purpose: #STANDARD,
       type: #IDENTIFICATION_REFERENCE,
       targetElement: '_ParamAR01',
-      label: 'AR Report Parameters',
-      position: 22,
+      label: 'Customer Open Item Report Parameters',
+      position: 30,
       hidden: #(HideParamAR01)
+    },
+    {
+      id: 'ParamAR02Section',
+      purpose: #STANDARD,
+      type: #IDENTIFICATION_REFERENCE,
+      targetElement: '_ParamAR02',
+      label: 'Customer Balance Report Parameters',
+      position: 30,
+      hidden: #(HideParamAR02)
+    },
+    {
+      id: 'ParamAR03Section',
+      purpose: #STANDARD,
+      type: #IDENTIFICATION_REFERENCE,
+      targetElement: '_ParamAR03',
+      label: 'Aging Report Parameters',
+      position: 30,
+      hidden: #(HideParamAR03)
+    },
+    {
+      id: 'ParamAP01Section',
+      purpose: #STANDARD,
+      type: #IDENTIFICATION_REFERENCE,
+      targetElement: '_ParamAP01',
+      label: 'Vendor Open Item Report Parameters',
+      position: 30,
+      hidden: #(HideParamAP01)
+    },
+    {
+      id: 'ParamAP02Section',
+      purpose: #STANDARD,
+      type: #IDENTIFICATION_REFERENCE,
+      targetElement: '_ParamAP02',
+      label: 'Vendor Balance Report Parameters',
+      position: 30,
+      hidden: #(HideParamAP02)
+    },
+    {
+      id: 'ParamAP03Section',
+      purpose: #STANDARD,
+      type: #IDENTIFICATION_REFERENCE,
+      targetElement: '_ParamAP03',
+      label: 'AP Aging Report Parameters',
+      position: 30,
+      hidden: #(HideParamAP03)
     },
     {
       id: 'AdminData',
@@ -138,6 +183,21 @@ annotate entity ZCR_DRS_SUBSCR with
   
   @UI.hidden: true
   HideParamAR01;
+  
+  @UI.hidden: true
+  HideParamAR02;
+  
+  @UI.hidden: true
+  HideParamAR03;
+  
+  @UI.hidden: true
+  HideParamAP01;
+  
+  @UI.hidden: true
+  HideParamAP02;
+  
+  @UI.hidden: true
+  HideParamAP03;
   
   @UI.fieldGroup: [ { qualifier: 'AdminData', position: 10 } ]
   @EndUserText.label: 'Created By'

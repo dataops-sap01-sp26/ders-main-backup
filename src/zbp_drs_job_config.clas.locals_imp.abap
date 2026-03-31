@@ -21,6 +21,18 @@ CLASS lhc_DrsJobConfig DEFINITION INHERITING FROM CL_ABAP_BEHAVIOR_HANDLER.
     METHODS validateSubscrId FOR VALIDATE ON SAVE
       IMPORTING KEYS FOR DrsJobConfig~validateSubscrId.
 
+    METHODS validatePeriodicGranularity FOR VALIDATE ON SAVE
+      IMPORTING KEYS FOR DrsJobConfig~validatePeriodicGranularity.
+
+    METHODS validateShiftDirection FOR VALIDATE ON SAVE
+      IMPORTING KEYS FOR DrsJobConfig~validateShiftDirection.
+
+    METHODS validateStartRestriction FOR VALIDATE ON SAVE
+      IMPORTING KEYS FOR DrsJobConfig~validateStartRestriction.
+
+    METHODS validateCalendarId FOR VALIDATE ON SAVE
+      IMPORTING KEYS FOR DrsJobConfig~validateCalendarId.
+
     METHODS validateRunSettings FOR VALIDATE ON SAVE
       IMPORTING KEYS FOR DrsJobConfig~validateRunSettings.
 
@@ -226,22 +238,122 @@ CLASS lhc_DrsJobConfig IMPLEMENTATION.
       WITH CORRESPONDING #( KEYS )
       RESULT DATA(LT_JOBS).
 
+    " Fetch valid values from DB Table
+    SELECT value FROM zdrs_run_type_vt INTO TABLE @DATA(lt_valid_run_types).
+
     LOOP AT LT_JOBS INTO DATA(LS_JOB).
-      " RunType must be one of the three valid values
-      IF LS_JOB-RunType <> 'I' AND
-         LS_JOB-RunType <> 'O' AND
-         LS_JOB-RunType <> 'P'.
+      " Validate existence
+      IF LS_JOB-RunType IS INITIAL OR NOT line_exists( lt_valid_run_types[ value = LS_JOB-RunType ] ).
         APPEND VALUE #( %TKY = LS_JOB-%TKY ) TO FAILED-DRSJOBCONFIG.
         APPEND VALUE #( %TKY = LS_JOB-%TKY
           %MSG = NEW_MESSAGE_WITH_TEXT(
             SEVERITY = IF_ABAP_BEHV_MESSAGE=>SEVERITY-ERROR
-            TEXT = 'Run Type is required and must be Immediate (I), Once (O), or Periodic (P)' )
+            TEXT = |Run Type '{ LS_JOB-RunType }' is invalid or missing| )
           %ELEMENT-RunType = IF_ABAP_BEHV=>MK-ON )
         TO REPORTED-DRSJOBCONFIG.
       ENDIF.
     ENDLOOP.
   ENDMETHOD.
 
+  METHOD validatePeriodicGranularity.
+    READ ENTITIES OF ZIR_DRS_JOB_CONFIG IN LOCAL MODE
+      ENTITY DrsJobConfig
+      FIELDS ( RunType PeriodicGranularity )
+      WITH CORRESPONDING #( KEYS )
+      RESULT DATA(LT_JOBS).
+
+    SELECT value FROM zdrs_per_gran_vt INTO TABLE @DATA(lt_valid_granularity).
+
+    LOOP AT LT_JOBS INTO DATA(LS_JOB).
+      " Only validate for Periodic jobs
+      IF LS_JOB-RunType = 'P'.
+        IF LS_JOB-PeriodicGranularity IS INITIAL OR NOT line_exists( lt_valid_granularity[ value = LS_JOB-PeriodicGranularity ] ).
+          APPEND VALUE #( %TKY = LS_JOB-%TKY ) TO FAILED-DRSJOBCONFIG.
+          APPEND VALUE #( %TKY = LS_JOB-%TKY
+            %MSG = NEW_MESSAGE_WITH_TEXT(
+              SEVERITY = IF_ABAP_BEHV_MESSAGE=>SEVERITY-ERROR
+              TEXT = |Periodic Granularity '{ LS_JOB-PeriodicGranularity }' is invalid| )
+            %ELEMENT-PeriodicGranularity = IF_ABAP_BEHV=>MK-ON )
+          TO REPORTED-DRSJOBCONFIG.
+        ENDIF.
+      ENDIF.
+    ENDLOOP.
+  ENDMETHOD.
+
+  METHOD validateShiftDirection.
+    READ ENTITIES OF ZIR_DRS_JOB_CONFIG IN LOCAL MODE
+      ENTITY DrsJobConfig
+      FIELDS ( ShiftDirection )
+      WITH CORRESPONDING #( KEYS )
+      RESULT DATA(LT_JOBS).
+
+    SELECT value FROM zdrs_shiftdir_vt INTO TABLE @DATA(lt_valid_shiftdir).
+
+    LOOP AT LT_JOBS INTO DATA(LS_JOB).
+      IF LS_JOB-ShiftDirection IS NOT INITIAL.
+        IF NOT line_exists( lt_valid_shiftdir[ value = LS_JOB-ShiftDirection ] ).
+          APPEND VALUE #( %TKY = LS_JOB-%TKY ) TO FAILED-DRSJOBCONFIG.
+          APPEND VALUE #( %TKY = LS_JOB-%TKY
+            %MSG = NEW_MESSAGE_WITH_TEXT(
+              SEVERITY = IF_ABAP_BEHV_MESSAGE=>SEVERITY-ERROR
+              TEXT = |Shift Direction '{ LS_JOB-ShiftDirection }' is invalid| )
+            %ELEMENT-ShiftDirection = IF_ABAP_BEHV=>MK-ON )
+          TO REPORTED-DRSJOBCONFIG.
+        ENDIF.
+      ENDIF.
+    ENDLOOP.
+  ENDMETHOD.
+
+  METHOD validateStartRestriction.
+    READ ENTITIES OF ZIR_DRS_JOB_CONFIG IN LOCAL MODE
+      ENTITY DrsJobConfig
+      FIELDS ( ExceptionRestrictionCode )
+      WITH CORRESPONDING #( KEYS )
+      RESULT DATA(LT_JOBS).
+
+    SELECT value FROM zdrs_strt_res_vt INTO TABLE @DATA(lt_valid_strt_res).
+
+    LOOP AT LT_JOBS INTO DATA(LS_JOB).
+      IF LS_JOB-ExceptionRestrictionCode IS NOT INITIAL.
+        IF NOT line_exists( lt_valid_strt_res[ value = LS_JOB-ExceptionRestrictionCode ] ).
+          APPEND VALUE #( %TKY = LS_JOB-%TKY ) TO FAILED-DRSJOBCONFIG.
+          APPEND VALUE #( %TKY = LS_JOB-%TKY
+            %MSG = NEW_MESSAGE_WITH_TEXT(
+              SEVERITY = IF_ABAP_BEHV_MESSAGE=>SEVERITY-ERROR
+              TEXT = |Start Restriction '{ LS_JOB-ExceptionRestrictionCode }' is invalid| )
+            %ELEMENT-ExceptionRestrictionCode = IF_ABAP_BEHV=>MK-ON )
+          TO REPORTED-DRSJOBCONFIG.
+        ENDIF.
+      ENDIF.
+    ENDLOOP.
+  ENDMETHOD.
+
+  METHOD validateCalendarId.
+    READ ENTITIES OF ZIR_DRS_JOB_CONFIG IN LOCAL MODE
+      ENTITY DrsJobConfig
+      FIELDS ( ExceptionCalendarId )
+      WITH CORRESPONDING #( KEYS )
+      RESULT DATA(LT_JOBS).
+
+    " Fetch valid Calendar IDs using the CDS View
+    SELECT FactoryCalendar
+      FROM ZI_VH_DRS_CALENDAR_ID
+      INTO TABLE @DATA(lt_valid_calendars).
+
+    LOOP AT LT_JOBS INTO DATA(LS_JOB).
+      IF LS_JOB-ExceptionCalendarId IS NOT INITIAL.
+        IF NOT line_exists( lt_valid_calendars[ FactoryCalendar = LS_JOB-ExceptionCalendarId ] ).
+          APPEND VALUE #( %TKY = LS_JOB-%TKY ) TO FAILED-DRSJOBCONFIG.
+          APPEND VALUE #( %TKY = LS_JOB-%TKY
+            %MSG = NEW_MESSAGE_WITH_TEXT(
+              SEVERITY = IF_ABAP_BEHV_MESSAGE=>SEVERITY-ERROR
+              TEXT = |Exception Calendar '{ LS_JOB-ExceptionCalendarId }' is invalid| )
+            %ELEMENT-ExceptionCalendarId = IF_ABAP_BEHV=>MK-ON )
+          TO REPORTED-DRSJOBCONFIG.
+        ENDIF.
+      ENDIF.
+    ENDLOOP.
+  ENDMETHOD.
 
   METHOD validateRunSettings.
     " Read entities
@@ -304,29 +416,7 @@ CLASS lhc_DrsJobConfig IMPLEMENTATION.
             TO REPORTED-DRSJOBCONFIG.
           ENDIF.
 
-          " 2. Validate PeriodicGranularity
-          IF LS_JOB-PeriodicGranularity IS INITIAL.
-            APPEND VALUE #( %TKY = LS_JOB-%TKY ) TO FAILED-DRSJOBCONFIG.
-            APPEND VALUE #( %TKY = LS_JOB-%TKY
-              %MSG = NEW_MESSAGE_WITH_TEXT(
-                SEVERITY = IF_ABAP_BEHV_MESSAGE=>SEVERITY-ERROR
-                TEXT = 'Periodic Granularity is required for recurring jobs' )
-              %ELEMENT-PeriodicGranularity = IF_ABAP_BEHV=>MK-ON )
-            TO REPORTED-DRSJOBCONFIG.
-          ELSEIF LS_JOB-PeriodicGranularity <> 'MI' AND
-                 LS_JOB-PeriodicGranularity <> 'H'  AND
-                 LS_JOB-PeriodicGranularity <> 'D'  AND
-                 LS_JOB-PeriodicGranularity <> 'W'  AND
-                 LS_JOB-PeriodicGranularity <> 'WM' AND
-                 LS_JOB-PeriodicGranularity <> 'MO'.
-            APPEND VALUE #( %TKY = LS_JOB-%TKY ) TO FAILED-DRSJOBCONFIG.
-            APPEND VALUE #( %TKY = LS_JOB-%TKY
-              %MSG = NEW_MESSAGE_WITH_TEXT(
-                SEVERITY = IF_ABAP_BEHV_MESSAGE=>SEVERITY-ERROR
-                TEXT = 'Periodic Granularity must be Minutes (MI), Hourly (H), Daily (D), Weekly (W), Week-Month (WM), or Monthly (MO)' )
-              %ELEMENT-PeriodicGranularity = IF_ABAP_BEHV=>MK-ON )
-            TO REPORTED-DRSJOBCONFIG.
-          ENDIF.
+          " 2. Validate PeriodicGranularity is moved to its own validation method (validatePeriodicGranularity)
 
           " 3. Validate PeriodicValue
           IF LS_JOB-PeriodicValue IS INITIAL OR LS_JOB-PeriodicValue <= 0.

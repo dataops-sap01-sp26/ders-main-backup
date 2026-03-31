@@ -42,9 +42,33 @@ provider contract transactional_query
     @ObjectModel.virtualElementCalculatedBy: 'ABAP:ZCL_DRS_SUBSCR_HIDE'
     virtual HideParamAR01 : abap_boolean,
     
+    @ObjectModel.virtualElement: true
+    @ObjectModel.virtualElementCalculatedBy: 'ABAP:ZCL_DRS_SUBSCR_HIDE'
+    virtual HideParamAR02 : abap_boolean,
+    
+    @ObjectModel.virtualElement: true
+    @ObjectModel.virtualElementCalculatedBy: 'ABAP:ZCL_DRS_SUBSCR_HIDE'
+    virtual HideParamAR03 : abap_boolean,
+    
+    @ObjectModel.virtualElement: true
+    @ObjectModel.virtualElementCalculatedBy: 'ABAP:ZCL_DRS_SUBSCR_HIDE'
+    virtual HideParamAP01 : abap_boolean,
+    
+    @ObjectModel.virtualElement: true
+    @ObjectModel.virtualElementCalculatedBy: 'ABAP:ZCL_DRS_SUBSCR_HIDE'
+    virtual HideParamAP02 : abap_boolean,
+    
+    @ObjectModel.virtualElement: true
+    @ObjectModel.virtualElementCalculatedBy: 'ABAP:ZCL_DRS_SUBSCR_HIDE'
+    virtual HideParamAP03 : abap_boolean,
+    
     /* Associations */
     _Catalog,
     _ParamGL01 : redirected to composition child ZC_DRS_PARAM_GL01,
     _ParamAR01 : redirected to composition child ZC_DRS_PARAM_AR01, 
-    _ParamAR02 : redirected to composition child ZC_DRS_PARAM_AR02
+    _ParamAR02 : redirected to composition child ZC_DRS_PARAM_AR02,
+    _ParamAR03 : redirected to composition child ZC_DRS_PARAM_AR03,
+    _ParamAP01 : redirected to composition child ZC_DRS_PARAM_AP01, 
+    _ParamAP02 : redirected to composition child ZC_DRS_PARAM_AP02,
+    _ParamAP03 : redirected to composition child ZC_DRS_PARAM_AP03
 }

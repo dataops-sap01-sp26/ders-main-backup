@@ -13,6 +13,10 @@ define service ZSD_DRS_MAIN_O4 {
   expose ZC_DRS_PARAM_GL01 as DrsParamGL01;
   expose ZC_DRS_PARAM_AR01 as DrsParamAR01;
   expose ZC_DRS_PARAM_AR02 as DrsParamAR02;
+  expose ZC_DRS_PARAM_AR03 as DrsParamAR03;
+  expose ZC_DRS_PARAM_AP01 as DrsParamAP01;
+  expose ZC_DRS_PARAM_AP02 as DrsParamAP02;
+  expose ZC_DRS_PARAM_AP03 as DrsParamAP03;
   expose ZC_DRS_GL01_PREVIEW as DrsGL01Preview;
   expose ZI_VH_DRS_MODULE as ModuleVH;
   expose ZI_VH_DRS_FORMAT as FormatVH;

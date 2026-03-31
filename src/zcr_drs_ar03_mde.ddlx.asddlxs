@@ -71,4 +71,7 @@ annotate view ZI_RPT_AR03 with
   @UI.lineItem: [{ position: 90 }]
   @EndUserText.label: 'Over 90 Days'
   Bucket_Over_90;
+  
+  @UI.hidden: true
+  NetDueDate;
 }
