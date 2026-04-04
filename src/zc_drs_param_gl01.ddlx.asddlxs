@@ -1,10 +1,10 @@
-    @Metadata.layer: #CORE
+@Metadata.layer: #CORE
 @UI: {
   headerInfo: {
     typeName: 'GL Report Parameter',
     typeNamePlural: 'GL Report Parameters',
     title: { type: #STANDARD, value: 'CompanyCode' },
-    description: { value: 'FiscalYear' }
+    description: { value: 'CompanyCode' }
   }
 }
 annotate entity ZC_DRS_PARAM_GL01 with
@@ -19,7 +19,7 @@ annotate entity ZC_DRS_PARAM_GL01 with
       position: 10
     }
   ]
-  
+
   @UI.hidden: true
   SubscrUuid;
 
@@ -35,36 +35,54 @@ annotate entity ZC_DRS_PARAM_GL01 with
   CompanyCode;
 
   @UI: {
-    lineItem:       [ { position: 20, importance: #HIGH } ],
-    identification: [ { position: 20 } ],
-    fieldGroup:     [ { qualifier: 'SubscriptionParams', position: 20 } ]
+  lineItem:       [ { position: 20, importance: #LOW } ],
+  identification: [ { position: 20 } ],
+  fieldGroup:     [ { qualifier: 'SubscriptionParams', position: 20 } ]
+  }
+  @EndUserText.label: 'G/L Account Fr'
+  GlAccountFr;
+
+  @UI: {
+    lineItem:       [ { position: 30, importance: #LOW } ],
+    identification: [ { position: 30 } ],
+    fieldGroup:     [ { qualifier: 'SubscriptionParams', position: 30 } ]
+  }
+  @EndUserText.label: 'G/L Account To'
+  GlAccountTo;
+
+  @UI: {
+    lineItem:       [ { position: 40, importance: #HIGH } ],
+    identification: [ { position: 40 } ],
+    fieldGroup:     [ { qualifier: 'SubscriptionParams', position: 40 } ]
+  }
+  @EndUserText.label: 'Fiscal Period Fr'
+  FiscalPeriodFr;
+
+  @UI: {
+    lineItem:       [ { position: 50, importance: #HIGH } ],
+    identification: [ { position: 50} ],
+    fieldGroup:     [ { qualifier: 'SubscriptionParams', position: 50 } ]
+  }
+  @EndUserText.label: 'Fiscal Period To'
+  FiscalPeriodTo;
+
+  @UI: {
+    lineItem:       [ { position: 55, importance: #HIGH } ],
+    identification: [ { position: 55 } ],
+    fieldGroup:     [ { qualifier: 'SubscriptionParams', position: 55 } ]
   }
   @EndUserText.label: 'Fiscal Year'
   FiscalYear;
 
-  @UI: {
-    lineItem:       [ { position: 30, importance: #HIGH } ],
-    identification: [ { position: 30 } ],
-    fieldGroup:     [ { qualifier: 'SubscriptionParams', position: 30 } ]
-  }
-  @EndUserText.label: 'Fiscal Period'
-  FiscalPeriod;
+  //  @UI: {
+  //    lineItem:       [ { position: 50, importance: #MEDIUM } ],
+  //    identification: [ { position: 50 } ],
+  //    fieldGroup:     [ { qualifier: 'SubscriptionParams', position: 50 } ]
+  //  }
+  //  @EndUserText.label: 'Currency'
+  //  Currency;
 
-  @UI: {
-    lineItem:       [ { position: 40, importance: #MEDIUM } ],
-    identification: [ { position: 40 } ],
-    fieldGroup:     [ { qualifier: 'SubscriptionParams', position: 40 } ]
-  }
-  @EndUserText.label: 'Currency'
-  Currency;
 
-  @UI: {
-    lineItem:       [ { position: 50, importance: #LOW } ],
-    identification: [ { position: 50 } ],
-    fieldGroup:     [ { qualifier: 'SubscriptionParams', position: 50 } ]
-  }
-  @EndUserText.label: 'G/L Account'
-  GlAccount;
 
   @UI: {
     lineItem:       [ { position: 60, importance: #LOW } ],

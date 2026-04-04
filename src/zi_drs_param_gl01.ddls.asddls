@@ -7,20 +7,22 @@
 // CHILD ENTITY: GL01 Parameters - Composition child of Subscription
 // Lifecycle managed by parent (cascade delete when Subscription deleted)
 // ═══════════════════════════════════════════════════════════════════════════════
-define view entity ZI_DRS_PARAM_GL01 as select from zdrs_param_gl01 as ParamGL01
-  association to parent ZIR_DRS_SUBSCR as _Subscription 
-    on $projection.SubscrUuid = _Subscription.SubscrUuid
-   and $projection.SubscrId = _Subscription.SubscrId
+define view entity ZI_DRS_PARAM_GL01
+  as select from zdrs_param_gl01 as ParamGL01
+  association to parent ZIR_DRS_SUBSCR as _Subscription on  $projection.SubscrUuid = _Subscription.SubscrUuid
+                                                        and $projection.SubscrId   = _Subscription.SubscrId
 {
-    key subscr_uuid as SubscrUuid,
-    key subscr_id as SubscrId,
-    company_code as CompanyCode,
-    fiscal_year as FiscalYear,
-    fiscal_period as FiscalPeriod,
-    currency as Currency,
-    gl_account as GlAccount,
-    max_rows as MaxRows,
-    
-    /* Associations */
-    _Subscription
+  key subscr_uuid        as SubscrUuid,
+  key subscr_id          as SubscrId,
+      company_code       as CompanyCode,
+      fiscal_year        as FiscalYear,
+      fiscal_period_from as FiscalPeriodFr,
+      fiscal_period_to   as FiscalPeriodTo,
+      currency           as Currency,
+      gl_account_from    as GlAccountFr,
+      gl_account_to      as GlAccountTo,
+      max_rows           as MaxRows,
+
+      /* Associations */
+      _Subscription
 }

@@ -1,0 +1,10 @@
+@EndUserText.label: 'Access Control for File Access'
+@MappingRole: true
+define role ZI_DRS_FILE {
+  grant
+    select
+      on
+        ZI_DRS_FILE
+          where
+            inheriting conditions from entity ZIR_DRS_JOB_CONFIG;
+}

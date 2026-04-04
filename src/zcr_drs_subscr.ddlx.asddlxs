@@ -94,6 +94,24 @@ annotate entity ZCR_DRS_SUBSCR with
       hidden: #(HideParamAP03)
     },
     {
+      id: 'CustomerListSection',
+      purpose: #STANDARD,
+      type: #LINEITEM_REFERENCE,
+      targetElement: '_Customers',
+      label: 'Customer List',
+      position: 35,
+      hidden: #(HideCustomerList)
+    },
+    {
+      id: 'VendorListSection',
+      purpose: #STANDARD,
+      type: #LINEITEM_REFERENCE,
+      targetElement: '_Vendors',
+      label: 'Vendor List',
+      position: 35,
+      hidden: #(HideVendorList)
+    },
+    {
       id: 'AdminData',
       purpose: #STANDARD,
       type: #FIELDGROUP_REFERENCE,
@@ -122,8 +140,7 @@ annotate entity ZCR_DRS_SUBSCR with
   SubscrId;
 
   @UI: {
-    lineItem:       [ { position: 20, importance: #HIGH } ],
-    fieldGroup:     [ { qualifier: 'GeneralInfo', position: 20 } ]
+    lineItem:       [ { position: 20, importance: #HIGH } ]
   }
   @EndUserText.label: 'Description'
   SubscrName;
@@ -136,12 +153,12 @@ annotate entity ZCR_DRS_SUBSCR with
   @EndUserText.label: 'Report ID'
   ReportId;
 
-  @UI: {
-    lineItem:       [ { position: 40, importance: #MEDIUM } ],
-    fieldGroup:     [ { qualifier: 'GeneralInfo', position: 40 } ]
-  }
-  @EndUserText.label: 'Company Code'
-  Bukrs;
+//  @UI: {
+//    lineItem:       [ { position: 40, importance: #MEDIUM } ],
+//    fieldGroup:     [ { qualifier: 'GeneralInfo', position: 40 } ]
+//  }
+//  @EndUserText.label: 'Company Code'
+//  Bukrs;
 
   @UI: {
     lineItem:       [ { position: 50, importance: #MEDIUM } ],
@@ -198,6 +215,12 @@ annotate entity ZCR_DRS_SUBSCR with
   
   @UI.hidden: true
   HideParamAP03;
+  
+  @UI.hidden: true
+  HideCustomerList;
+  
+  @UI.hidden: true
+  HideVendorList;
   
   @UI.fieldGroup: [ { qualifier: 'AdminData', position: 10 } ]
   @EndUserText.label: 'Created By'

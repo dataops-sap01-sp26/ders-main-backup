@@ -1,0 +1,9 @@
+@EndUserText.label: 'Access Control for Subscriptions'
+@MappingRole: true
+define role ZCR_DRS_SUBSCR {
+  grant
+    select
+      on
+        ZCR_DRS_SUBSCR
+          where inheriting conditions from entity ZIR_DRS_SUBSCR;
+}

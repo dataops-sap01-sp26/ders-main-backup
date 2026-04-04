@@ -1,7 +1,6 @@
 @EndUserText.label: 'Service Definition for Admin'
 define service ZSD_DRS_ADMIN {
   expose ZCR_DRS_JOB_CONFIG as DrsJobConfig;
-  expose ZC_DRS_FILE as DrsFile;
   expose ZI_VH_DRS_RUN_TYPE as DrsRunTypeVH;
   expose ZI_VH_DRS_PERIODIC_GRANULARITY as DrsPeriodicGranularityVH;
   expose ZI_VH_DRS_START_RESTRICTION as DrsStartRestrictionVH;

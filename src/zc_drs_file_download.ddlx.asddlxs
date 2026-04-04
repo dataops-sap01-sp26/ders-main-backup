@@ -1,0 +1,78 @@
+@Metadata.layer: #CORE
+@UI: {
+  headerInfo: {
+    typeName: 'Report File',
+    typeNamePlural: 'Report Files',
+    title: { type: #STANDARD, value: 'FileName' },
+    description: { value: 'MimeType' }
+  }
+}
+annotate entity ZI_DRS_FILE_DOWNLOAD with
+{
+  @UI.facet: [
+    {
+      id: 'FileDetails',
+      purpose: #STANDARD,
+      type: #FIELDGROUP_REFERENCE,
+      targetQualifier: 'FileDetails',
+      label: 'File Details',
+      position: 10
+    },
+    {
+      id: 'AdminData',
+      purpose: #STANDARD,
+      type: #FIELDGROUP_REFERENCE,
+      targetQualifier: 'AdminData',
+      label: 'Administrative Data',
+      position: 20
+    }
+  ]
+
+  @UI.hidden: true
+  FileUuid;
+
+  @UI.hidden: true
+  JobUuid;
+
+  @UI: {
+    lineItem: [ { position: 20, importance: #HIGH } ],
+    fieldGroup: [ { qualifier: 'FileDetails', position: 20 } ]
+  }
+  @EndUserText.label: 'File Name'
+  FileName;
+
+  @UI: {
+    lineItem: [ { position: 30, importance: #HIGH } ],
+    fieldGroup: [ { qualifier: 'FileDetails', position: 30 } ]
+  }
+  @EndUserText.label: 'File Content'
+  FileContent;
+
+  @UI.hidden: true
+  FileSize;
+
+  @UI: {
+  lineItem: [ { position: 40, importance: #HIGH } ],
+  fieldGroup: [ { qualifier: 'FileDetails', position: 40 } ]
+  }
+  @EndUserText.label: 'File Size'
+  FileSizeDisplay;
+
+  @UI.hidden: true
+  MimeType;
+
+  @UI: {
+    lineItem: [ { position: 50, importance: #MEDIUM } ],
+    fieldGroup: [ { qualifier: 'AdminData', position: 10 } ]
+  }
+  @EndUserText.label: 'Created By'
+  CreatedBy;
+
+  @UI: {
+    lineItem: [ { position: 60, importance: #MEDIUM } ],
+    fieldGroup: [ { qualifier: 'AdminData', position: 20 } ]
+  }
+  @EndUserText.label: 'Created At'
+  CreatedAt;
+
+}

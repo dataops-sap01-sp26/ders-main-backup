@@ -39,11 +39,41 @@ ENDCLASS.
 CLASS lhc_catalog IMPLEMENTATION.
 
   METHOD get_global_authorizations.
-    " Authorization check for Catalog operations
-    " In production, check S_TCODE or custom auth object
-    result = VALUE #( %create = if_abap_behv=>auth-allowed
-                      %update = if_abap_behv=>auth-allowed
-                      %delete = if_abap_behv=>auth-allowed ).
+    " ═══════════════════════════════════════════════════════════════════════════
+    " AUTHORIZATION: Only ZDRS_ADMIN users can manage catalog (CRUD operations)
+    " LOGIC: Check ZDRS_REP object with wildcard report access and CHANGE activity
+    " ═══════════════════════════════════════════════════════════════════════════
+    DATA lv_create_auth TYPE if_abap_behv=>t_xflag.
+    DATA lv_update_auth TYPE if_abap_behv=>t_xflag.
+    DATA lv_delete_auth TYPE if_abap_behv=>t_xflag.
+
+    " Check CREATE permission (ACTVT 01 = Create)
+    AUTHORITY-CHECK OBJECT 'ZDRS_REP'
+      ID 'ZREP_ID' FIELD '*'       " * = All reports (Admin role)
+      ID 'ACTVT'   FIELD '01'.     " 01 = Create
+    lv_create_auth = COND #( WHEN sy-subrc = 0
+                             THEN if_abap_behv=>auth-allowed
+                             ELSE if_abap_behv=>auth-unauthorized ).
+
+    " Check UPDATE permission (ACTVT 02 = Change)
+    AUTHORITY-CHECK OBJECT 'ZDRS_REP'
+      ID 'ZREP_ID' FIELD '*'
+      ID 'ACTVT'   FIELD '02'.     " 02 = Change
+    lv_update_auth = COND #( WHEN sy-subrc = 0
+                             THEN if_abap_behv=>auth-allowed
+                             ELSE if_abap_behv=>auth-unauthorized ).
+
+    " Check DELETE permission (ACTVT 06 = Delete)
+    AUTHORITY-CHECK OBJECT 'ZDRS_REP'
+      ID 'ZREP_ID' FIELD '*'
+      ID 'ACTVT'   FIELD '06'.     " 06 = Delete
+    lv_delete_auth = COND #( WHEN sy-subrc = 0
+                             THEN if_abap_behv=>auth-allowed
+                             ELSE if_abap_behv=>auth-unauthorized ).
+
+    result = VALUE #( %create = lv_create_auth
+                      %update = lv_update_auth
+                      %delete = lv_delete_auth ).
   ENDMETHOD.
 
 

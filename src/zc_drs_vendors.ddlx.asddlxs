@@ -1,0 +1,95 @@
+@Metadata.layer: #CORE
+@UI: {
+  headerInfo: {
+    typeName: 'Vendor List',
+    typeNamePlural: 'Vendor List',
+    title: { type: #STANDARD, value: 'Vendor' },
+    description: { value: 'SupplierName' }
+  }
+}
+annotate entity ZC_DRS_VENDORS
+    with 
+{
+  @UI.facet: [
+        {
+      id: 'GeneralInfo',
+      purpose: #STANDARD,
+      type: #FIELDGROUP_REFERENCE,
+      targetQualifier: 'GeneralInfo',
+      label: 'General Information',
+      position: 10
+    },
+    {
+      id: 'AdminData',
+      purpose: #STANDARD,
+      type: #FIELDGROUP_REFERENCE,
+      targetQualifier: 'AdminData',
+      label: 'Administrative Data',
+      position: 40
+    }
+      ]
+
+  @UI.hidden: true
+  SubscrUuid;
+
+  @UI.hidden: true
+  SubscrId;
+
+  @UI: {
+    lineItem:       [ { position: 20, importance: #HIGH } ],
+    identification: [ { position: 20 } ]
+  }
+  @EndUserText.label: 'Vendor'
+  Vendor;
+
+  @UI: {
+    lineItem:       [ { position: 30, importance: #HIGH } ],
+    identification: [ { position: 30 } ]
+  }
+  @EndUserText.label: 'Vendor Name'
+  SupplierName;
+
+  @UI: {
+    lineItem:       [ { position: 40, importance: #HIGH } ],
+    identification: [ { position: 40 } ],
+    fieldGroup:     [ { qualifier: 'GeneralInfo', position: 40 } ]
+  }
+  @EndUserText.label: 'Country/Region'
+  Country;
+
+  @UI: {
+  lineItem:       [ { position: 50, importance: #HIGH } ],
+  identification: [ { position: 50 } ],
+  fieldGroup:     [ { qualifier: 'GeneralInfo', position: 50 } ]
+  }
+  @EndUserText.label: 'City'
+  City;
+
+  @UI: {
+  lineItem:       [ { position: 60, importance: #HIGH } ],
+  identification: [ { position: 60 } ],
+  fieldGroup:     [ { qualifier: 'GeneralInfo', position: 60 } ]
+  }
+  @EndUserText.label: 'Street'
+  Street;
+
+  @UI: {
+  lineItem:       [ { position: 70, importance: #HIGH } ],
+  identification: [ { position: 70 } ],
+  fieldGroup:     [ { qualifier: 'GeneralInfo', position: 70 } ]
+  }
+  @EndUserText.label: 'Postal Code'
+  PostalCode;
+
+  @UI.fieldGroup: [ { qualifier: 'AdminData', position: 10 } ]
+  @EndUserText.label: 'Created By'
+  CreatedBy;
+
+  @UI.fieldGroup: [ { qualifier: 'AdminData', position: 20 } ]
+  @EndUserText.label: 'Created At'
+  CreatedAt;
+
+
+    
+   
+}

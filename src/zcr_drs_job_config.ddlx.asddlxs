@@ -78,10 +78,16 @@ annotate entity ZCR_DRS_JOB_CONFIG with
 
   @UI.hidden: true
   JobUuid;
+  
+    @UI: {
+    selectionField: [ { position: 10 } ]
+  }
+  @EndUserText.label: 'Job Date'
+  JobDate;
 
   @UI: {
     lineItem: [ { position: 5, importance: #HIGH } ],
-    selectionField: [ { position: 5 } ]
+    selectionField: [ { position: 40 } ]
   }
   @EndUserText.label: 'Job ID'
   JobId;
@@ -97,14 +103,12 @@ annotate entity ZCR_DRS_JOB_CONFIG with
       { type: #FOR_ACTION, dataAction: 'scheduleJob',   label: 'Schedule Job',   position: 10 },
       { type: #FOR_ACTION, dataAction: 'cancelJob',     label: 'Cancel Job',     position: 20 },
       { type: #FOR_ACTION, dataAction: 'refreshStatus', label: 'Refresh Status', position: 30 }
-    ],
-    selectionField: [ { position: 10 } ]
+    ]
   }
   JobText;
 
   @UI: {
     lineItem: [ { position: 20, importance: #HIGH } ],
-    selectionField: [ { position: 20 } ],
     fieldGroup: [ { qualifier: 'GeneralSettings', position: 10 } ]
   }
   @EndUserText.label: 'Run Type'
@@ -285,7 +289,8 @@ annotate entity ZCR_DRS_JOB_CONFIG with
 
   @UI: {
     lineItem: [ { position: 60, importance: #HIGH, criticality: 'JobStatusCriticality' } ],
-    fieldGroup: [ { qualifier: 'JobStatus', position: 30, criticality: 'JobStatusCriticality' } ]
+    fieldGroup: [ { qualifier: 'JobStatus', position: 30, criticality: 'JobStatusCriticality' } ],
+    selectionField: [ { position: 50 } ]
   }
   JobStatus;
 
@@ -306,7 +311,8 @@ annotate entity ZCR_DRS_JOB_CONFIG with
   Message;
 
   @UI: {
-    fieldGroup: [ { qualifier: 'AdminData', position: 10 } ]
+    fieldGroup: [ { qualifier: 'AdminData', position: 10 } ],
+    selectionField: [ { position: 20 } ]
   }
   @EndUserText.label: 'Created By'
   CreatedBy;

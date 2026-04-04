@@ -14,10 +14,6 @@ define view entity ZI_RPT_AR01_BASE
     and Item.AccountingDocument = _JournalEntry.AccountingDocument
     and Item.FiscalYear         = _JournalEntry.FiscalYear
     
-    association [1..1] to ZI_DRS_AR01_TOTAL as _Total
-  on  $projection.CompanyCode = _Total.CompanyCode
-  and $projection.Ledger = _Total.Ledger
-
 
 {
   key Item.Ledger,
@@ -45,12 +41,7 @@ define view entity ZI_RPT_AR01_BASE
   end as OpenAmount,
 
   Item.CompanyCodeCurrency as LocalCurrency,
-  Item.FinancialAccountType,
-  
-   @Semantics.amount.currencyCode: 'LocalCurrency'
-  _Total.CompanyTotalAmount,
-  _Total.LocalCurrency as TotalCurrency
-  
+  Item.FinancialAccountType
   
 
 }

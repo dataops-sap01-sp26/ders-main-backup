@@ -1,29 +1,29 @@
 @AbapCatalog.viewEnhancementCategory: [#NONE]
 @AccessControl.authorizationCheck: #NOT_REQUIRED
-@EndUserText.label: 'File Root Entity'
+@EndUserText.label: 'File Interface Entity'
 define view entity ZI_DRS_FILE
   as select from zdrs_file as File
-  association to parent ZIR_DRS_JOB_CONFIG as _JobConfig on $projection.JobUuid = _JobConfig.JobUuid
-   association [0..*] to zi_drs_job_history as _JobHistory on $projection.FileUuid = _JobHistory.FileUuid
+  association        to parent ZIR_DRS_JOB_CONFIG as _JobConfig  on $projection.JobUuid = _JobConfig.JobUuid
+  association [0..*] to ZI_DRS_JOB_HISTORY        as _JobHistory on $projection.FileUuid = _JobHistory.FileUuid
 {
-  key file_uuid    as FileUuid,
-      job_uuid     as JobUuid,
-      file_name    as FileName,
-      mime_type    as MimeType,
+  key file_uuid         as FileUuid,
+      job_uuid          as JobUuid,
+      file_name         as FileName,
+      mime_type         as MimeType,
       @Semantics.largeObject: {
         mimeType: 'MimeType',
         fileName: 'FileName',
         contentDispositionPreference: #ATTACHMENT
         }
-      file_content as FileContent,
-      file_size    as FileSize,
-
+      file_content      as FileContent,
+      file_size         as FileSize,
+      file_size_display as FileSizeDisplay,
       @Semantics.user.createdBy: true
-      created_by   as CreatedBy,
+      created_by        as CreatedBy,
 
       @Semantics.systemDateTime.createdAt: true
-      created_at   as CreatedAt,
-      
+      created_at        as CreatedAt,
+
       // Association
       _JobConfig,
       _JobHistory

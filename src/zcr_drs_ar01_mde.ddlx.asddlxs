@@ -33,8 +33,6 @@ annotate view ZI_RPT_AR01 with
   -------------------------------------------------------
   -- FIELD ANNOTATIONS
   -------------------------------------------------------
-  @UI.hidden: true
-  CompanyTotalAmount;
   
   @UI.selectionField: [{ position: 10 }]
   @UI.identification: [{ position: 10 }]

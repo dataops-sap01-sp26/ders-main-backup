@@ -8,11 +8,10 @@ define service ZSD_RPT_REPORT_CATALOG {
   expose ZI_RPT_AP03_I as APAgingReportDetail;
   expose ZI_RPT_AR01 as CustomerOpenItems;
   expose ZI_RPT_AR01_I as CustomerOpenItemsDetail;
-  expose ZI_DRS_AR01_TOTAL as DynamicTotal;
   expose ZI_RPT_AR02 as CustomerBalances;
   expose ZI_RPT_AR02_I as CustomerBalancesDetail;
   expose ZI_RPT_AR03 as ARAgingReport;
   expose ZI_RPT_AR03_I as ARAgingReportDetail;
-  expose ZCR_DRS_GL01 as GLAccountBalances;
-  expose ZC_DRS_GL01_I as GLAccountBalancesDetail;
+  expose ZCR_RPT_GL01 as GLAccountBalances;
+  expose ZC_RPT_GL01_I as GLAccountBalancesDetail;
 }

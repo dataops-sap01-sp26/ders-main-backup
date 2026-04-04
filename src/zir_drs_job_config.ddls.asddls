@@ -1,12 +1,13 @@
-@AccessControl.authorizationCheck: #NOT_REQUIRED
+@AccessControl.authorizationCheck: #CHECK
 @EndUserText.label: 'Job Config Root Entity'
 @Metadata.ignorePropagatedAnnotations: true
+
 define root view entity ZIR_DRS_JOB_CONFIG
   as select from zdrs_job_config as JobConfig
-  composition [0..*] of ZI_DRS_FILE   as _File
-  composition [0..*] of zi_drs_job_history as _JobHistory
-  association [0..1] to ZIR_DRS_SUBSCR as _Subscription on $projection.SubscrUuid = _Subscription.SubscrUuid
-  and $projection.SubscrId = _Subscription.SubscrId
+  composition [0..*] of ZI_DRS_FILE        as _File
+  composition [0..*] of ZI_DRS_JOB_HISTORY as _JobHistory
+  association [0..1] to ZIR_DRS_SUBSCR     as _Subscription on  $projection.SubscrUuid = _Subscription.SubscrUuid
+                                                            and $projection.SubscrId   = _Subscription.SubscrId
 {
   key job_uuid                   as JobUuid,
       job_id                     as JobId,
@@ -42,12 +43,6 @@ define root view entity ZIR_DRS_JOB_CONFIG
       message                    as Message,
       job_status_text            as JobStatusText,
       job_status                 as JobStatus,
-      case job_status
-      when 'F' then 3  // Finished = Green
-      when 'S' then 5  // Scheduled = Blue
-      when 'A' then 1  // Cancel = Red
-      else 0
-      end                        as JobStatusCriticality,
 
       @Semantics.user.createdBy: true
       created_by                 as CreatedBy,
@@ -64,8 +59,18 @@ define root view entity ZIR_DRS_JOB_CONFIG
       @Semantics.systemDateTime.localInstanceLastChangedAt: true
       local_last_changed_at      as LocalLastChangedAt,
 
+      case job_status
+      when 'F' then 3  // Finished = Green
+      when 'S' then 5  // Scheduled = Blue
+      when 'A' then 1  // Failed, Cancel = Red
+      else 0
+      end                        as JobStatusCriticality,
+      
+      cast( substring( cast( start_timestamp as abap.char(23) ), 1, 8 )
+      as abap.dats )                            as JobDate,
+
       // Association
       _File,
-      _Subscription,
-      _JobHistory
+      _JobHistory,
+      _Subscription
 }

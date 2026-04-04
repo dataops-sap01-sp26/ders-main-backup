@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_NROB" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <ATTRIBUTES>
+    <OBJECT>ZDRS_JOBID</OBJECT>
+    <DOMLEN>ZDM_JOB_ID</DOMLEN>
+    <PERCENTAGE>99.0</PERCENTAGE>
+   </ATTRIBUTES>
+   <TEXT>
+    <LANGU>E</LANGU>
+    <OBJECT>ZDRS_JOBID</OBJECT>
+    <TXT>GSP26SAP01 Job ID</TXT>
+    <TXTSHORT>GSP26SAP01 Job ID</TXTSHORT>
+   </TEXT>
+  </asx:values>
+ </asx:abap>
+</abapGit>

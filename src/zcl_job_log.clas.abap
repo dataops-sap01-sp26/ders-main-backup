@@ -23,9 +23,9 @@ CLASS ZCL_JOB_LOG DEFINITION
 
       UPDATE_JOB_RESULTS
         IMPORTING
-          IV_JOB_HIST_UUID  TYPE SYSUUID_X16
-          IV_FILE_UUID      TYPE SYSUUID_X16
-          IV_OUTPUT_FORMAT  TYPE ZDTE_FORMAT_ID,
+          IV_JOB_HIST_UUID TYPE SYSUUID_X16
+          IV_FILE_UUID     TYPE SYSUUID_X16
+          IV_OUTPUT_FORMAT TYPE ZDTE_FORMAT_ID,
 
       LOG_JOB_END
         IMPORTING
@@ -117,8 +117,8 @@ CLASS ZCL_JOB_LOG IMPLEMENTATION.
     ).
 
     " Enforce a default final status if framework returns empty
-    DATA lv_final_status TYPE btcstatus.
-    lv_final_status = COND #(
+    DATA LV_FINAL_STATUS TYPE BTCSTATUS.
+    LV_FINAL_STATUS = COND #(
         WHEN IV_JOB_STATUS IS NOT INITIAL THEN IV_JOB_STATUS
         WHEN IV_STEP_STATUS IS NOT INITIAL THEN IV_STEP_STATUS
         ELSE 'F'
@@ -126,7 +126,7 @@ CLASS ZCL_JOB_LOG IMPLEMENTATION.
 
     UPDATE_JOB_HISTORY(
       IV_JOB_HIST_UUID = IV_JOB_HIST_UUID
-      IV_STATUS        = lv_final_status
+      IV_STATUS        = LV_FINAL_STATUS
       IV_END_TIMESTAMP = LV_TIMESTAMP
       IV_DURATION_MS   = LV_DURATION_MS
       IV_MESSAGE       = COND #( WHEN IV_MESSAGE IS NOT INITIAL THEN IV_MESSAGE )
@@ -139,35 +139,35 @@ CLASS ZCL_JOB_LOG IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD UPDATE_JOB_HISTORY.
-    DATA ls_job_hist TYPE zdrs_job_history.
+    DATA LS_JOB_HIST TYPE ZDRS_JOB_HISTORY.
 
-    SELECT SINGLE * FROM zdrs_job_history
-      WHERE job_hist_uuid = @iv_job_hist_uuid
-      INTO @ls_job_hist.
+    SELECT SINGLE * FROM ZDRS_JOB_HISTORY
+      WHERE JOB_HIST_UUID = @IV_JOB_HIST_UUID
+      INTO @LS_JOB_HIST.
 
-    IF sy-subrc = 0.
-      IF iv_status IS NOT INITIAL.
-        ls_job_hist-job_status = iv_status.
+    IF SY-SUBRC = 0.
+      IF IV_STATUS IS NOT INITIAL.
+        LS_JOB_HIST-JOB_STATUS = IV_STATUS.
       ENDIF.
-      IF iv_end_timestamp IS NOT INITIAL.
-        ls_job_hist-end_timestamp = iv_end_timestamp.
+      IF IV_END_TIMESTAMP IS NOT INITIAL.
+        LS_JOB_HIST-END_TIMESTAMP = IV_END_TIMESTAMP.
       ENDIF.
-      IF iv_duration_ms IS NOT INITIAL.
-        ls_job_hist-duration_ms = iv_duration_ms.
+      IF IV_DURATION_MS IS NOT INITIAL.
+        LS_JOB_HIST-DURATION_MS = IV_DURATION_MS.
       ENDIF.
-      IF iv_file_uuid IS NOT INITIAL.
-        ls_job_hist-file_uuid = iv_file_uuid.
+      IF IV_FILE_UUID IS NOT INITIAL.
+        LS_JOB_HIST-FILE_UUID = IV_FILE_UUID.
       ENDIF.
-      IF iv_output_format IS NOT INITIAL.
-        ls_job_hist-output_format = iv_output_format.
+      IF IV_OUTPUT_FORMAT IS NOT INITIAL.
+        LS_JOB_HIST-OUTPUT_FORMAT = IV_OUTPUT_FORMAT.
       ENDIF.
-      IF iv_message IS NOT INITIAL.
-        ls_job_hist-message = iv_message.
+      IF IV_MESSAGE IS NOT INITIAL.
+        LS_JOB_HIST-MESSAGE = IV_MESSAGE.
       ENDIF.
 
-      ls_job_hist-local_last_changed_at = get_timestamp( ).
+      LS_JOB_HIST-LOCAL_LAST_CHANGED_AT = GET_TIMESTAMP( ).
 
-      UPDATE zdrs_job_history FROM @ls_job_hist.
+      UPDATE ZDRS_JOB_HISTORY FROM @LS_JOB_HIST.
       COMMIT WORK.
     ENDIF.
   ENDMETHOD.

@@ -1,0 +1,9 @@
+@EndUserText.label: 'Access Control for Report Catalog'
+@MappingRole: true
+define role ZCR_DRS_CATALOG {
+  grant
+    select
+      on
+        ZCR_DRS_CATALOG
+          where inheriting conditions from entity ZIR_DRS_CATALOG;
+}

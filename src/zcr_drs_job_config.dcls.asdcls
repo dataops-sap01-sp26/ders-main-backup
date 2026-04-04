@@ -1,0 +1,9 @@
+@EndUserText.label: 'Access Control for Job Configuration'
+@MappingRole: true
+define role ZCR_DRS_JOB_CONFIG {
+  grant
+    select
+      on
+        ZCR_DRS_JOB_CONFIG
+          where inheriting conditions from entity ZIR_DRS_JOB_CONFIG;
+}

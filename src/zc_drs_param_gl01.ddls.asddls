@@ -14,13 +14,21 @@ define view entity ZC_DRS_PARAM_GL01 as projection on ZI_DRS_PARAM_GL01
     @Consumption.valueHelpDefinition: [{ entity: { name: 'I_CompanyCodeStdVH', element: 'CompanyCode' } }]
     CompanyCode,
     
+    @Consumption.valueHelpDefinition: [{ entity: { name: 'I_FiscalYear', element: 'FiscalYear' } }]
     FiscalYear,
-    FiscalPeriod,
+    
+    FiscalPeriodFr,
+
+    FiscalPeriodTo,
     
     @Consumption.valueHelpDefinition: [{ entity: { name: 'I_CurrencyStdVH', element: 'Currency' } }]
     Currency,
     
-    GlAccount,
+    @Consumption.valueHelpDefinition: [{ entity: { name: 'I_GLAccountStdVH', element: 'GLAccount' } }]
+    GlAccountFr,
+
+    @Consumption.valueHelpDefinition: [{ entity: { name: 'I_GLAccountStdVH', element: 'GLAccount' } }]
+    GlAccountTo,
     MaxRows,
     
     /* Associations */

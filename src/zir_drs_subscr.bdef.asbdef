@@ -11,7 +11,7 @@ persistent table zdrs_subscr
 draft table zdrs_d_subscr
 etag master LocalLastChangedAt
 lock master total etag LastChangedAt
-authorization master ( global )
+authorization master ( global, instance )
 early numbering
 
 {
@@ -24,6 +24,11 @@ early numbering
   field ( readonly )
   SubscrUuid,
   SubscrId;
+
+  field ( mandatory )
+  SubscrName;
+
+  field ( features : instance, mandatory ) ReportId;
 
   // System fields (managed automatically)
   field ( readonly )
@@ -47,6 +52,8 @@ early numbering
   association _ParamAP01 { create; with draft; }
   association _ParamAP02 { create; with draft; }
   association _ParamAP03 { create; with draft; }
+  association _Customers { create; with draft; }
+  association _Vendors   { create; with draft; }
 
   // ─────────────────────────────────────────────────────────────────────────────
   // DRAFT ACTIONS
@@ -55,7 +62,11 @@ early numbering
   draft action Activate;
   draft action Discard;
   draft action Resume;
-  draft determine action Prepare;
+  draft determine action Prepare
+  {
+    validation validateDescription;
+    validation validateReportID;
+  }
 
   // ─────────────────────────────────────────────────────────────────────────────
   // CUSTOM ACTIONS (US-E3-008, US-E3-009, US-E3-010)
@@ -73,12 +84,18 @@ early numbering
   // GL01 → zdrs_param_gl01, AR01 → zdrs_param_ar01, etc.
   action createReportParams result [1] $self;
 
+  // Validations
+  validation validateDescription on save { create; update; field SubscrName; }
+  validation validateReportID    on save { create; update; field ReportId; }
+
+
   // ─────────────────────────────────────────────────────────────────────────────
   // DETERMINATIONS
   // ─────────────────────────────────────────────────────────────────────────────
   determination setDefaultStatus on modify { create; }
 
   // NOTE: cascadeDeleteParams removed - composition handles cascade delete automatically
+  determination CleanupOnReportChange on modify { field ReportId; create; }
 
   // ─────────────────────────────────────────────────────────────────────────────
   // MAPPINGS
@@ -121,6 +138,14 @@ authorization dependent by _Subscription
   SubscrUuid,
   SubscrId;
 
+  field ( mandatory )
+  CompanyCode,
+  FiscalYear,
+  FiscalPeriodFr,
+  FiscalPeriodTo,
+  GlAccountFr,
+  GlAccountTo;
+
   // Parent association (required for composition)
   association _Subscription { with draft; }
 
@@ -133,9 +158,11 @@ authorization dependent by _Subscription
     SubscrId = subscr_id;
     CompanyCode = company_code;
     FiscalYear = fiscal_year;
-    FiscalPeriod = fiscal_period;
+    FiscalPeriodFr = fiscal_period_from;
+    FiscalPeriodTo = fiscal_period_to;
     Currency = currency;
-    GlAccount = gl_account;
+    GlAccountFr = gl_account_from;
+    GlAccountTo = gl_account_to;
     MaxRows = max_rows;
   }
 }
@@ -153,10 +180,18 @@ authorization dependent by _Subscription
   update;
   delete;
 
+
+
   // Key fields - set from parent context, readonly
   field ( readonly )
   SubscrUuid,
   SubscrId;
+
+  field ( mandatory )
+  CompanyCode,
+  CustomerFrom,
+  CustomerTo,
+  keyDate;
 
   // Parent association (required for composition)
   association _Subscription { with draft; }
@@ -194,6 +229,12 @@ authorization dependent by _Subscription
   field ( readonly )
   SubscrUuid,
   SubscrId;
+
+  field ( mandatory )
+  CompanyCode,
+  CustomerFrom,
+  CustomerTo,
+  FiscalYear;
 
   // Parent association (required for composition)
   association _Subscription { with draft; }
@@ -235,6 +276,12 @@ authorization dependent by _Subscription
   SubscrUuid,
   SubscrId;
 
+  field ( mandatory )
+  CompanyCode,
+  CustomerFrom,
+  CustomerTo,
+  keyDate;
+
   // Parent association (required for composition)
   association _Subscription { with draft; }
 
@@ -271,6 +318,12 @@ authorization dependent by _Subscription
   field ( readonly )
   SubscrUuid,
   SubscrId;
+
+  field ( mandatory )
+  CompanyCode,
+  VendorFrom,
+  VendorTo,
+  keyDate;
 
   // Parent association (required for composition)
   association _Subscription { with draft; }
@@ -309,6 +362,12 @@ authorization dependent by _Subscription
   SubscrUuid,
   SubscrId;
 
+  field ( mandatory )
+  CompanyCode,
+  VendorFrom,
+  VendorTo,
+  FiscalYear;
+
   // Parent association (required for composition)
   association _Subscription { with draft; }
 
@@ -346,6 +405,12 @@ authorization dependent by _Subscription
   SubscrUuid,
   SubscrId;
 
+  field ( mandatory )
+  CompanyCode,
+  VendorFrom,
+  VendorTo,
+  keyDate;
+
   // Parent association (required for composition)
   association _Subscription { with draft; }
 
@@ -362,5 +427,74 @@ authorization dependent by _Subscription
     VendorTo = vendor_to;
     keyDate = key_date;
     MaxRows = max_rows;
+  }
+}
+// ═══════════════════════════════════════════════════════════════════════════════
+// CHILD ENTITY: Customer List (Composition child of Subscription)
+// ═══════════════════════════════════════════════════════════════════════════════
+define behavior for ZI_DRS_CUSTOMERS alias CUSTOMERS
+persistent table zdrs_customers
+draft table zdrs_d_customers
+lock dependent by _Subscription
+authorization dependent by _Subscription
+{
+  // Standard operations
+  update;
+  delete;
+
+  // Key fields - set from parent context, readonly
+  field ( readonly )
+  SubscrUuid,
+  SubscrId,
+  CreatedBy,
+  CreatedAt;
+
+  // Parent association (required for composition)
+  association _Subscription { with draft; }
+
+
+  // ─────────────────────────────────────────────────────────────────────────────
+  // MAPPINGS
+  // ─────────────────────────────────────────────────────────────────────────────
+  mapping for zdrs_customers
+  {
+    SubscrUuid = subscr_uuid;
+    SubscrId = subscr_id;
+    Customer = customer;
+  }
+}
+// ═══════════════════════════════════════════════════════════════════════════════
+// CHILD ENTITY: Vendor List (Composition child of Subscription)
+// ═══════════════════════════════════════════════════════════════════════════════
+define behavior for ZI_DRS_VENDORS alias VENDORS
+persistent table zdrs_vendors
+draft table zdrs_d_vendors
+lock dependent by _Subscription
+authorization dependent by _Subscription
+{
+  // Standard operations
+  update;
+  delete;
+
+  // Key fields - set from parent context, readonly
+  field ( readonly )
+  SubscrUuid,
+  SubscrId,
+  CreatedBy,
+  CreatedAt;
+
+  // Parent association (required for composition)
+  association _Subscription { with draft; }
+
+
+  // ─────────────────────────────────────────────────────────────────────────────
+  // MAPPINGS
+  // ─────────────────────────────────────────────────────────────────────────────
+  mapping for zdrs_vendors
+  {
+    SubscrUuid = subscr_uuid;
+    SubscrId = subscr_id;
+    Vendor = vendor;
+
   }
 }

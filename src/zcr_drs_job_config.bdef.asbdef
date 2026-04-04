@@ -19,10 +19,18 @@ define behavior for ZCR_DRS_JOB_CONFIG alias DrsJobConfig
   use action Prepare;
 
   use association _File { create; with draft; }
+  use association _JobHistory { create; with draft; }
 }
 
 define behavior for ZC_DRS_FILE alias DrsFile
 {
 
   use association _JobConfig { with draft; }
+}
+
+define behavior for ZC_DRS_JOB_HISTORY alias DrsJobHistory
+{
+
+  use association _JobConfig { with draft; }
+  use association _File;
 }

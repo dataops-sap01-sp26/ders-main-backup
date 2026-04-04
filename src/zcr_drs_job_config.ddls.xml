@@ -5,7 +5,7 @@
    <DDLS>
     <DDLNAME>ZCR_DRS_JOB_CONFIG</DDLNAME>
     <DDLANGUAGE>E</DDLANGUAGE>
-    <DDTEXT>Job Config Projection</DDTEXT>
+    <DDTEXT>Job Config Root Entity</DDTEXT>
     <SOURCE_TYPE>P</SOURCE_TYPE>
    </DDLS>
   </asx:values>

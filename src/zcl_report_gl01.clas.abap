@@ -74,21 +74,58 @@ CLASS ZCL_REPORT_GL01 IMPLEMENTATION.
 
     DATA(LV_MAX) = COND I( WHEN LS_SPEC_PARAM-MAX_ROWS > 0 THEN LS_SPEC_PARAM-MAX_ROWS ELSE 5000 ).
 
-    SELECT FROM ZIR_DRS_GL01
+    " 2. Prepare Ranges
+    DATA: LT_GL_RANGE     TYPE RANGE OF FIS_RACCT,
+          LT_YEAR_RANGE   TYPE RANGE OF GJAHR,
+          LT_PERIOD_RANGE TYPE RANGE OF FINS_FISCALPERIOD.
+
+    " G/L Account Range
+    IF LS_SPEC_PARAM-GL_ACCOUNT_FROM IS NOT INITIAL.
+      APPEND VALUE #(
+        SIGN   = 'I'
+        OPTION = COND #( WHEN LS_SPEC_PARAM-GL_ACCOUNT_TO IS INITIAL THEN 'EQ' ELSE 'BT' )
+        LOW    = LS_SPEC_PARAM-GL_ACCOUNT_FROM
+        HIGH   = LS_SPEC_PARAM-GL_ACCOUNT_TO
+      ) TO LT_GL_RANGE.
+    ENDIF.
+
+    " Fiscal Year Range
+    IF LS_SPEC_PARAM-FISCAL_YEAR_FROM IS NOT INITIAL.
+      APPEND VALUE #(
+        SIGN   = 'I'
+        OPTION = COND #( WHEN LS_SPEC_PARAM-FISCAL_YEAR_TO IS INITIAL THEN 'EQ' ELSE 'BT' )
+        LOW    = LS_SPEC_PARAM-FISCAL_YEAR_FROM
+        HIGH   = LS_SPEC_PARAM-FISCAL_YEAR_TO
+      ) TO LT_YEAR_RANGE.
+    ENDIF.
+
+    " Fiscal Period Range
+    IF LS_SPEC_PARAM-FISCAL_PERIOD_FROM IS NOT INITIAL.
+      APPEND VALUE #(
+        SIGN   = 'I'
+        OPTION = COND #( WHEN LS_SPEC_PARAM-FISCAL_PERIOD_TO IS INITIAL THEN 'EQ' ELSE 'BT' )
+        LOW    = LS_SPEC_PARAM-FISCAL_PERIOD_FROM
+        HIGH   = LS_SPEC_PARAM-FISCAL_PERIOD_TO
+      ) TO LT_PERIOD_RANGE.
+    ENDIF.
+
+    " 3. Select Data from G/L View
+    SELECT FROM ZIR_RPT_GL01_BASE
       FIELDS CompanyCode,
-             FiscalYear,
-             Period,
              GLAccount,
              GLAccountName,
-             LocalCurrency,
+             FiscalYear,
+             Period,
              DebitAmount,
              CreditAmount,
-             BalanceAmount
-      WHERE ( @LS_SPEC_PARAM-COMPANY_CODE = '' OR CompanyCode = @LS_SPEC_PARAM-COMPANY_CODE )
-        AND ( @LS_SPEC_PARAM-FISCAL_YEAR  = '' OR FiscalYear  = @LS_SPEC_PARAM-FISCAL_YEAR )
-        AND ( @LS_SPEC_PARAM-FISCAL_PERIOD = '' OR Period      = @LS_SPEC_PARAM-FISCAL_PERIOD )
-        AND ( @LS_SPEC_PARAM-GL_ACCOUNT    = '' OR GLAccount   = @LS_SPEC_PARAM-GL_ACCOUNT )
-      ORDER BY CompanyCode, GLAccount
+             BalanceAmount,
+             LocalCurrency
+      WHERE COMPANYCODE  = @LS_SPEC_PARAM-COMPANY_CODE
+        AND GLACCOUNT    IN @LT_GL_RANGE
+        AND FISCALYEAR   IN @LT_YEAR_RANGE
+        AND Period IN @LT_PERIOD_RANGE
+        AND ( LOCALCURRENCY = @LS_SPEC_PARAM-CURRENCY OR @LS_SPEC_PARAM-CURRENCY = '' )
+      ORDER BY COMPANYCODE, GLACCOUNT, FISCALYEAR, Period
       INTO TABLE @DATA(LT_GL01)
       UP TO @LV_MAX ROWS.
 
@@ -104,16 +141,8 @@ CLASS ZCL_REPORT_GL01 IMPLEMENTATION.
 
 
   METHOD BUILD_COL_META.
-    DATA(LT_COMP) = IO_STRUCT->GET_COMPONENTS( ).
-    LOOP AT LT_COMP INTO DATA(LS_C).
-      DATA(LS_M) = VALUE ZIF_FILE_FORMATTER=>TY_COL_META( NAME = LS_C-NAME ).
-      IF LS_C-NAME CP '*AMOUNT'.
-        LS_M-IS_NUM  = ABAP_TRUE.
-        LS_M-IS_BOLD = ABAP_TRUE.
-        LS_M-ALIGN   = 'right'.
-      ENDIF.
-      APPEND LS_M TO RT_RESULT.
-    ENDLOOP.
+*    DATA(LT_COMP) = IO_STRUCT->GET_COMPONENTS( ).
+
   ENDMETHOD.
 
 

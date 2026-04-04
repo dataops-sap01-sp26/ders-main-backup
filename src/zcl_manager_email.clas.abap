@@ -1,113 +1,126 @@
-CLASS zcl_manager_email DEFINITION
+CLASS ZCL_MANAGER_EMAIL DEFINITION
   PUBLIC
   FINAL
   CREATE PUBLIC .
 
   PUBLIC SECTION.
 
-    METHODS send_email
-      IMPORTING iv_job_uuid      TYPE zdrs_job_config-job_uuid
-                iv_report_id     TYPE zdrs_subscr-report_id
-                iv_output_format TYPE zdrs_subscr-output_format
-                iv_file_content  TYPE zdrs_file-file_content
-                iv_file_name     TYPE zdrs_file-file_name
-                iv_email_to      TYPE string
-                iv_email_cc      TYPE string.
+    METHODS SEND_EMAIL
+      IMPORTING IV_JOB_UUID      TYPE ZDRS_JOB_CONFIG-JOB_UUID
+                IV_REPORT_ID     TYPE ZDRS_SUBSCR-REPORT_ID
+                IV_OUTPUT_FORMAT TYPE ZDRS_SUBSCR-OUTPUT_FORMAT
+                IV_FILE_CONTENT  TYPE ZDRS_FILE-FILE_CONTENT
+                IV_FILE_NAME     TYPE ZDRS_FILE-FILE_NAME
+                IV_CREATED_BY    TYPE SYUNAME
+                IV_EMAIL_TO      TYPE STRING
+                IV_EMAIL_CC      TYPE STRING.
 
-    CLASS-METHODS parse_emails
-      IMPORTING iv_email_string  TYPE string
+    CLASS-METHODS PARSE_EMAILS
+      IMPORTING IV_EMAIL_STRING  TYPE STRING
       RETURNING
-                VALUE(rt_emails) TYPE string_table.
+                VALUE(RT_EMAILS) TYPE STRING_TABLE.
 
-    METHODS refactor_file
-      IMPORTING iv_file_content  TYPE zdrs_file-file_content
-                iv_output_format TYPE zdrs_subscr-output_format
+    METHODS REFACTOR_FILE
+      IMPORTING IV_FILE_CONTENT  TYPE ZDRS_FILE-FILE_CONTENT
+                IV_OUTPUT_FORMAT TYPE ZDRS_SUBSCR-OUTPUT_FORMAT
       EXPORTING
-                ev_file_content  TYPE solix_tab
-                ev_type          TYPE soodk-objtp.
+                EV_FILE_CONTENT  TYPE SOLIX_TAB
+                EV_TYPE          TYPE SOODK-OBJTP.
 
   PROTECTED SECTION.
   PRIVATE SECTION.
-
+    METHODS GET_EMAIL_FROM_UNAME
+      IMPORTING IV_UNAME        TYPE SYUNAME
+      RETURNING VALUE(RV_EMAIL) TYPE AD_SMTPADR.
 
 ENDCLASS.
 
 
 
-CLASS zcl_manager_email IMPLEMENTATION.
+CLASS ZCL_MANAGER_EMAIL IMPLEMENTATION.
 
-  METHOD send_email.
+  METHOD SEND_EMAIL.
     " Logic will be implemented by someone else
-    DATA: lo_send_request    TYPE REF TO cl_bcs,
-          lo_document        TYPE REF TO cl_document_bcs,
-          lo_recipient       TYPE REF TO if_recipient_bcs,
-          lx_bcs             TYPE REF TO cx_bcs,
-          lt_body            TYPE bcsy_text,
-          lt_att_content_hex TYPE solix_tab,
-          lv_att_type        TYPE soodk-objtp.
+    DATA: LO_SEND_REQUEST    TYPE REF TO CL_BCS,
+          LO_DOCUMENT        TYPE REF TO CL_DOCUMENT_BCS,
+          LO_RECIPIENT       TYPE REF TO IF_RECIPIENT_BCS,
+          LX_BCS             TYPE REF TO CX_BCS,
+          LT_BODY            TYPE BCSY_TEXT,
+          LT_ATT_CONTENT_HEX TYPE SOLIX_TAB,
+          LV_ATT_TYPE        TYPE SOODK-OBJTP.
 
     TRY.
-        lo_send_request = cl_bcs=>create_persistent( ).
+        LO_SEND_REQUEST = CL_BCS=>CREATE_PERSISTENT( ).
 
         " Render email content
-        DATA(lv_html_string) = zcl_template_email=>render_email( iv_job_uuid = iv_job_uuid ).
-        lt_body = cl_document_bcs=>string_to_soli( lv_html_string ).
+        DATA(LV_HTML_STRING) = ZCL_TEMPLATE_EMAIL=>RENDER_EMAIL( IV_JOB_UUID = IV_JOB_UUID ).
+        LT_BODY = CL_DOCUMENT_BCS=>STRING_TO_SOLI( LV_HTML_STRING ).
 
 
         " Create document for Email
-        lo_document = cl_document_bcs=>create_document(
-              i_type    = 'HTM'
-              i_subject = |DERS-Fiori: { iv_report_id } Export Complete|
-              i_text    = lt_body
+        LO_DOCUMENT = CL_DOCUMENT_BCS=>CREATE_DOCUMENT(
+              I_TYPE    = 'HTM'
+              I_SUBJECT = |DERS-Fiori: { IV_REPORT_ID } Export Complete|
+              I_TEXT    = LT_BODY
             ).
 
         " Add attach file
-        IF iv_file_content IS NOT INITIAL.
-          me->refactor_file(
-                            EXPORTING iv_file_content  = iv_file_content
-                                      iv_output_format = iv_output_format
-                            IMPORTING ev_file_content  = lt_att_content_hex
-                                      ev_type          = lv_att_type )  .
+        IF IV_FILE_CONTENT IS NOT INITIAL.
+          ME->REFACTOR_FILE(
+                            EXPORTING IV_FILE_CONTENT  = IV_FILE_CONTENT
+                                      IV_OUTPUT_FORMAT = IV_OUTPUT_FORMAT
+                            IMPORTING EV_FILE_CONTENT  = LT_ATT_CONTENT_HEX
+                                      EV_TYPE          = LV_ATT_TYPE )  .
 
 
           " Limited file name is 50 character
-          DATA(lv_filename_50) = CONV sood-objdes( iv_file_name ).
+          DATA(LV_FILENAME_50) = CONV SOOD-OBJDES( IV_FILE_NAME ).
 
-          lo_document->add_attachment(
-            i_attachment_type    = lv_att_type
-            i_attachment_subject = lv_filename_50
-            i_att_content_hex    = lt_att_content_hex
+          LO_DOCUMENT->ADD_ATTACHMENT(
+            I_ATTACHMENT_TYPE    = LV_ATT_TYPE
+            I_ATTACHMENT_SUBJECT = LV_FILENAME_50
+            I_ATT_CONTENT_HEX    = LT_ATT_CONTENT_HEX
           ).
         ENDIF.
 
-        lo_send_request->set_document( lo_document ).
+        LO_SEND_REQUEST->SET_DOCUMENT( LO_DOCUMENT ).
+
+        DATA(LV_USER_EMAIL) = GET_EMAIL_FROM_UNAME( IV_CREATED_BY ).
+
+        IF LV_USER_EMAIL IS NOT INITIAL.
+          DATA(LO_RECIPIENT_CREATOR) = CL_CAM_ADDRESS_BCS=>CREATE_INTERNET_ADDRESS( LV_USER_EMAIL  ).
+
+          LO_SEND_REQUEST->ADD_RECIPIENT( I_RECIPIENT = LO_RECIPIENT_CREATOR ).
+        ELSE.
+          " Xử lý ngoại lệ nếu user không có email trong SU01 (Tùy chọn)
+          " Có thể ghi log hoặc raise exception
+        ENDIF.
 
         " Email To
 *        DATA lv_user_email TYPE string VALUE 'hieunmse182322@fpt.edu.vn'.
-        IF iv_email_to IS NOT INITIAL.  "iv_email_to
+        IF IV_EMAIL_TO IS NOT INITIAL.  "iv_email_to
 
-          DATA(lt_email_to) = parse_emails( iv_email_to ).
+          DATA(LT_EMAIL_TO) = PARSE_EMAILS( IV_EMAIL_TO ).
 
-          LOOP AT lt_email_to INTO DATA(lv_to).
-            lo_recipient = cl_cam_address_bcs=>create_internet_address( CONV #( lv_to ) ).
-            lo_send_request->add_recipient( lo_recipient ).
+          LOOP AT LT_EMAIL_TO INTO DATA(LV_TO).
+            LO_RECIPIENT = CL_CAM_ADDRESS_BCS=>CREATE_INTERNET_ADDRESS( CONV #( LV_TO ) ).
+            LO_SEND_REQUEST->ADD_RECIPIENT( LO_RECIPIENT ).
           ENDLOOP.
 
 
         ENDIF.
 
         " Email CC
-        IF iv_email_cc IS NOT INITIAL.
+        IF IV_EMAIL_CC IS NOT INITIAL.
 
-          DATA(lt_email_cc) = parse_emails( iv_email_cc ).
+          DATA(LT_EMAIL_CC) = PARSE_EMAILS( IV_EMAIL_CC ).
 
-          LOOP AT lt_email_cc INTO DATA(lv_cc).
-            DATA(lo_recipient_cc) = cl_cam_address_bcs=>create_internet_address( CONV #( lv_cc ) ).
-            lo_send_request->add_recipient(
-            i_recipient = lo_recipient_cc
-            i_copy      = abap_true
+          LOOP AT LT_EMAIL_CC INTO DATA(LV_CC).
+            DATA(LO_RECIPIENT_CC) = CL_CAM_ADDRESS_BCS=>CREATE_INTERNET_ADDRESS( CONV #( LV_CC ) ).
+            LO_SEND_REQUEST->ADD_RECIPIENT(
+            I_RECIPIENT = LO_RECIPIENT_CC
+            I_COPY      = ABAP_TRUE
           ).
-            lo_send_request->add_recipient( lo_recipient ).
           ENDLOOP.
 
         ENDIF.
@@ -122,58 +135,83 @@ CLASS zcl_manager_email IMPLEMENTATION.
 *        ENDIF.
 
         "Send email
-        lo_send_request->set_sender( cl_sapuser_bcs=>create( sy-uname ) ).
-        lo_send_request->set_send_immediately( abap_true ).
+        LO_SEND_REQUEST->SET_SENDER( CL_SAPUSER_BCS=>CREATE( SY-UNAME ) ).
+        LO_SEND_REQUEST->SET_SEND_IMMEDIATELY( ABAP_TRUE ).
 
-        DATA(lv_sent) = lo_send_request->send( ).
+        DATA(LV_SENT) = LO_SEND_REQUEST->SEND( ).
 
 
-        IF lv_sent = abap_true.
+        IF LV_SENT = ABAP_TRUE.
           COMMIT WORK.
         ELSE.
           ROLLBACK WORK.
         ENDIF.
 
-      CATCH cx_bcs INTO lx_bcs.
+      CATCH CX_BCS INTO LX_BCS.
 
     ENDTRY.
   ENDMETHOD.
 
-  METHOD parse_emails.
+  METHOD PARSE_EMAILS.
 
     " Convert semicolon to comma
-    DATA(lv_string_to) = iv_email_string.
-    REPLACE ALL OCCURRENCES OF ';' IN lv_string_to WITH ','.
+    DATA(LV_STRING_TO) = IV_EMAIL_STRING.
+    REPLACE ALL OCCURRENCES OF ';' IN LV_STRING_TO WITH ','.
 
     " Slit string email by comma
-    SPLIT lv_string_to AT ',' INTO TABLE DATA(lt_temp).
+    SPLIT LV_STRING_TO AT ',' INTO TABLE DATA(LT_TEMP).
 
-    LOOP AT lt_temp INTO DATA(lv_email).
-      CONDENSE lv_email.
-      IF lv_email IS NOT INITIAL.
-        APPEND lv_email TO rt_emails.
+    LOOP AT LT_TEMP INTO DATA(LV_EMAIL).
+      CONDENSE LV_EMAIL.
+      IF LV_EMAIL IS NOT INITIAL.
+        APPEND LV_EMAIL TO RT_EMAILS.
       ENDIF.
     ENDLOOP.
 
   ENDMETHOD.
 
-  METHOD refactor_file.
+  METHOD REFACTOR_FILE.
     " Convert content XSTRING to HEX
-    ev_file_content = cl_bcs_convert=>xstring_to_solix( iv_file_content ).
+    EV_FILE_CONTENT = CL_BCS_CONVERT=>XSTRING_TO_SOLIX( IV_FILE_CONTENT ).
 
     " Format file
-    DATA(lv_format_upper) = to_upper( iv_output_format ).
+    DATA(LV_FORMAT_UPPER) = TO_UPPER( IV_OUTPUT_FORMAT ).
 
-    IF lv_format_upper CS 'XLSX' OR lv_format_upper CS 'XLS'.
-      ev_type = 'XLS'.
-    ELSEIF lv_format_upper CS 'PDF'.
-      ev_type = 'PDF'.
-    ELSEIF lv_format_upper CS 'CSV'.
-      ev_type = 'CSV'.
+    IF LV_FORMAT_UPPER CS 'XLSX' OR LV_FORMAT_UPPER CS 'XLS'.
+      EV_TYPE = 'XLS'.
+    ELSEIF LV_FORMAT_UPPER CS 'PDF'.
+      EV_TYPE = 'PDF'.
+    ELSEIF LV_FORMAT_UPPER CS 'CSV'.
+      EV_TYPE = 'CSV'.
     ELSE.
-      ev_type = 'BIN'.
+      EV_TYPE = 'BIN'.
     ENDIF.
 
+  ENDMETHOD.
+
+  METHOD GET_EMAIL_FROM_UNAME.
+*    " Get email from User Profile (SU01)
+*    DATA: LT_RETURN TYPE TABLE OF BAPIRET2,
+*          LT_SMTP   TYPE TABLE OF BAPIADSMTP.
+*
+*    CALL FUNCTION 'BAPI_USER_GET_DETAIL'
+*      EXPORTING
+*        USERNAME = IV_UNAME
+*      TABLES
+*        RETURN   = LT_RETURN
+*        ADDSMTP  = LT_SMTP.
+*
+*    READ TABLE LT_SMTP INTO DATA(LS_SMTP) INDEX 1.
+*    IF SY-SUBRC = 0.
+*      RV_EMAIL = LS_SMTP-E_MAIL.
+*    ENDIF.
+
+    SELECT SINGLE A~SMTP_ADDR
+        FROM USR21 AS U
+        INNER JOIN ADR6 AS A ON U~ADDRNUMBER = A~ADDRNUMBER
+                      AND U~PERSNUMBER = A~PERSNUMBER
+        WHERE U~BNAME = @IV_UNAME
+        INTO @RV_EMAIL.
   ENDMETHOD.
 
 ENDCLASS.

@@ -133,11 +133,15 @@ authorization dependent by _JobConfig
   MimeType,
   FileContent,
   FileSize,
+  FileSizeDisplay,
   CreatedBy,
   CreatedAt;
 
   field ( numbering : managed )
   FileUuid;
+
+  update;
+  delete;
 
   // Association
   association _JobConfig { with draft; }
@@ -150,6 +154,7 @@ authorization dependent by _JobConfig
     MimeType = mime_type;
     FileContent = file_content;
     FileSize = file_size;
+    FileSizeDisplay = file_size_display;
     CreatedBy = created_by;
     CreatedAt = created_at;
   }
@@ -186,6 +191,9 @@ authorization dependent by _JobConfig
 
   field ( numbering : managed )
   JobHistUuid;
+
+  update;
+  delete;
 
   // Actions available to users
   //  action retryJob result [1] $self;

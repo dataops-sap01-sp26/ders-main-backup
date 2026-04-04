@@ -1,0 +1,11 @@
+@EndUserText.label: 'Access Control for Job Configuration'
+@MappingRole: true
+define role ZIR_DRS_JOB_CONFIG {
+  grant
+    select
+      on
+        ZIR_DRS_JOB_CONFIG
+          where
+            ( _Subscription.ReportId ) =
+              aspect pfcg_auth ( ZDRS_REP, ZREP_ID, ACTVT = '03' );
+}

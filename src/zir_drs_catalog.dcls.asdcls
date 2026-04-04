@@ -1,0 +1,11 @@
+@EndUserText.label: 'Access Control for Report Catalog'
+@MappingRole: true
+define role ZIR_DRS_CATALOG {
+  grant
+    select
+      on
+        ZIR_DRS_CATALOG
+          where
+            ( ReportId ) =
+              aspect pfcg_auth ( ZDRS_REP, ZREP_ID, ACTVT = '03' );
+}

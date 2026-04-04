@@ -3,8 +3,7 @@
 {
 "FROM":
 [
-"ZI_DRS_AR01_H",
-"ZI_DRS_AR01_TOTAL"
+"ZI_RPT_AR01_H"
 ],
 "ASSOCIATED":
 [

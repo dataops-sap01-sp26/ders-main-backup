@@ -1,8 +1,6 @@
 @EndUserText.label: 'Main Service Definition'
 define service ZSD_DRS_MAIN_O4 {
   expose ZCR_DRS_JOB_CONFIG as DrsJobConfig;
-  expose ZC_DRS_JOB_HISTORY as DrsJobHistory;
-  expose ZC_DRS_FILE as DrsFile;
   expose ZI_VH_DRS_RUN_TYPE as DrsRunTypeVH;
   expose ZI_VH_DRS_PERIODIC_GRANULARITY as DrsPeriodicGranularityVH;
   expose ZI_VH_DRS_START_RESTRICTION as DrsStartRestrictionVH;
@@ -17,6 +15,8 @@ define service ZSD_DRS_MAIN_O4 {
   expose ZC_DRS_PARAM_AP01 as DrsParamAP01;
   expose ZC_DRS_PARAM_AP02 as DrsParamAP02;
   expose ZC_DRS_PARAM_AP03 as DrsParamAP03;
+  expose ZC_DRS_CUSTOMERS as CustomersList;
+  expose ZC_DRS_VENDORS as VendorsList;
   expose ZC_DRS_GL01_PREVIEW as DrsGL01Preview;
   expose ZI_VH_DRS_MODULE as ModuleVH;
   expose ZI_VH_DRS_FORMAT as FormatVH;
@@ -28,11 +28,10 @@ define service ZSD_DRS_MAIN_O4 {
   expose ZI_RPT_AP03_I as APAgingReportDetail;
   expose ZI_RPT_AR01 as CustomerOpenItems;
   expose ZI_RPT_AR01_I as CustomerOpenItemsDetail;
-  expose ZI_DRS_AR01_TOTAL as DynamicTotal;
   expose ZI_RPT_AR02 as CustomerBalances;
   expose ZI_RPT_AR02_I as CustomerBalancesDetail;
   expose ZI_RPT_AR03 as ARAgingReport;
   expose ZI_RPT_AR03_I as ARAgingReportDetail;
-  expose ZCR_DRS_GL01 as GLAccountBalances;
-  expose ZC_DRS_GL01_I as GLAccountBalancesDetail;
+  expose ZCR_RPT_GL01 as GLAccountBalances;
+  expose ZC_RPT_GL01_I as GLAccountBalancesDetail;
 }

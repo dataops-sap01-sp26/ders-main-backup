@@ -1,7 +1,10 @@
 CLASS lhc_DrsJobConfig DEFINITION INHERITING FROM CL_ABAP_BEHAVIOR_HANDLER.
   PRIVATE SECTION.
-    "! Job template name — change after registering via zcl_setup_catalog_and_template
+    " Job template name
     CONSTANTS GC_JOB_TEMPLATE_NAME TYPE APJ_JOB_TEMPLATE_NAME VALUE 'ZDRS_JOB_TEMPLATE_V2'.
+    " SNRO nr_range_nr value and object name
+    CONSTANTS GC_SNRO_NR_RANGE_NR TYPE NRNR VALUE '01'.
+    CONSTANTS GC_SNRO_OBJECT TYPE NROBJ VALUE 'ZDRS_JOBID'.
 
     METHODS GET_GLOBAL_AUTHORIZATIONS FOR GLOBAL AUTHORIZATION
       IMPORTING REQUEST REQUESTED_AUTHORIZATIONS FOR DrsJobConfig RESULT RESULT.
@@ -120,15 +123,48 @@ CLASS lhc_DrsJobConfig IMPLEMENTATION.
       WITH CORRESPONDING #( KEYS )
       RESULT DATA(LT_JOBS).
 
-    " Generate next JobId
-    DATA LV_MAX_ID TYPE ZIR_DRS_JOB_CONFIG-JobId.
-    CLEAR LV_MAX_ID.
-    SELECT SINGLE MAX( JobId )
-      FROM ZIR_DRS_JOB_CONFIG
-      INTO @LV_MAX_ID.
-    DATA LV_NEXT_ID TYPE ZIR_DRS_JOB_CONFIG-JobId.
-    CLEAR LV_NEXT_ID.
-    LV_NEXT_ID = LV_MAX_ID + 1.
+    " Determine how many jobs need an ID
+    DATA(lt_jobs_wo_id) = LT_JOBS.
+    DELETE lt_jobs_wo_id WHERE JobId IS NOT INITIAL.
+
+    " Set to abap_true IF you have created an SNRO object (e.g. 'ZDRS_JOBID' in T-Code SNRO)
+    DATA use_number_range TYPE abap_bool VALUE abap_true.
+    DATA lv_next_id TYPE zdrs_job_config-job_id.
+    CLEAR lv_next_id.
+
+    IF use_number_range = abap_true AND lines( lt_jobs_wo_id ) > 0.
+      TRY.
+          cl_numberrange_runtime=>number_get(
+            EXPORTING
+              nr_range_nr       = GC_SNRO_NR_RANGE_NR
+              object            = GC_SNRO_OBJECT
+              quantity          = CONV #( lines( lt_jobs_wo_id ) )
+            IMPORTING
+              number            = DATA(number_range_key)
+              returned_quantity = DATA(number_range_returned_quantity)
+          ).
+          " Number range returns the LAST number in the requested block.
+          lv_next_id = number_range_key - number_range_returned_quantity.
+        CATCH cx_number_ranges INTO DATA(lx_number_ranges).
+           " If SNRO fails (not found etc.), fallback to MAX
+           use_number_range = abap_false.
+      ENDTRY.
+    ENDIF.
+
+    IF use_number_range = abap_false.
+      " Fallback: Generate next JobId by checking both Active and Draft tables
+      DATA: lv_max_active TYPE zdrs_job_config-job_id,
+            lv_max_draft  TYPE zdrs_job_configd-jobid.
+
+      SELECT SINGLE MAX( job_id ) FROM zdrs_job_config  INTO @lv_max_active.
+      SELECT SINGLE MAX( jobid ) FROM zdrs_job_configd INTO @lv_max_draft.
+
+      IF lv_max_active > lv_max_draft.
+        lv_next_id = lv_max_active.
+      ELSE.
+        lv_next_id = lv_max_draft.
+      ENDIF.
+    ENDIF.
 
     " Resolve user timezone — fallback to UTC if context not available
     DATA LV_USER_TZ TYPE SY-ZONLO.
@@ -139,36 +175,40 @@ CLASS lhc_DrsJobConfig IMPLEMENTATION.
         LV_USER_TZ = 'UTC'.
     ENDTRY.
 
+    " Prepare updates
+    DATA update_jobs TYPE TABLE FOR UPDATE ZIR_DRS_JOB_CONFIG.
+    LOOP AT LT_JOBS INTO DATA(LS_JOB).
+      IF LS_JOB-JobId IS INITIAL.
+        lv_next_id += 1.
+        LS_JOB-JobId = lv_next_id.
+      ENDIF.
+
+      APPEND VALUE #(
+          %TKY                = LS_JOB-%TKY
+          JobId               = LS_JOB-JobId
+          JobTemplateName     = COND #( WHEN LS_JOB-JobTemplateName IS INITIAL
+                                        THEN GC_JOB_TEMPLATE_NAME
+                                        ELSE LS_JOB-JobTemplateName )
+          RunType             = COND #( WHEN LS_JOB-RunType IS INITIAL
+                                        THEN 'I'
+                                        ELSE LS_JOB-RunType )
+          Tmzone              = COND #( WHEN LS_JOB-Tmzone IS INITIAL
+                                        THEN LV_USER_TZ
+                                        ELSE LS_JOB-Tmzone )
+          PeriodicGranularity = COND #( WHEN LS_JOB-PeriodicGranularity IS INITIAL
+                                        THEN 'H'
+                                        ELSE LS_JOB-PeriodicGranularity )
+          PeriodicValue       = COND #( WHEN LS_JOB-PeriodicValue IS INITIAL
+                                        THEN 1
+                                        ELSE LS_JOB-PeriodicValue )
+      ) TO update_jobs.
+    ENDLOOP.
+
     " Set default values for new entities
     MODIFY ENTITIES OF ZIR_DRS_JOB_CONFIG IN LOCAL MODE
       ENTITY DrsJobConfig
       UPDATE FIELDS ( JobId JobTemplateName RunType Tmzone PeriodicGranularity PeriodicValue )
-      WITH VALUE #( FOR LS_JOB IN LT_JOBS
-        ( %TKY = LS_JOB-%TKY
-          JobId = COND #(
-            WHEN LS_JOB-JobId IS INITIAL
-            THEN LV_NEXT_ID
-            ELSE LS_JOB-JobId )
-          JobTemplateName = COND #(
-            WHEN LS_JOB-JobTemplateName IS INITIAL
-            THEN GC_JOB_TEMPLATE_NAME
-            ELSE LS_JOB-JobTemplateName )
-          RunType = COND #(
-            WHEN LS_JOB-RunType IS INITIAL
-            THEN 'I'
-            ELSE LS_JOB-RunType )
-          Tmzone = COND #(
-            WHEN LS_JOB-Tmzone IS INITIAL
-            THEN LV_USER_TZ
-            ELSE LS_JOB-Tmzone )
-          PeriodicGranularity = COND #(
-            WHEN LS_JOB-PeriodicGranularity IS INITIAL
-            THEN 'H'
-            ELSE LS_JOB-PeriodicGranularity )
-          PeriodicValue = COND #(
-            WHEN LS_JOB-PeriodicValue IS INITIAL
-            THEN 1
-            ELSE LS_JOB-PeriodicValue ) ) )
+      WITH update_jobs
       REPORTED DATA(LT_REPORTED).
   ENDMETHOD.
 

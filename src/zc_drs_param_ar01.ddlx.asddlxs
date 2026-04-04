@@ -40,11 +40,11 @@ annotate entity ZC_DRS_PARAM_AR01 with
   }
   @EndUserText.label: 'Customer From'
   CustomerFrom;
-  
-    @UI: {
-    lineItem:       [ { position: 25, importance: #HIGH } ],
-    identification: [ { position: 25 } ],
-    fieldGroup:     [ { qualifier: 'SubscriptionParams', position: 25 } ]
+
+  @UI: {
+  lineItem:       [ { position: 25, importance: #HIGH } ],
+  identification: [ { position: 25 } ],
+  fieldGroup:     [ { qualifier: 'SubscriptionParams', position: 25 } ]
   }
   @EndUserText.label: 'Customer To'
   CustomerTo;

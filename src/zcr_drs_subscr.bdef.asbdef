@@ -33,6 +33,8 @@ define behavior for ZCR_DRS_SUBSCR alias Subscription
   use association _ParamAP01 { create; with draft; }
   use association _ParamAP02 { create; with draft; }
   use association _ParamAP03 { create; with draft; }
+  use association _Customers { create; with draft; }
+  use association _Vendors { create; with draft; }
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -99,6 +101,26 @@ define behavior for ZC_DRS_PARAM_AP02 alias ParamAP02
 // CHILD PROJECTION: AP03 Parameters
 // ═══════════════════════════════════════════════════════════════════════════════
 define behavior for ZC_DRS_PARAM_AP03 alias ParamAP03
+{
+  use update;
+  use delete;
+
+  use association _Subscription { with draft; }
+}
+// ═══════════════════════════════════════════════════════════════════════════════
+// CHILD PROJECTION: Customer List
+// ═══════════════════════════════════════════════════════════════════════════════
+define behavior for ZC_DRS_CUSTOMERS alias Customers
+{
+  use update;
+  use delete;
+
+  use association _Subscription { with draft; }
+}
+// ═══════════════════════════════════════════════════════════════════════════════
+// CHILD PROJECTION: Vendor List
+// ═══════════════════════════════════════════════════════════════════════════════
+define behavior for ZC_DRS_VENDORS alias Vendors
 {
   use update;
   use delete;

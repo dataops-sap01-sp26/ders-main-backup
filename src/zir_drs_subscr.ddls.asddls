@@ -1,4 +1,4 @@
-@AccessControl.authorizationCheck: #NOT_REQUIRED
+@AccessControl.authorizationCheck: #CHECK
 @EndUserText.label: 'Subscription Root Entity'
 @Metadata.ignorePropagatedAnnotations: false
 define root view entity ZIR_DRS_SUBSCR as select from zdrs_subscr as Subscription
@@ -22,6 +22,9 @@ association [0..1] to ZIR_DRS_CATALOG as _Catalog on $projection.ReportId = _Cat
    composition [0..1] of ZI_DRS_PARAM_AP03 as _ParamAP03
 // composition [0..1] of ZI_DRS_PARAM_CA01 as _ParamCA01  -- Future: Cash Position
 
+
+   composition [0..*] of ZI_DRS_CUSTOMERS as _Customers
+   composition [0..*] of ZI_DRS_VENDORS   as _Vendors
 {
     key subscr_uuid as SubscrUuid,
     key subscr_id as SubscrId,
@@ -74,5 +77,7 @@ association [0..1] to ZIR_DRS_CATALOG as _Catalog on $projection.ReportId = _Cat
     _ParamAR03,
     _ParamAP01,
     _ParamAP02,
-    _ParamAP03 
+    _ParamAP03,
+    _Customers,
+    _Vendors 
 }

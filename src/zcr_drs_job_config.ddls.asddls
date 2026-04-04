@@ -1,4 +1,4 @@
-@AccessControl.authorizationCheck: #NOT_REQUIRED
+@AccessControl.authorizationCheck: #CHECK
 @EndUserText.label: 'Job Config Projection'
 @Metadata.ignorePropagatedAnnotations: false
 @Metadata.allowExtensions: true
@@ -46,6 +46,7 @@ define root view entity ZCR_DRS_JOB_CONFIG
           ExceptionCalendarId,
           EndInfoType,
           ExceptionRestrictionCode,
+          JobDate,
 
           /* Associations */
           _File         : redirected to composition child ZC_DRS_FILE,

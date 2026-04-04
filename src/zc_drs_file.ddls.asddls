@@ -11,13 +11,11 @@ define view entity ZC_DRS_FILE
           MimeType,
           FileContent,
           FileSize,
+          FileSizeDisplay,
           CreatedBy,
           CreatedAt,
-          @ObjectModel.virtualElement: true
-          @ObjectModel.virtualElementCalculatedBy: 'ABAP:ZCL_FILE_SIZE_CALC'
-          @EndUserText.label: 'File Size'
-  virtual FileSizeDisplay : abap.char(20),
 
           /* Associations */
-          _JobConfig : redirected to parent ZCR_DRS_JOB_CONFIG
+          _JobConfig  : redirected to parent ZCR_DRS_JOB_CONFIG,
+          _JobHistory : redirected to ZC_DRS_JOB_HISTORY
 }

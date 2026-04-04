@@ -45,6 +45,22 @@ CLASS ZCL_SETUP_SUBSCR_AND_PARAM IMPLEMENTATION.
     DATA LV_UUID5 TYPE SYSUUID_X16.
     DATA LV_UUID6 TYPE SYSUUID_X16.
 
+    " AR03
+    DATA LV_UUID7 TYPE SYSUUID_X16.
+    DATA LV_UUID8 TYPE SYSUUID_X16.
+
+    " AP01
+    DATA LV_UUID9 TYPE SYSUUID_X16.
+    DATA LV_UUID10 TYPE SYSUUID_X16.
+
+    " AP02
+    DATA LV_UUID11 TYPE SYSUUID_X16.
+    DATA LV_UUID12 TYPE SYSUUID_X16.
+
+    " AP03
+    DATA LV_UUID13 TYPE SYSUUID_X16.
+    DATA LV_UUID14 TYPE SYSUUID_X16.
+
     TRY.
         LV_UUID1 = CL_SYSTEM_UUID=>CREATE_UUID_X16_STATIC( ).
         LV_UUID2 = CL_SYSTEM_UUID=>CREATE_UUID_X16_STATIC( ).
@@ -52,6 +68,15 @@ CLASS ZCL_SETUP_SUBSCR_AND_PARAM IMPLEMENTATION.
         LV_UUID4 = CL_SYSTEM_UUID=>CREATE_UUID_X16_STATIC( ).
         LV_UUID5 = CL_SYSTEM_UUID=>CREATE_UUID_X16_STATIC( ).
         LV_UUID6 = CL_SYSTEM_UUID=>CREATE_UUID_X16_STATIC( ).
+        LV_UUID7 = CL_SYSTEM_UUID=>CREATE_UUID_X16_STATIC( ).
+        LV_UUID8 = CL_SYSTEM_UUID=>CREATE_UUID_X16_STATIC( ).
+        LV_UUID9 = CL_SYSTEM_UUID=>CREATE_UUID_X16_STATIC( ).
+        LV_UUID10 = CL_SYSTEM_UUID=>CREATE_UUID_X16_STATIC( ).
+        LV_UUID11 = CL_SYSTEM_UUID=>CREATE_UUID_X16_STATIC( ).
+        LV_UUID12 = CL_SYSTEM_UUID=>CREATE_UUID_X16_STATIC( ).
+        LV_UUID13 = CL_SYSTEM_UUID=>CREATE_UUID_X16_STATIC( ).
+        LV_UUID14 = CL_SYSTEM_UUID=>CREATE_UUID_X16_STATIC( ).
+
       CATCH CX_UUID_ERROR INTO DATA(LX_UUID).
         IF IO_OUT IS BOUND.
           IO_OUT->WRITE( |UUID generation failed: { LX_UUID->GET_TEXT( ) }| ).
@@ -70,8 +95,8 @@ CLASS ZCL_SETUP_SUBSCR_AND_PARAM IMPLEMENTATION.
       REPORT_ID             = 'GL-01'
       BUKRS                 = 'VNM'
       OUTPUT_FORMAT         = 'XLSX'
-      EMAIL_TO              = 'finance-bot@test.com'
-      EMAIL_CC              = 'gl_accountant@test.com'
+      EMAIL_TO              = 'cuongtqse182989@fpt.edu.vn'
+      EMAIL_CC              = 'thinhhpcse182037@fpt.edu.vn'
       CREATED_BY            = LV_USER
       CREATED_AT            = LV_TS
       LAST_CHANGED_BY       = LV_USER
@@ -86,8 +111,8 @@ CLASS ZCL_SETUP_SUBSCR_AND_PARAM IMPLEMENTATION.
       REPORT_ID             = 'GL-01'
       BUKRS                 = 'FI12'
       OUTPUT_FORMAT         = 'CSV'
-      EMAIL_TO              = 'finance-bot@test.com'
-      EMAIL_CC              = 'gl_accountant@test.com'
+      EMAIL_TO              = 'cuongtqse182989@fpt.edu.vn'
+      EMAIL_CC              = 'thinhhpcse182037@fpt.edu.vn'
       CREATED_BY            = LV_USER
       CREATED_AT            = LV_TS
       LAST_CHANGED_BY       = LV_USER
@@ -95,15 +120,16 @@ CLASS ZCL_SETUP_SUBSCR_AND_PARAM IMPLEMENTATION.
       LOCAL_LAST_CHANGED_AT = LV_TS
     ) TO LT_SUB_HDR.
 
+    " AR01 - CUSTOMER OPEN ITEMS REPORT
     APPEND VALUE #(
      SUBSCR_UUID           = LV_UUID3
      SUBSCR_ID             = '000003'
-     SUBSCR_NAME           = 'Vendor Open Items - US00'
+     SUBSCR_NAME           = 'Customer Open Items - US00'
      REPORT_ID             = 'AR-01'
      BUKRS                 = 'US00'
      OUTPUT_FORMAT         = 'XLSX'
-     EMAIL_TO              = 'finance-bot@test.com'
-     EMAIL_CC              = 'gl_accountant@test.com'
+     EMAIL_TO              = 'cuongtqse182989@fpt.edu.vn'
+     EMAIL_CC              = 'thinhhpcse182037@fpt.edu.vn'
      CREATED_BY            = LV_USER
      CREATED_AT            = LV_TS
      LAST_CHANGED_BY       = LV_USER
@@ -111,15 +137,16 @@ CLASS ZCL_SETUP_SUBSCR_AND_PARAM IMPLEMENTATION.
      LOCAL_LAST_CHANGED_AT = LV_TS
    ) TO LT_SUB_HDR.
 
+
     APPEND VALUE #(
       SUBSCR_UUID           = LV_UUID4
       SUBSCR_ID             = '000004'
-      SUBSCR_NAME           = 'Vendor Open Items - VNM'
+      SUBSCR_NAME           = 'Customer Open Items - VNM'
       REPORT_ID             = 'AR-01'
       BUKRS                 = 'VNM'
       OUTPUT_FORMAT         = 'CSV'
-      EMAIL_TO              = 'finance-bot@test.com'
-      EMAIL_CC              = 'gl_accountant@test.com'
+      EMAIL_TO              = 'cuongtqse182989@fpt.edu.vn'
+      EMAIL_CC              = 'thinhhpcse182037@fpt.edu.vn'
       CREATED_BY            = LV_USER
       CREATED_AT            = LV_TS
       LAST_CHANGED_BY       = LV_USER
@@ -141,10 +168,10 @@ CLASS ZCL_SETUP_SUBSCR_AND_PARAM IMPLEMENTATION.
       SUBSCR_UUID   = LV_UUID1
       SUBSCR_ID     = '000001'
       COMPANY_CODE  = 'VNM'
-      FISCAL_YEAR   = '2025'
-      FISCAL_PERIOD = '005'
+      FISCAL_YEAR_FROM   = '2025'
+      FISCAL_PERIOD_FROM = '005'
       CURRENCY      = 'VND'
-      GL_ACCOUNT    = '0000200000'
+      GL_ACCOUNT_FROM    = '0000200000'
       MAX_ROWS      = 100
     ) TO LT_PARAM_GL01.
 
@@ -152,23 +179,24 @@ CLASS ZCL_SETUP_SUBSCR_AND_PARAM IMPLEMENTATION.
       SUBSCR_UUID   = LV_UUID2
       SUBSCR_ID     = '000002'
       COMPANY_CODE  = 'FI12'
-      FISCAL_YEAR   = '2025'
-      FISCAL_PERIOD = '012'
+      FISCAL_YEAR_FROM   = '2025'
+      FISCAL_PERIOD_FROM = '012'
       CURRENCY      = 'VND'
-      GL_ACCOUNT    = '0000200000'
+      GL_ACCOUNT_FROM    = '0000200000'
       MAX_ROWS      = 100
     ) TO LT_PARAM_GL01.
 
     INSERT ZDRS_PARAM_GL01 FROM TABLE @LT_PARAM_GL01.
 
-    " AR01 - VENDOR OPEN ITEMS REPORT
+
+    " AR01 - CUSTOMER OPEN ITEMS REPORT
     DATA LT_PARAM_AR01 TYPE TABLE OF ZDRS_PARAM_AR01.
 
     APPEND VALUE #(
       SUBSCR_UUID   = LV_UUID3
       SUBSCR_ID     = '000003'
       COMPANY_CODE  = 'US00'
-      CUSTOMER = '129997'
+      CUSTOMER_FROM = '129997'
       KEY_DATE      = SY-DATUM
       MAX_ROWS      = 100
     ) TO LT_PARAM_AR01.
@@ -177,12 +205,14 @@ CLASS ZCL_SETUP_SUBSCR_AND_PARAM IMPLEMENTATION.
       SUBSCR_UUID   = LV_UUID4
       SUBSCR_ID     = '000004'
       COMPANY_CODE  = 'US00'
-      CUSTOMER = '129999'
+      CUSTOMER_FROM = '129999'
       KEY_DATE      = SY-DATUM
       MAX_ROWS      = 100
     ) TO LT_PARAM_AR01.
 
     INSERT ZDRS_PARAM_AR01 FROM TABLE @LT_PARAM_AR01.
+
+
 
     " -----------------------------------------------------------------
     " 4.  Commit / Rollback

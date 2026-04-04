@@ -14,10 +14,14 @@ define view entity ZC_DRS_PARAM_AP03 as projection on ZI_DRS_PARAM_AP03
     @Consumption.valueHelpDefinition: [{ entity: { name: 'I_CompanyCodeStdVH', element: 'CompanyCode' } }]
     CompanyCode,
 
+    @Consumption.valueHelpDefinition: [{ entity: { name: 'I_Supplier_VH', element: 'Supplier' } }]
     VendorFrom,
+
+    @Consumption.valueHelpDefinition: [{ entity: { name: 'I_Supplier_VH', element: 'Supplier' } }]
     VendorTo,
     
     KeyDate,
+    
     MaxRows,
     /* Associations */
     _Subscription : redirected to parent ZCR_DRS_SUBSCR
