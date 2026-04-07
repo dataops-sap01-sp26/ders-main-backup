@@ -8,6 +8,9 @@ define root view entity ZIR_DRS_SUBSCR as select from zdrs_subscr as Subscriptio
 // ═══════════════════════════════════════════════════════════════════════════════
 association [0..1] to ZIR_DRS_CATALOG as _Catalog on $projection.ReportId = _Catalog.ReportId
 
+association [0..*] to ZIR_DRS_JOB_CONFIG as _JobConfig on  $projection.SubscrUuid = _JobConfig.SubscrUuid
+                                                        and $projection.SubscrId   = _JobConfig.SubscrId
+
 // ═══════════════════════════════════════════════════════════════════════════════
 // COMPOSITION: Report-specific parameters (Child entities)
 // Each Subscription can have ONE set of parameters per report type
@@ -79,5 +82,6 @@ association [0..1] to ZIR_DRS_CATALOG as _Catalog on $projection.ReportId = _Cat
     _ParamAP02,
     _ParamAP03,
     _Customers,
-    _Vendors 
+    _Vendors,
+     _JobConfig
 }

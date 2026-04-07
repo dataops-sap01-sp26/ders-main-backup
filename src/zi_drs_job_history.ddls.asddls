@@ -45,7 +45,7 @@ define view entity ZI_DRS_JOB_HISTORY
       else 0
       end                   as JobStatusCriticality,
 
-      cast( substring( cast( start_timestamp as abap.char(23) ), 1, 8 )
+      cast( substring( cast( created_at as abap.char(23) ), 1, 8 )
       as abap.dats )        as JobDate,
 
       // Association

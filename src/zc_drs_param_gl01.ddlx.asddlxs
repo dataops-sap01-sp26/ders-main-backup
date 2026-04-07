@@ -43,9 +43,9 @@ annotate entity ZC_DRS_PARAM_GL01 with
   GlAccountFr;
 
   @UI: {
-    lineItem:       [ { position: 30, importance: #LOW } ],
-    identification: [ { position: 30 } ],
-    fieldGroup:     [ { qualifier: 'SubscriptionParams', position: 30 } ]
+    lineItem:       [ { position: 50, importance: #LOW } ],
+    identification: [ { position: 50 } ],
+    fieldGroup:     [ { qualifier: 'SubscriptionParams', position: 50 } ]
   }
   @EndUserText.label: 'G/L Account To'
   GlAccountTo;
@@ -87,7 +87,7 @@ annotate entity ZC_DRS_PARAM_GL01 with
   @UI: {
     lineItem:       [ { position: 60, importance: #LOW } ],
     identification: [ { position: 60 } ],
-    fieldGroup:     [ { qualifier: 'SubscriptionParams', position: 60 } ]
+    fieldGroup:     [ { qualifier: 'SubscriptionParams', position: 20 } ]
   }
   @EndUserText.label: 'Max Rows'
   MaxRows;

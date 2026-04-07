@@ -83,5 +83,6 @@ define root view entity ZCR_DRS_SUBSCR
           _ParamAP02 : redirected to composition child ZC_DRS_PARAM_AP02,
           _ParamAP03 : redirected to composition child ZC_DRS_PARAM_AP03,
           _Customers : redirected to composition child ZC_DRS_CUSTOMERS,
-          _Vendors   : redirected to composition child ZC_DRS_VENDORS
+          _Vendors   : redirected to composition child ZC_DRS_VENDORS,
+          _JobConfig : redirected to ZCR_DRS_JOB_CONFIG
 }

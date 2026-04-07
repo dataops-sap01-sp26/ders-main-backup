@@ -78,9 +78,9 @@ annotate entity ZCR_DRS_JOB_CONFIG with
 
   @UI.hidden: true
   JobUuid;
-  
-    @UI: {
-    selectionField: [ { position: 10 } ]
+
+  @UI: {
+  selectionField: [ { position: 10 } ]
   }
   @EndUserText.label: 'Job Date'
   JobDate;

@@ -1,10 +1,12 @@
 CLASS lhc_DrsJobConfig DEFINITION INHERITING FROM CL_ABAP_BEHAVIOR_HANDLER.
   PRIVATE SECTION.
-    " Job template name
+    " Job template
     CONSTANTS GC_JOB_TEMPLATE_NAME TYPE APJ_JOB_TEMPLATE_NAME VALUE 'ZDRS_JOB_TEMPLATE_V2'.
     " SNRO nr_range_nr value and object name
     CONSTANTS GC_SNRO_NR_RANGE_NR TYPE NRNR VALUE '01'.
     CONSTANTS GC_SNRO_OBJECT TYPE NROBJ VALUE 'ZDRS_JOBID'.
+    " Message class
+    CONSTANTS GC_MSG_CLASS TYPE SYMSGID VALUE 'ZMSG_DRS_SP26_SAP01'.
 
     METHODS GET_GLOBAL_AUTHORIZATIONS FOR GLOBAL AUTHORIZATION
       IMPORTING REQUEST REQUESTED_AUTHORIZATIONS FOR DrsJobConfig RESULT RESULT.
@@ -124,45 +126,45 @@ CLASS lhc_DrsJobConfig IMPLEMENTATION.
       RESULT DATA(LT_JOBS).
 
     " Determine how many jobs need an ID
-    DATA(lt_jobs_wo_id) = LT_JOBS.
-    DELETE lt_jobs_wo_id WHERE JobId IS NOT INITIAL.
+    DATA(LT_JOBS_WO_ID) = LT_JOBS.
+    DELETE LT_JOBS_WO_ID WHERE JobId IS NOT INITIAL.
 
     " Set to abap_true IF you have created an SNRO object (e.g. 'ZDRS_JOBID' in T-Code SNRO)
-    DATA use_number_range TYPE abap_bool VALUE abap_true.
-    DATA lv_next_id TYPE zdrs_job_config-job_id.
-    CLEAR lv_next_id.
+    DATA USE_NUMBER_RANGE TYPE ABAP_BOOL VALUE ABAP_TRUE.
+    DATA LV_NEXT_ID TYPE ZDRS_JOB_CONFIG-JOB_ID.
+    CLEAR LV_NEXT_ID.
 
-    IF use_number_range = abap_true AND lines( lt_jobs_wo_id ) > 0.
+    IF USE_NUMBER_RANGE = ABAP_TRUE AND LINES( LT_JOBS_WO_ID ) > 0.
       TRY.
-          cl_numberrange_runtime=>number_get(
+          CL_NUMBERRANGE_RUNTIME=>NUMBER_GET(
             EXPORTING
-              nr_range_nr       = GC_SNRO_NR_RANGE_NR
-              object            = GC_SNRO_OBJECT
-              quantity          = CONV #( lines( lt_jobs_wo_id ) )
+              NR_RANGE_NR       = GC_SNRO_NR_RANGE_NR
+              OBJECT            = GC_SNRO_OBJECT
+              QUANTITY          = CONV #( LINES( LT_JOBS_WO_ID ) )
             IMPORTING
-              number            = DATA(number_range_key)
-              returned_quantity = DATA(number_range_returned_quantity)
+              NUMBER            = DATA(NUMBER_RANGE_KEY)
+              RETURNED_QUANTITY = DATA(NUMBER_RANGE_RETURNED_QUANTITY)
           ).
           " Number range returns the LAST number in the requested block.
-          lv_next_id = number_range_key - number_range_returned_quantity.
-        CATCH cx_number_ranges INTO DATA(lx_number_ranges).
-           " If SNRO fails (not found etc.), fallback to MAX
-           use_number_range = abap_false.
+          LV_NEXT_ID = NUMBER_RANGE_KEY - NUMBER_RANGE_RETURNED_QUANTITY.
+        CATCH CX_NUMBER_RANGES INTO DATA(LX_NUMBER_RANGES).
+          " If SNRO fails (not found etc.), fallback to MAX
+          USE_NUMBER_RANGE = ABAP_FALSE.
       ENDTRY.
     ENDIF.
 
-    IF use_number_range = abap_false.
+    IF USE_NUMBER_RANGE = ABAP_FALSE.
       " Fallback: Generate next JobId by checking both Active and Draft tables
-      DATA: lv_max_active TYPE zdrs_job_config-job_id,
-            lv_max_draft  TYPE zdrs_job_configd-jobid.
+      DATA: LV_MAX_ACTIVE TYPE ZDRS_JOB_CONFIG-JOB_ID,
+            LV_MAX_DRAFT  TYPE ZDRS_JOB_CONFIGD-JOBID.
 
-      SELECT SINGLE MAX( job_id ) FROM zdrs_job_config  INTO @lv_max_active.
-      SELECT SINGLE MAX( jobid ) FROM zdrs_job_configd INTO @lv_max_draft.
+      SELECT SINGLE MAX( JOB_ID ) FROM ZDRS_JOB_CONFIG  INTO @LV_MAX_ACTIVE.
+      SELECT SINGLE MAX( JOBID ) FROM ZDRS_JOB_CONFIGD INTO @LV_MAX_DRAFT.
 
-      IF lv_max_active > lv_max_draft.
-        lv_next_id = lv_max_active.
+      IF LV_MAX_ACTIVE > LV_MAX_DRAFT.
+        LV_NEXT_ID = LV_MAX_ACTIVE.
       ELSE.
-        lv_next_id = lv_max_draft.
+        LV_NEXT_ID = LV_MAX_DRAFT.
       ENDIF.
     ENDIF.
 
@@ -176,11 +178,11 @@ CLASS lhc_DrsJobConfig IMPLEMENTATION.
     ENDTRY.
 
     " Prepare updates
-    DATA update_jobs TYPE TABLE FOR UPDATE ZIR_DRS_JOB_CONFIG.
+    DATA UPDATE_JOBS TYPE TABLE FOR UPDATE ZIR_DRS_JOB_CONFIG.
     LOOP AT LT_JOBS INTO DATA(LS_JOB).
       IF LS_JOB-JobId IS INITIAL.
-        lv_next_id += 1.
-        LS_JOB-JobId = lv_next_id.
+        LV_NEXT_ID += 1.
+        LS_JOB-JobId = LV_NEXT_ID.
       ENDIF.
 
       APPEND VALUE #(
@@ -201,14 +203,14 @@ CLASS lhc_DrsJobConfig IMPLEMENTATION.
           PeriodicValue       = COND #( WHEN LS_JOB-PeriodicValue IS INITIAL
                                         THEN 1
                                         ELSE LS_JOB-PeriodicValue )
-      ) TO update_jobs.
+      ) TO UPDATE_JOBS.
     ENDLOOP.
 
     " Set default values for new entities
     MODIFY ENTITIES OF ZIR_DRS_JOB_CONFIG IN LOCAL MODE
       ENTITY DrsJobConfig
       UPDATE FIELDS ( JobId JobTemplateName RunType Tmzone PeriodicGranularity PeriodicValue )
-      WITH update_jobs
+      WITH UPDATE_JOBS
       REPORTED DATA(LT_REPORTED).
   ENDMETHOD.
 
@@ -225,9 +227,10 @@ CLASS lhc_DrsJobConfig IMPLEMENTATION.
       IF LS_JOB-JobText IS INITIAL.
         APPEND VALUE #( %TKY = LS_JOB-%TKY ) TO FAILED-DRSJOBCONFIG.
         APPEND VALUE #( %TKY = LS_JOB-%TKY
-          %MSG = NEW_MESSAGE_WITH_TEXT(
-            SEVERITY = IF_ABAP_BEHV_MESSAGE=>SEVERITY-ERROR
-            TEXT = 'Description is required' )
+          %MSG = NEW_MESSAGE(
+           ID       = GC_MSG_CLASS
+           NUMBER   = '001'
+           SEVERITY = IF_ABAP_BEHV_MESSAGE=>SEVERITY-ERROR )
           %ELEMENT-JobText = IF_ABAP_BEHV=>MK-ON )
         TO REPORTED-DRSJOBCONFIG.
       ENDIF.
@@ -246,9 +249,10 @@ CLASS lhc_DrsJobConfig IMPLEMENTATION.
       IF LS_JOB-SubscrId IS INITIAL.
         APPEND VALUE #( %TKY = LS_JOB-%TKY ) TO FAILED-DRSJOBCONFIG.
         APPEND VALUE #( %TKY = LS_JOB-%TKY
-          %MSG = NEW_MESSAGE_WITH_TEXT(
-            SEVERITY = IF_ABAP_BEHV_MESSAGE=>SEVERITY-ERROR
-            TEXT = 'Subscription ID is required' )
+          %MSG = NEW_MESSAGE(
+            ID       = GC_MSG_CLASS
+            NUMBER   = '002'
+            SEVERITY = IF_ABAP_BEHV_MESSAGE=>SEVERITY-ERROR )
           %ELEMENT-SubscrId = IF_ABAP_BEHV=>MK-ON )
         TO REPORTED-DRSJOBCONFIG.
       ELSE.
@@ -259,9 +263,11 @@ CLASS lhc_DrsJobConfig IMPLEMENTATION.
         IF SY-SUBRC <> 0.
           APPEND VALUE #( %TKY = LS_JOB-%TKY ) TO FAILED-DRSJOBCONFIG.
           APPEND VALUE #( %TKY = LS_JOB-%TKY
-            %MSG = NEW_MESSAGE_WITH_TEXT(
+            %MSG = NEW_MESSAGE(
+              ID       = GC_MSG_CLASS
+              NUMBER   = '003'
               SEVERITY = IF_ABAP_BEHV_MESSAGE=>SEVERITY-ERROR
-              TEXT = |Subscription ID { LS_JOB-SubscrId } does not exist| )
+              V1       = LS_JOB-SubscrId )
             %ELEMENT-SubscrId = IF_ABAP_BEHV=>MK-ON )
           TO REPORTED-DRSJOBCONFIG.
         ENDIF.
@@ -279,16 +285,18 @@ CLASS lhc_DrsJobConfig IMPLEMENTATION.
       RESULT DATA(LT_JOBS).
 
     " Fetch valid values from DB Table
-    SELECT value FROM zdrs_run_type_vt INTO TABLE @DATA(lt_valid_run_types).
+    SELECT VALUE FROM ZDRS_RUN_TYPE_VT INTO TABLE @DATA(LT_VALID_RUN_TYPES).
 
     LOOP AT LT_JOBS INTO DATA(LS_JOB).
       " Validate existence
-      IF LS_JOB-RunType IS INITIAL OR NOT line_exists( lt_valid_run_types[ value = LS_JOB-RunType ] ).
+      IF LS_JOB-RunType IS INITIAL OR NOT LINE_EXISTS( LT_VALID_RUN_TYPES[ VALUE = LS_JOB-RunType ] ).
         APPEND VALUE #( %TKY = LS_JOB-%TKY ) TO FAILED-DRSJOBCONFIG.
         APPEND VALUE #( %TKY = LS_JOB-%TKY
-          %MSG = NEW_MESSAGE_WITH_TEXT(
+          %MSG = NEW_MESSAGE(
+            ID       = GC_MSG_CLASS
+            NUMBER   = '004'
             SEVERITY = IF_ABAP_BEHV_MESSAGE=>SEVERITY-ERROR
-            TEXT = |Run Type '{ LS_JOB-RunType }' is invalid or missing| )
+            V1       = LS_JOB-RunType )
           %ELEMENT-RunType = IF_ABAP_BEHV=>MK-ON )
         TO REPORTED-DRSJOBCONFIG.
       ENDIF.
@@ -302,17 +310,19 @@ CLASS lhc_DrsJobConfig IMPLEMENTATION.
       WITH CORRESPONDING #( KEYS )
       RESULT DATA(LT_JOBS).
 
-    SELECT value FROM zdrs_per_gran_vt INTO TABLE @DATA(lt_valid_granularity).
+    SELECT VALUE FROM ZDRS_PER_GRAN_VT INTO TABLE @DATA(LT_VALID_GRANULARITY).
 
     LOOP AT LT_JOBS INTO DATA(LS_JOB).
       " Only validate for Periodic jobs
       IF LS_JOB-RunType = 'P'.
-        IF LS_JOB-PeriodicGranularity IS INITIAL OR NOT line_exists( lt_valid_granularity[ value = LS_JOB-PeriodicGranularity ] ).
+        IF LS_JOB-PeriodicGranularity IS INITIAL OR NOT LINE_EXISTS( LT_VALID_GRANULARITY[ VALUE = LS_JOB-PeriodicGranularity ] ).
           APPEND VALUE #( %TKY = LS_JOB-%TKY ) TO FAILED-DRSJOBCONFIG.
           APPEND VALUE #( %TKY = LS_JOB-%TKY
-            %MSG = NEW_MESSAGE_WITH_TEXT(
+            %MSG = NEW_MESSAGE(
+              ID       = GC_MSG_CLASS
+              NUMBER   = '005'
               SEVERITY = IF_ABAP_BEHV_MESSAGE=>SEVERITY-ERROR
-              TEXT = |Periodic Granularity '{ LS_JOB-PeriodicGranularity }' is invalid| )
+              V1       = LS_JOB-PeriodicGranularity )
             %ELEMENT-PeriodicGranularity = IF_ABAP_BEHV=>MK-ON )
           TO REPORTED-DRSJOBCONFIG.
         ENDIF.
@@ -327,16 +337,18 @@ CLASS lhc_DrsJobConfig IMPLEMENTATION.
       WITH CORRESPONDING #( KEYS )
       RESULT DATA(LT_JOBS).
 
-    SELECT value FROM zdrs_shiftdir_vt INTO TABLE @DATA(lt_valid_shiftdir).
+    SELECT VALUE FROM ZDRS_SHIFTDIR_VT INTO TABLE @DATA(LT_VALID_SHIFTDIR).
 
     LOOP AT LT_JOBS INTO DATA(LS_JOB).
       IF LS_JOB-ShiftDirection IS NOT INITIAL.
-        IF NOT line_exists( lt_valid_shiftdir[ value = LS_JOB-ShiftDirection ] ).
+        IF NOT LINE_EXISTS( LT_VALID_SHIFTDIR[ VALUE = LS_JOB-ShiftDirection ] ).
           APPEND VALUE #( %TKY = LS_JOB-%TKY ) TO FAILED-DRSJOBCONFIG.
           APPEND VALUE #( %TKY = LS_JOB-%TKY
-            %MSG = NEW_MESSAGE_WITH_TEXT(
+            %MSG = NEW_MESSAGE(
+              ID       = GC_MSG_CLASS
+              NUMBER   = '006'
               SEVERITY = IF_ABAP_BEHV_MESSAGE=>SEVERITY-ERROR
-              TEXT = |Shift Direction '{ LS_JOB-ShiftDirection }' is invalid| )
+              V1       = LS_JOB-ShiftDirection )
             %ELEMENT-ShiftDirection = IF_ABAP_BEHV=>MK-ON )
           TO REPORTED-DRSJOBCONFIG.
         ENDIF.
@@ -351,16 +363,18 @@ CLASS lhc_DrsJobConfig IMPLEMENTATION.
       WITH CORRESPONDING #( KEYS )
       RESULT DATA(LT_JOBS).
 
-    SELECT value FROM zdrs_strt_res_vt INTO TABLE @DATA(lt_valid_strt_res).
+    SELECT VALUE FROM ZDRS_STRT_RES_VT INTO TABLE @DATA(LT_VALID_STRT_RES).
 
     LOOP AT LT_JOBS INTO DATA(LS_JOB).
       IF LS_JOB-ExceptionRestrictionCode IS NOT INITIAL.
-        IF NOT line_exists( lt_valid_strt_res[ value = LS_JOB-ExceptionRestrictionCode ] ).
+        IF NOT LINE_EXISTS( LT_VALID_STRT_RES[ VALUE = LS_JOB-ExceptionRestrictionCode ] ).
           APPEND VALUE #( %TKY = LS_JOB-%TKY ) TO FAILED-DRSJOBCONFIG.
           APPEND VALUE #( %TKY = LS_JOB-%TKY
-            %MSG = NEW_MESSAGE_WITH_TEXT(
+            %MSG = NEW_MESSAGE(
+              ID       = GC_MSG_CLASS
+              NUMBER   = '007'
               SEVERITY = IF_ABAP_BEHV_MESSAGE=>SEVERITY-ERROR
-              TEXT = |Start Restriction '{ LS_JOB-ExceptionRestrictionCode }' is invalid| )
+              V1       = LS_JOB-ExceptionRestrictionCode )
             %ELEMENT-ExceptionRestrictionCode = IF_ABAP_BEHV=>MK-ON )
           TO REPORTED-DRSJOBCONFIG.
         ENDIF.
@@ -378,16 +392,18 @@ CLASS lhc_DrsJobConfig IMPLEMENTATION.
     " Fetch valid Calendar IDs using the CDS View
     SELECT FactoryCalendar
       FROM ZI_VH_DRS_CALENDAR_ID
-      INTO TABLE @DATA(lt_valid_calendars).
+      INTO TABLE @DATA(LT_VALID_CALENDARS).
 
     LOOP AT LT_JOBS INTO DATA(LS_JOB).
       IF LS_JOB-ExceptionCalendarId IS NOT INITIAL.
-        IF NOT line_exists( lt_valid_calendars[ FactoryCalendar = LS_JOB-ExceptionCalendarId ] ).
+        IF NOT LINE_EXISTS( LT_VALID_CALENDARS[ FactoryCalendar = LS_JOB-ExceptionCalendarId ] ).
           APPEND VALUE #( %TKY = LS_JOB-%TKY ) TO FAILED-DRSJOBCONFIG.
           APPEND VALUE #( %TKY = LS_JOB-%TKY
-            %MSG = NEW_MESSAGE_WITH_TEXT(
+            %MSG = NEW_MESSAGE(
+              ID       = GC_MSG_CLASS
+              NUMBER   = '008'
               SEVERITY = IF_ABAP_BEHV_MESSAGE=>SEVERITY-ERROR
-              TEXT = |Exception Calendar '{ LS_JOB-ExceptionCalendarId }' is invalid| )
+              V1       = LS_JOB-ExceptionCalendarId )
             %ELEMENT-ExceptionCalendarId = IF_ABAP_BEHV=>MK-ON )
           TO REPORTED-DRSJOBCONFIG.
         ENDIF.
@@ -420,17 +436,19 @@ CLASS lhc_DrsJobConfig IMPLEMENTATION.
           IF LS_JOB-StartTimestamp IS INITIAL.
             APPEND VALUE #( %TKY = LS_JOB-%TKY ) TO FAILED-DRSJOBCONFIG.
             APPEND VALUE #( %TKY = LS_JOB-%TKY
-              %MSG = NEW_MESSAGE_WITH_TEXT(
-                SEVERITY = IF_ABAP_BEHV_MESSAGE=>SEVERITY-ERROR
-                TEXT = 'Start Timestamp is required for once jobs' )
+              %MSG = NEW_MESSAGE(
+                ID       = GC_MSG_CLASS
+                NUMBER   = '009'
+                SEVERITY = IF_ABAP_BEHV_MESSAGE=>SEVERITY-ERROR )
               %ELEMENT-StartTimestamp = IF_ABAP_BEHV=>MK-ON )
             TO REPORTED-DRSJOBCONFIG.
           ELSEIF LS_JOB-StartTimestamp <= LV_NOW.
             APPEND VALUE #( %TKY = LS_JOB-%TKY ) TO FAILED-DRSJOBCONFIG.
             APPEND VALUE #( %TKY = LS_JOB-%TKY
-              %MSG = NEW_MESSAGE_WITH_TEXT(
-                SEVERITY = IF_ABAP_BEHV_MESSAGE=>SEVERITY-ERROR
-                TEXT = 'Start Timestamp must be a future date and time' )
+              %MSG = NEW_MESSAGE(
+                ID       = GC_MSG_CLASS
+                NUMBER   = '010'
+                SEVERITY = IF_ABAP_BEHV_MESSAGE=>SEVERITY-ERROR )
               %ELEMENT-StartTimestamp = IF_ABAP_BEHV=>MK-ON )
             TO REPORTED-DRSJOBCONFIG.
           ENDIF.
@@ -441,17 +459,19 @@ CLASS lhc_DrsJobConfig IMPLEMENTATION.
           IF LS_JOB-StartTimestamp IS INITIAL.
             APPEND VALUE #( %TKY = LS_JOB-%TKY ) TO FAILED-DRSJOBCONFIG.
             APPEND VALUE #( %TKY = LS_JOB-%TKY
-              %MSG = NEW_MESSAGE_WITH_TEXT(
-                SEVERITY = IF_ABAP_BEHV_MESSAGE=>SEVERITY-ERROR
-                TEXT = 'Start Timestamp is required for periodic jobs' )
+              %MSG = NEW_MESSAGE(
+                ID       = GC_MSG_CLASS
+                NUMBER   = '011'
+                SEVERITY = IF_ABAP_BEHV_MESSAGE=>SEVERITY-ERROR )
               %ELEMENT-StartTimestamp = IF_ABAP_BEHV=>MK-ON )
             TO REPORTED-DRSJOBCONFIG.
           ELSEIF LS_JOB-StartTimestamp <= LV_NOW.
             APPEND VALUE #( %TKY = LS_JOB-%TKY ) TO FAILED-DRSJOBCONFIG.
             APPEND VALUE #( %TKY = LS_JOB-%TKY
-              %MSG = NEW_MESSAGE_WITH_TEXT(
-                SEVERITY = IF_ABAP_BEHV_MESSAGE=>SEVERITY-ERROR
-                TEXT = 'Start Timestamp must be a future date and time' )
+              %MSG = NEW_MESSAGE(
+                ID       = GC_MSG_CLASS
+                NUMBER   = '010'
+                SEVERITY = IF_ABAP_BEHV_MESSAGE=>SEVERITY-ERROR )
               %ELEMENT-StartTimestamp = IF_ABAP_BEHV=>MK-ON )
             TO REPORTED-DRSJOBCONFIG.
           ENDIF.
@@ -462,9 +482,10 @@ CLASS lhc_DrsJobConfig IMPLEMENTATION.
           IF LS_JOB-PeriodicValue IS INITIAL OR LS_JOB-PeriodicValue <= 0.
             APPEND VALUE #( %TKY = LS_JOB-%TKY ) TO FAILED-DRSJOBCONFIG.
             APPEND VALUE #( %TKY = LS_JOB-%TKY
-              %MSG = NEW_MESSAGE_WITH_TEXT(
-                SEVERITY = IF_ABAP_BEHV_MESSAGE=>SEVERITY-ERROR
-                TEXT = 'Periodic Value must be greater than 0' )
+              %MSG = NEW_MESSAGE(
+                ID       = GC_MSG_CLASS
+                NUMBER   = '012'
+                SEVERITY = IF_ABAP_BEHV_MESSAGE=>SEVERITY-ERROR )
               %ELEMENT-PeriodicValue = IF_ABAP_BEHV=>MK-ON )
             TO REPORTED-DRSJOBCONFIG.
           ENDIF.
@@ -481,9 +502,10 @@ CLASS lhc_DrsJobConfig IMPLEMENTATION.
                LS_JOB-OnSunday    <> ABAP_TRUE.
               APPEND VALUE #( %TKY = LS_JOB-%TKY ) TO FAILED-DRSJOBCONFIG.
               APPEND VALUE #( %TKY = LS_JOB-%TKY
-                %MSG = NEW_MESSAGE_WITH_TEXT(
-                  SEVERITY = IF_ABAP_BEHV_MESSAGE=>SEVERITY-ERROR
-                  TEXT = 'Weekly / Week-Month jobs require at least one weekday to be selected' ) )
+               %MSG = NEW_MESSAGE(
+                 ID       = GC_MSG_CLASS
+                 NUMBER   = '013'
+                 SEVERITY = IF_ABAP_BEHV_MESSAGE=>SEVERITY-ERROR ) )
               TO REPORTED-DRSJOBCONFIG.
             ENDIF.
 
@@ -535,9 +557,10 @@ CLASS lhc_DrsJobConfig IMPLEMENTATION.
                   WHEN 6 THEN 'Sunday' ).
                 APPEND VALUE #( %TKY = LS_JOB-%TKY ) TO FAILED-DRSJOBCONFIG.
                 APPEND VALUE #( %TKY = LS_JOB-%TKY
-                  %MSG = NEW_MESSAGE_WITH_TEXT(
-                    SEVERITY = IF_ABAP_BEHV_MESSAGE=>SEVERITY-ERROR
-                    TEXT = |Start date is a { LV_W_DAY_NAME } — it must fall on one of the selected weekdays| )
+                  %MSG = NEW_MESSAGE(
+                    ID       = GC_MSG_CLASS
+                    NUMBER   = '014'
+                    SEVERITY = IF_ABAP_BEHV_MESSAGE=>SEVERITY-ERROR )
                   %ELEMENT-StartTimestamp = IF_ABAP_BEHV=>MK-ON )
                 TO REPORTED-DRSJOBCONFIG.
               ENDIF.
@@ -550,9 +573,12 @@ CLASS lhc_DrsJobConfig IMPLEMENTATION.
                 IF LV_WM_WEEK_NUMBER <> LS_JOB-MonthWeekNumber.
                   APPEND VALUE #( %TKY = LS_JOB-%TKY ) TO FAILED-DRSJOBCONFIG.
                   APPEND VALUE #( %TKY = LS_JOB-%TKY
-                    %MSG = NEW_MESSAGE_WITH_TEXT(
+                    %MSG = NEW_MESSAGE(
+                      ID       = GC_MSG_CLASS
+                      NUMBER   = '015'
                       SEVERITY = IF_ABAP_BEHV_MESSAGE=>SEVERITY-ERROR
-                      TEXT = |Start date falls on week { LV_WM_WEEK_NUMBER } of the month — expected week { LS_JOB-MonthWeekNumber }| )
+                      V1       = LV_WM_WEEK_NUMBER
+                      V2       = LS_JOB-MonthWeekNumber )
                     %ELEMENT-StartTimestamp = IF_ABAP_BEHV=>MK-ON )
                   TO REPORTED-DRSJOBCONFIG.
                 ENDIF.
@@ -567,9 +593,10 @@ CLASS lhc_DrsJobConfig IMPLEMENTATION.
             IF LS_JOB-MonthWeekNumber <= 0 OR LS_JOB-MonthWeekNumber > 5.
               APPEND VALUE #( %TKY = LS_JOB-%TKY ) TO FAILED-DRSJOBCONFIG.
               APPEND VALUE #( %TKY = LS_JOB-%TKY
-                %MSG = NEW_MESSAGE_WITH_TEXT(
-                  SEVERITY = IF_ABAP_BEHV_MESSAGE=>SEVERITY-ERROR
-                  TEXT = 'Week-Month jobs require a Week Number between 1 and 5 (5 = last week)' )
+                %MSG = NEW_MESSAGE(
+                  ID       = GC_MSG_CLASS
+                  NUMBER   = '016'
+                  SEVERITY = IF_ABAP_BEHV_MESSAGE=>SEVERITY-ERROR )
                 %ELEMENT-MonthWeekNumber = IF_ABAP_BEHV=>MK-ON )
               TO REPORTED-DRSJOBCONFIG.
             ENDIF.
@@ -580,9 +607,10 @@ CLASS lhc_DrsJobConfig IMPLEMENTATION.
             IF LS_JOB-MonthDay <= 0 OR LS_JOB-MonthDay > 31.
               APPEND VALUE #( %TKY = LS_JOB-%TKY ) TO FAILED-DRSJOBCONFIG.
               APPEND VALUE #( %TKY = LS_JOB-%TKY
-                %MSG = NEW_MESSAGE_WITH_TEXT(
-                  SEVERITY = IF_ABAP_BEHV_MESSAGE=>SEVERITY-ERROR
-                  TEXT = 'Monthly jobs require a Day of Month between 1 and 31' )
+                %MSG = NEW_MESSAGE(
+                  ID       = GC_MSG_CLASS
+                  NUMBER   = '017'
+                  SEVERITY = IF_ABAP_BEHV_MESSAGE=>SEVERITY-ERROR )
                 %ELEMENT-MonthDay = IF_ABAP_BEHV=>MK-ON )
               TO REPORTED-DRSJOBCONFIG.
             ENDIF.
@@ -594,9 +622,10 @@ CLASS lhc_DrsJobConfig IMPLEMENTATION.
             " Both filled → reject; user must choose one
             APPEND VALUE #( %TKY = LS_JOB-%TKY ) TO FAILED-DRSJOBCONFIG.
             APPEND VALUE #( %TKY = LS_JOB-%TKY
-              %MSG = NEW_MESSAGE_WITH_TEXT(
-                SEVERITY = IF_ABAP_BEHV_MESSAGE=>SEVERITY-ERROR
-                TEXT = 'Provide either End Timestamp or Max Iterations, not both' )
+              %MSG = NEW_MESSAGE(
+                ID       = GC_MSG_CLASS
+                NUMBER   = '018'
+                SEVERITY = IF_ABAP_BEHV_MESSAGE=>SEVERITY-ERROR )
               %ELEMENT-EndTimestamp  = IF_ABAP_BEHV=>MK-ON
               %ELEMENT-MaxIterations = IF_ABAP_BEHV=>MK-ON )
             TO REPORTED-DRSJOBCONFIG.
@@ -605,9 +634,10 @@ CLASS lhc_DrsJobConfig IMPLEMENTATION.
             " Neither filled → reject; at least one is required
             APPEND VALUE #( %TKY = LS_JOB-%TKY ) TO FAILED-DRSJOBCONFIG.
             APPEND VALUE #( %TKY = LS_JOB-%TKY
-              %MSG = NEW_MESSAGE_WITH_TEXT(
-                SEVERITY = IF_ABAP_BEHV_MESSAGE=>SEVERITY-ERROR
-                TEXT = 'Provide either Max Iterations (> 0) or an End Timestamp as stop condition' )
+              %MSG = NEW_MESSAGE(
+                ID       = GC_MSG_CLASS
+                NUMBER   = '019'
+                SEVERITY = IF_ABAP_BEHV_MESSAGE=>SEVERITY-ERROR )
               %ELEMENT-MaxIterations = IF_ABAP_BEHV=>MK-ON )
             TO REPORTED-DRSJOBCONFIG.
           ENDIF.
@@ -617,18 +647,20 @@ CLASS lhc_DrsJobConfig IMPLEMENTATION.
             IF LS_JOB-EndTimestamp <= LV_NOW.
               APPEND VALUE #( %TKY = LS_JOB-%TKY ) TO FAILED-DRSJOBCONFIG.
               APPEND VALUE #( %TKY = LS_JOB-%TKY
-                %MSG = NEW_MESSAGE_WITH_TEXT(
-                  SEVERITY = IF_ABAP_BEHV_MESSAGE=>SEVERITY-ERROR
-                  TEXT = 'End Timestamp must be a future date and time' )
+                %MSG = NEW_MESSAGE(
+                  ID       = GC_MSG_CLASS
+                  NUMBER   = '020'
+                  SEVERITY = IF_ABAP_BEHV_MESSAGE=>SEVERITY-ERROR )
                 %ELEMENT-EndTimestamp = IF_ABAP_BEHV=>MK-ON )
               TO REPORTED-DRSJOBCONFIG.
             ELSEIF LS_JOB-StartTimestamp IS NOT INITIAL
               AND LS_JOB-EndTimestamp <= LS_JOB-StartTimestamp.
               APPEND VALUE #( %TKY = LS_JOB-%TKY ) TO FAILED-DRSJOBCONFIG.
               APPEND VALUE #( %TKY = LS_JOB-%TKY
-                %MSG = NEW_MESSAGE_WITH_TEXT(
-                  SEVERITY = IF_ABAP_BEHV_MESSAGE=>SEVERITY-ERROR
-                  TEXT = 'End Timestamp must be after Start Timestamp' )
+                %MSG = NEW_MESSAGE(
+                  ID       = GC_MSG_CLASS
+                  NUMBER   = '021'
+                  SEVERITY = IF_ABAP_BEHV_MESSAGE=>SEVERITY-ERROR )
                 %ELEMENT-EndTimestamp = IF_ABAP_BEHV=>MK-ON )
               TO REPORTED-DRSJOBCONFIG.
             ELSEIF LS_JOB-StartTimestamp IS NOT INITIAL
@@ -662,11 +694,11 @@ CLASS lhc_DrsJobConfig IMPLEMENTATION.
                   APPEND VALUE #( %TKY = LS_JOB-%TKY ) TO FAILED-DRSJOBCONFIG.
                   APPEND VALUE #( %TKY = LS_JOB-%TKY
                     %MSG = NEW_MESSAGE(
-                       ID       = 'ZMSG_PHONE_DEMO_DERS'
-                       NUMBER   = '001'
-                       SEVERITY = IF_ABAP_BEHV_MESSAGE=>SEVERITY-ERROR
-                       V1       = 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
-                       V2       = LS_JOB-PeriodicGranularity )
+                      ID       = GC_MSG_CLASS
+                      NUMBER   = '022'
+                      SEVERITY = IF_ABAP_BEHV_MESSAGE=>SEVERITY-ERROR
+                      V1       = LS_JOB-PeriodicValue
+                      V2       = LS_JOB-PeriodicGranularity )
                     %ELEMENT-EndTimestamp = IF_ABAP_BEHV=>MK-ON )
                   TO REPORTED-DRSJOBCONFIG.
                 ENDIF.
@@ -692,9 +724,10 @@ CLASS lhc_DrsJobConfig IMPLEMENTATION.
       IF LS_JOB-JobName IS NOT INITIAL.
         APPEND VALUE #( %TKY = LS_JOB-%TKY ) TO FAILED-DRSJOBCONFIG.
         APPEND VALUE #( %TKY = LS_JOB-%TKY
-          %MSG = NEW_MESSAGE_WITH_TEXT(
-            SEVERITY = IF_ABAP_BEHV_MESSAGE=>SEVERITY-ERROR
-            TEXT = 'Job is already scheduled' ) )
+          %MSG = NEW_MESSAGE(
+            ID       = GC_MSG_CLASS
+            NUMBER   = '023'
+            SEVERITY = IF_ABAP_BEHV_MESSAGE=>SEVERITY-ERROR ) )
         TO REPORTED-DRSJOBCONFIG.
         CONTINUE.
       ENDIF.
@@ -926,22 +959,39 @@ CLASS lhc_DrsJobConfig IMPLEMENTATION.
                     LV_CALC_ITER = 1.
                   ENDIF.
                 ELSEIF LV_INTERVAL_SECS > 0.
-                  LV_CALC_ITER = LV_DIFF_SECS / LV_INTERVAL_SECS.
+*                  LV_CALC_ITER = LV_DIFF_SECS / LV_INTERVAL_SECS.
+                  IF LS_JOB-PeriodicGranularity = 'D'.
+                    " Test case D: Bỏ qua tự tính iterations, set dummy = 1 để qua hàm check guard
+                    LV_CALC_ITER = 1.
+                  ELSE.
+                    LV_CALC_ITER = LV_DIFF_SECS / LV_INTERVAL_SECS.
+                  ENDIF.
                 ENDIF.
 
                 " Guard: range must cover at least one full interval
                 IF LV_CALC_ITER <= 0.
                   APPEND VALUE #( %TKY = LS_JOB-%TKY ) TO FAILED-DRSJOBCONFIG.
                   APPEND VALUE #( %TKY = LS_JOB-%TKY
-                    %MSG = NEW_MESSAGE_WITH_TEXT(
+                    %MSG = NEW_MESSAGE(
+                      ID       = GC_MSG_CLASS
+                      NUMBER   = '022'
                       SEVERITY = IF_ABAP_BEHV_MESSAGE=>SEVERITY-ERROR
-                      TEXT = |End Timestamp is too close to Start Timestamp — time range must cover at least one full interval ({ LS_JOB-PeriodicValue } { LS_JOB-PeriodicGranularity })| ) )
+                      V1       = LS_JOB-PeriodicValue
+                      V2       = LS_JOB-PeriodicGranularity ) )
                   TO REPORTED-DRSJOBCONFIG.
                   CONTINUE.
                 ENDIF.
 
-                LS_END_INFO-TYPE           = 'NUM'.
-                LS_END_INFO-MAX_ITERATIONS = LV_CALC_ITER.
+*                LS_END_INFO-TYPE           = 'NUM'.
+*                LS_END_INFO-MAX_ITERATIONS = LV_CALC_ITER.
+                 IF LS_JOB-PeriodicGranularity = 'W' OR LS_JOB-PeriodicGranularity = 'D' OR LS_JOB-PeriodicGranularity = 'MO' OR LS_JOB-PeriodicGranularity = 'WM'.
+                  " Test case W, D, MO & WM: Bỏ qua Iterations, ép dùng chuẩn DATE theo yêu cầu
+                  LS_END_INFO-TYPE      = 'DATE'.
+                  LS_END_INFO-TIMESTAMP = LV_P_END_UTC.
+                ELSE.
+                  LS_END_INFO-TYPE           = 'NUM'.
+                  LS_END_INFO-MAX_ITERATIONS = LV_CALC_ITER.
+                ENDIF.
               ELSE.
                 " No EndTimestamp — use manually entered MaxIterations
                 LS_END_INFO-TYPE           = 'NUM'.
@@ -976,27 +1026,34 @@ CLASS lhc_DrsJobConfig IMPLEMENTATION.
                   DATA(LV_TEST_DOW) = CL_APJ_FW_UTILITIES=>COMPUTE_DAY( IV_DATE = LV_SHIFT_DATE ).
                   DATA(LV_MATCH)    = ABAP_FALSE.
                   CASE LV_TEST_DOW.
-                    WHEN 1. IF LS_JOB-OnMonday    = ABAP_TRUE.
-                    LV_MATCH = ABAP_TRUE.
-                    ENDIF.
-                    WHEN 2. IF LS_JOB-OnTuesday   = ABAP_TRUE.
-                    LV_MATCH = ABAP_TRUE.
-                    ENDIF.
-                    WHEN 3. IF LS_JOB-OnWednesday = ABAP_TRUE.
-                    LV_MATCH = ABAP_TRUE.
-                    ENDIF.
-                    WHEN 4. IF LS_JOB-OnThursday  = ABAP_TRUE.
-                    LV_MATCH = ABAP_TRUE.
-                    ENDIF.
-                    WHEN 5. IF LS_JOB-OnFriday    = ABAP_TRUE.
-                    LV_MATCH = ABAP_TRUE.
-                    ENDIF.
-                    WHEN 6. IF LS_JOB-OnSaturday  = ABAP_TRUE.
-                    LV_MATCH = ABAP_TRUE.
-                    ENDIF.
-                    WHEN 7. IF LS_JOB-OnSunday    = ABAP_TRUE.
-                    LV_MATCH = ABAP_TRUE.
-                    ENDIF.
+                    WHEN 1.
+                      IF LS_JOB-OnMonday    = ABAP_TRUE.
+                        LV_MATCH = ABAP_TRUE.
+                      ENDIF.
+                    WHEN 2.
+                      IF LS_JOB-OnTuesday   = ABAP_TRUE.
+                        LV_MATCH = ABAP_TRUE.
+                      ENDIF.
+                    WHEN 3.
+                      IF LS_JOB-OnWednesday = ABAP_TRUE.
+                        LV_MATCH = ABAP_TRUE.
+                      ENDIF.
+                    WHEN 4.
+                      IF LS_JOB-OnThursday  = ABAP_TRUE.
+                        LV_MATCH = ABAP_TRUE.
+                      ENDIF.
+                    WHEN 5.
+                      IF LS_JOB-OnFriday    = ABAP_TRUE.
+                        LV_MATCH = ABAP_TRUE.
+                      ENDIF.
+                    WHEN 6.
+                      IF LS_JOB-OnSaturday  = ABAP_TRUE.
+                        LV_MATCH = ABAP_TRUE.
+                      ENDIF.
+                    WHEN 7.
+                      IF LS_JOB-OnSunday    = ABAP_TRUE.
+                        LV_MATCH = ABAP_TRUE.
+                      ENDIF.
                   ENDCASE.
                   IF LV_MATCH = ABAP_TRUE.
                     CONVERT DATE LV_SHIFT_DATE TIME LV_SHIFT_TIME
@@ -1121,9 +1178,11 @@ CLASS lhc_DrsJobConfig IMPLEMENTATION.
 
           " Show success toast on Fiori UI
           APPEND VALUE #( %TKY = LS_JOB-%TKY
-            %MSG = NEW_MESSAGE_WITH_TEXT(
+            %MSG = NEW_MESSAGE(
+              ID       = GC_MSG_CLASS
+              NUMBER   = '024'
               SEVERITY = IF_ABAP_BEHV_MESSAGE=>SEVERITY-SUCCESS
-              TEXT = |Job ID { CONV I( LS_JOB-JobId ) } scheduled successfully| ) )
+              V1       = CONV I( LS_JOB-JobId ) ) )
           TO REPORTED-DRSJOBCONFIG.
 
         CATCH CX_APJ_RT INTO DATA(LX_APJ).
@@ -1179,9 +1238,10 @@ CLASS lhc_DrsJobConfig IMPLEMENTATION.
       IF LS_JOB-JobName IS INITIAL.
         APPEND VALUE #( %TKY = LS_JOB-%TKY ) TO FAILED-DRSJOBCONFIG.
         APPEND VALUE #( %TKY = LS_JOB-%TKY
-          %MSG = NEW_MESSAGE_WITH_TEXT(
-            SEVERITY = IF_ABAP_BEHV_MESSAGE=>SEVERITY-ERROR
-            TEXT = 'Job is not scheduled' ) )
+          %MSG = NEW_MESSAGE(
+            ID       = GC_MSG_CLASS
+            NUMBER   = '025'
+            SEVERITY = IF_ABAP_BEHV_MESSAGE=>SEVERITY-ERROR ) )
         TO REPORTED-DRSJOBCONFIG.
         CONTINUE.
       ENDIF.
@@ -1225,8 +1285,10 @@ CLASS lhc_DrsJobConfig IMPLEMENTATION.
           DATA(LV_CANCEL_BAPI_MSG) = LX_APJ->GET_BAPIRET2( ).
           DATA(LV_CANCEL_LONGTEXT) = LX_APJ->GET_LONGTEXT( ).
           DATA(LV_CANCEL_ERR_TEXT) = COND STRING(
-            WHEN LV_CANCEL_BAPI_MSG-MESSAGE IS NOT INITIAL THEN LV_CANCEL_BAPI_MSG-MESSAGE
-            WHEN LV_CANCEL_LONGTEXT          IS NOT INITIAL THEN LV_CANCEL_LONGTEXT
+            WHEN LV_CANCEL_BAPI_MSG-MESSAGE IS NOT INITIAL
+            THEN LV_CANCEL_BAPI_MSG-MESSAGE
+            WHEN LV_CANCEL_LONGTEXT          IS NOT INITIAL
+            THEN LV_CANCEL_LONGTEXT
             ELSE LX_APJ->GET_TEXT( ) ).
           APPEND VALUE #( %TKY = LS_JOB-%TKY ) TO FAILED-DRSJOBCONFIG.
           APPEND VALUE #( %TKY = LS_JOB-%TKY

@@ -1,11 +1,19 @@
 @EndUserText.label: 'Main Service Definition'
 define service ZSD_DRS_MAIN {
-expose ZCR_DRS_JOB_CONFIG as DrsJobConfig;
+  expose ZI_DRS_JOB_HISTORY_CUBE as JobHistoryAnalytics;
+  expose ZCR_DRS_JOB_CONFIG as DrsJobConfig;
+  expose ZC_DRS_JOB_HISTORY as DrsJobHistory;
+  expose ZC_DRS_FILE as DrsFile;
   expose ZI_VH_DRS_RUN_TYPE as DrsRunTypeVH;
   expose ZI_VH_DRS_PERIODIC_GRANULARITY as DrsPeriodicGranularityVH;
   expose ZI_VH_DRS_START_RESTRICTION as DrsStartRestrictionVH;
   expose ZI_VH_DRS_SHIFT_DIRECTION as DrsShiftDirectionVH;
   expose ZI_VH_DRS_CALENDAR_ID as DrsCalendarIDVH;
+  expose I_CompanyCodeStdVH;
+  expose I_Customer_VH;
+  expose I_Supplier_VH;
+  expose I_FiscalYear;
+  expose I_GLAccountStdVH;
   expose ZCR_DRS_CATALOG as ReportCatalog;
   expose ZCR_DRS_SUBSCR as DrsSubscription;
   expose ZC_DRS_PARAM_GL01 as DrsParamGL01;

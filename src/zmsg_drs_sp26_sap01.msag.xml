@@ -7,6 +7,176 @@
     <MASTERLANG>E</MASTERLANG>
     <STEXT>DRS SP26 SAP01 Message Class</STEXT>
    </T100A>
+   <T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZMSG_DRS_SP26_SAP01</ARBGB>
+     <MSGNR>001</MSGNR>
+     <TEXT>Description is required</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZMSG_DRS_SP26_SAP01</ARBGB>
+     <MSGNR>002</MSGNR>
+     <TEXT>Subscription ID is required</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZMSG_DRS_SP26_SAP01</ARBGB>
+     <MSGNR>003</MSGNR>
+     <TEXT>Subscription ID &amp;1 does not exist</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZMSG_DRS_SP26_SAP01</ARBGB>
+     <MSGNR>004</MSGNR>
+     <TEXT>Run Type &amp;1 is invalid or missing</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZMSG_DRS_SP26_SAP01</ARBGB>
+     <MSGNR>005</MSGNR>
+     <TEXT>Periodic Granularity &amp;1 is invalid</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZMSG_DRS_SP26_SAP01</ARBGB>
+     <MSGNR>006</MSGNR>
+     <TEXT>Shift Direction &amp;1 is invalid</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZMSG_DRS_SP26_SAP01</ARBGB>
+     <MSGNR>007</MSGNR>
+     <TEXT>Start Restriction &amp;1 is invalid</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZMSG_DRS_SP26_SAP01</ARBGB>
+     <MSGNR>008</MSGNR>
+     <TEXT>Exception Calendar &amp;1 is invalid</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZMSG_DRS_SP26_SAP01</ARBGB>
+     <MSGNR>009</MSGNR>
+     <TEXT>Start Timestamp is required for once jobs</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZMSG_DRS_SP26_SAP01</ARBGB>
+     <MSGNR>010</MSGNR>
+     <TEXT>Start Timestamp must be a future date and time</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZMSG_DRS_SP26_SAP01</ARBGB>
+     <MSGNR>011</MSGNR>
+     <TEXT>Start Timestamp is required for periodic jobs</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZMSG_DRS_SP26_SAP01</ARBGB>
+     <MSGNR>012</MSGNR>
+     <TEXT>Periodic Value must be greater than 0</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZMSG_DRS_SP26_SAP01</ARBGB>
+     <MSGNR>013</MSGNR>
+     <TEXT>Weekly / Week-Month jobs require at least one weekday to be selected</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZMSG_DRS_SP26_SAP01</ARBGB>
+     <MSGNR>014</MSGNR>
+     <TEXT>Start date must fall on one of the selected weekdays</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZMSG_DRS_SP26_SAP01</ARBGB>
+     <MSGNR>015</MSGNR>
+     <TEXT>Start date falls on week &amp;1 of the month - expected week &amp;2</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZMSG_DRS_SP26_SAP01</ARBGB>
+     <MSGNR>016</MSGNR>
+     <TEXT>Week-Month jobs require a Week Number between 1 and 5 (5 = last week)</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZMSG_DRS_SP26_SAP01</ARBGB>
+     <MSGNR>017</MSGNR>
+     <TEXT>Monthly jobs require a Day of Month between 1 and 31</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZMSG_DRS_SP26_SAP01</ARBGB>
+     <MSGNR>018</MSGNR>
+     <TEXT>Provide either End Timestamp or Max Iterations, not both</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZMSG_DRS_SP26_SAP01</ARBGB>
+     <MSGNR>019</MSGNR>
+     <TEXT>Provide either Max Iterations (&gt; 0) or an End Timestamp as stop condition</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZMSG_DRS_SP26_SAP01</ARBGB>
+     <MSGNR>020</MSGNR>
+     <TEXT>End Timestamp must be a future date and time</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZMSG_DRS_SP26_SAP01</ARBGB>
+     <MSGNR>021</MSGNR>
+     <TEXT>End Timestamp must be after Start Timestamp</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZMSG_DRS_SP26_SAP01</ARBGB>
+     <MSGNR>022</MSGNR>
+     <TEXT>Time range from Start to End must cover at least one full interval &amp;1 &amp;2</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZMSG_DRS_SP26_SAP01</ARBGB>
+     <MSGNR>023</MSGNR>
+     <TEXT>Job is already scheduled</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZMSG_DRS_SP26_SAP01</ARBGB>
+     <MSGNR>024</MSGNR>
+     <TEXT>Job ID &amp;1 scheduled successfully</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZMSG_DRS_SP26_SAP01</ARBGB>
+     <MSGNR>025</MSGNR>
+     <TEXT>Job is not scheduled</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZMSG_DRS_SP26_SAP01</ARBGB>
+     <MSGNR>051</MSGNR>
+     <TEXT>&amp;1 parameters already exist for this subscription</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZMSG_DRS_SP26_SAP01</ARBGB>
+     <MSGNR>052</MSGNR>
+     <TEXT>&amp;1 parameters created successfully</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZMSG_DRS_SP26_SAP01</ARBGB>
+     <MSGNR>053</MSGNR>
+     <TEXT>Report type &amp;1 does not have configurable parameters</TEXT>
+    </T100>
+   </T100>
   </asx:values>
  </asx:abap>
 </abapGit>

@@ -65,7 +65,7 @@ early numbering
   draft determine action Prepare
   {
     validation validateDescription;
-    validation validateReportID;
+    validation validateReport;
   }
 
   // ─────────────────────────────────────────────────────────────────────────────
@@ -86,7 +86,7 @@ early numbering
 
   // Validations
   validation validateDescription on save { create; update; field SubscrName; }
-  validation validateReportID    on save { create; update; field ReportId; }
+  validation validateReport      on save { create; update; field ReportId; }
 
 
   // ─────────────────────────────────────────────────────────────────────────────
