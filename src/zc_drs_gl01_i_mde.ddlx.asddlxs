@@ -5,7 +5,7 @@
     typeNamePlural: 'Journal Entry Items'
 }
 
-annotate view ZC_DRS_GL01_I with
+annotate view ZC_RPT_GL01_I with
 {
   -------------------------------------------------------
   -- LINE ITEMS: Thêm type: #STANDARD để chặn Click

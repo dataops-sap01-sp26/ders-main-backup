@@ -53,7 +53,7 @@ early numbering
   association _ParamAP02 { create; with draft; }
   association _ParamAP03 { create; with draft; }
   association _Customers { create; with draft; }
-  association _Vendors   { create; with draft; }
+  association _Vendors { create; with draft; }
 
   // ─────────────────────────────────────────────────────────────────────────────
   // DRAFT ACTIONS
@@ -84,15 +84,15 @@ early numbering
   // GL01 → zdrs_param_gl01, AR01 → zdrs_param_ar01, etc.
   action createReportParams result [1] $self;
 
-  // Validations
+  //   Validations
   validation validateDescription on save { create; update; field SubscrName; }
-  validation validateReport      on save { create; update; field ReportId; }
+  validation validateReport on save { create; update; field ReportId; }
 
 
   // ─────────────────────────────────────────────────────────────────────────────
   // DETERMINATIONS
   // ─────────────────────────────────────────────────────────────────────────────
-  determination setDefaultStatus on modify { create; }
+  determination setDefaultValue on modify { create; }
 
   // NOTE: cascadeDeleteParams removed - composition handles cascade delete automatically
   determination CleanupOnReportChange on modify { field ReportId; create; }
@@ -138,13 +138,13 @@ authorization dependent by _Subscription
   SubscrUuid,
   SubscrId;
 
-  field ( mandatory )
-  CompanyCode,
-  FiscalYear,
-  FiscalPeriodFr,
-  FiscalPeriodTo,
-  GlAccountFr,
-  GlAccountTo;
+  //  field ( mandatory )
+  //  CompanyCode,
+  //  FiscalYear,
+  //  FiscalPeriodFr,
+  //  FiscalPeriodTo,
+  //  GlAccountFr,
+  //  GlAccountTo;
 
   // Parent association (required for composition)
   association _Subscription { with draft; }
@@ -157,7 +157,8 @@ authorization dependent by _Subscription
     SubscrUuid = subscr_uuid;
     SubscrId = subscr_id;
     CompanyCode = company_code;
-    FiscalYear = fiscal_year;
+    FiscalYearFr = fiscal_year_from;
+    FiscalYearTo = fiscal_year_to;
     FiscalPeriodFr = fiscal_period_from;
     FiscalPeriodTo = fiscal_period_to;
     Currency = currency;
@@ -187,11 +188,9 @@ authorization dependent by _Subscription
   SubscrUuid,
   SubscrId;
 
-  field ( mandatory )
-  CompanyCode,
-  CustomerFrom,
-  CustomerTo,
-  keyDate;
+  //  field ( mandatory )
+  //  CompanyCode,
+  //  keyDate;
 
   // Parent association (required for composition)
   association _Subscription { with draft; }
@@ -206,7 +205,7 @@ authorization dependent by _Subscription
     SubscrId = subscr_id;
     CompanyCode = company_code;
     CustomerFrom = customer_from;
-    CustomerTo  = customer_to;
+    CustomerTo = customer_to;
     keyDate = key_date;
     MaxRows = max_rows;
   }
@@ -249,11 +248,11 @@ authorization dependent by _Subscription
     SubscrId = subscr_id;
     CompanyCode = company_code;
     CustomerFrom = customer_from;
-    CustomerTo  = customer_to;
+    CustomerTo = customer_to;
     FiscalYear = fiscal_year;
-//    FiscalPeriod = fiscal_period;
-//    PostingDate = posting_date;
-//    Currency = currency;
+    //    FiscalPeriod = fiscal_period;
+    //    PostingDate = posting_date;
+    //    Currency = currency;
     MaxRows = max_rows;
   }
 }
@@ -295,7 +294,7 @@ authorization dependent by _Subscription
     SubscrId = subscr_id;
     CompanyCode = company_code;
     CustomerFrom = customer_from;
-    CustomerTo  = customer_to;
+    CustomerTo = customer_to;
     keyDate = key_date;
     MaxRows = max_rows;
   }
@@ -319,11 +318,11 @@ authorization dependent by _Subscription
   SubscrUuid,
   SubscrId;
 
-  field ( mandatory )
-  CompanyCode,
-  VendorFrom,
-  VendorTo,
-  keyDate;
+  //  field ( mandatory )
+  //  CompanyCode,
+  //  VendorFrom,
+  //  VendorTo,
+  //  keyDate;
 
   // Parent association (required for composition)
   association _Subscription { with draft; }

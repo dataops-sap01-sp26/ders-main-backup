@@ -16,6 +16,8 @@ define view entity ZI_DRS_PARAM_GL01
   key subscr_id          as SubscrId,
       company_code       as CompanyCode,
       fiscal_year        as FiscalYear,
+      fiscal_year_from   as FiscalYearFr,
+      fiscal_year_to     as FiscalYearTo,
       fiscal_period_from as FiscalPeriodFr,
       fiscal_period_to   as FiscalPeriodTo,
       currency           as Currency,

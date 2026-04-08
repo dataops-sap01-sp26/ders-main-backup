@@ -7,7 +7,7 @@
     description: { type: #STANDARD, value: 'GLAccountName' } 
 }
 
-annotate view ZCR_DRS_GL01 with
+annotate view ZCR_RPT_GL01 with
 {
   -------------------------------------------------------
   -- FACETS
@@ -60,26 +60,19 @@ annotate view ZCR_DRS_GL01 with
   @UI.identification: [{ position: 50 }]
   GLAccountName;
 
+
   @UI.lineItem: [{ position: 60 }]
   @UI.identification: [{ position: 60 }]
-  profitcenter;
-
-  @UI.lineItem: [{ position: 70 }]
-  @UI.identification: [{ position: 70 }]
-  costcenter;
-
-  @UI.lineItem: [{ position: 80 }]
-  @UI.identification: [{ position: 80 }]
   @EndUserText.label: 'Debit Amount'
   DebitAmount;
 
-  @UI.lineItem: [{ position: 90 }]
-  @UI.identification: [{ position: 90 }]
+  @UI.lineItem: [{ position: 70 }]
+  @UI.identification: [{ position: 70 }]
   @EndUserText.label: 'Credit Amount'
   CreditAmount;
 
-  @UI.lineItem: [{ position: 100 }]
-  @UI.identification: [{ position: 100 }]
+  @UI.lineItem: [{ position: 80 }]
+  @UI.identification: [{ position: 80 }]
   @EndUserText.label: 'Balance Amount'
   BalanceAmount;
 }

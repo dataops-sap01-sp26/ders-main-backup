@@ -31,8 +31,8 @@ CLASS LHC_SUBSCRIPTION DEFINITION INHERITING FROM CL_ABAP_BEHAVIOR_HANDLER.
       IMPORTING KEYS FOR ACTION Subscription~resumeSubscription RESULT RESULT.
 
     " Determination: Set default status on create
-    METHODS setDefaultStatus FOR DETERMINE ON MODIFY
-      IMPORTING KEYS FOR Subscription~setDefaultStatus.
+    METHODS setDefaultValue FOR DETERMINE ON MODIFY
+      IMPORTING KEYS FOR Subscription~setDefaultValue.
 
     " NOTE: cascadeDeleteParams removed - composition handles cascade delete automatically
 
@@ -41,8 +41,8 @@ CLASS LHC_SUBSCRIPTION DEFINITION INHERITING FROM CL_ABAP_BEHAVIOR_HANDLER.
       IMPORTING KEYS FOR ACTION Subscription~createReportParams RESULT RESULT.
 
 
-*    METHODS CleanupOnReportChange FOR DETERMINE ON MODIFY
-*      IMPORTING KEYS FOR Subscription~CleanupOnReportChange.
+    METHODS CleanupOnReportChange FOR DETERMINE ON MODIFY
+      IMPORTING KEYS FOR Subscription~CleanupOnReportChange.
 
     METHODS validateDescription FOR VALIDATE ON SAVE
       IMPORTING KEYS FOR Subscription~validateDescription.
@@ -272,7 +272,7 @@ CLASS LHC_SUBSCRIPTION IMPLEMENTATION.
   ENDMETHOD.
 
 
-  METHOD setDefaultStatus.
+  METHOD setDefaultValue.
     " Set status to 'A' (Active) when subscription is created
     READ ENTITIES OF ZIR_DRS_SUBSCR IN LOCAL MODE
       ENTITY Subscription
@@ -410,19 +410,29 @@ CLASS LHC_SUBSCRIPTION IMPLEMENTATION.
       RETURN.
     ENDIF.
 
-    " Read associated GL01 parameters via composition
+    " Read associated parameters via composition
     READ ENTITIES OF ZIR_DRS_SUBSCR IN LOCAL MODE
-      ENTITY Subscription BY \_ParamGL01
-        ALL FIELDS WITH CORRESPONDING #( KEYS )
-      RESULT DATA(LT_SOURCE_GL01).
+        ENTITY Subscription BY \_ParamGL01 ALL FIELDS WITH CORRESPONDING #( KEYS ) RESULT DATA(LT_SOURCE_GL01)
+        ENTITY Subscription BY \_ParamAR01 ALL FIELDS WITH CORRESPONDING #( KEYS ) RESULT DATA(LT_SOURCE_AR01)
+        ENTITY Subscription BY \_ParamAR02 ALL FIELDS WITH CORRESPONDING #( KEYS ) RESULT DATA(LT_SOURCE_AR02)
+        ENTITY Subscription BY \_ParamAR03 ALL FIELDS WITH CORRESPONDING #( KEYS ) RESULT DATA(LT_SOURCE_AR03)
+        ENTITY Subscription BY \_ParamAP01 ALL FIELDS WITH CORRESPONDING #( KEYS ) RESULT DATA(LT_SOURCE_AP01)
+        ENTITY Subscription BY \_ParamAP02 ALL FIELDS WITH CORRESPONDING #( KEYS ) RESULT DATA(LT_SOURCE_AP02)
+        ENTITY Subscription BY \_ParamAP03 ALL FIELDS WITH CORRESPONDING #( KEYS ) RESULT DATA(LT_SOURCE_AP03).
 
     " Get max subscr_id for new ID generation
     SELECT MAX( SUBSCR_ID ) FROM ZDRS_SUBSCR INTO @DATA(LV_MAX_ID).
     DATA(LV_NEW_SUBSCR_ID) = LV_MAX_ID + 1.
 
-    " Create subscription copies with nested ParamGL01 via composition
-    DATA LT_SUBSCR TYPE TABLE FOR CREATE ZIR_DRS_SUBSCR.
+    " Data declarations for creating composition nodes
+    DATA LT_SUBSCR     TYPE TABLE FOR CREATE ZIR_DRS_SUBSCR.
     DATA LT_PARAM_GL01 TYPE TABLE FOR CREATE ZIR_DRS_SUBSCR\_ParamGL01.
+    DATA LT_PARAM_AR01 TYPE TABLE FOR CREATE ZIR_DRS_SUBSCR\_ParamAR01.
+    DATA LT_PARAM_AR02 TYPE TABLE FOR CREATE ZIR_DRS_SUBSCR\_ParamAR02.
+    DATA LT_PARAM_AR03 TYPE TABLE FOR CREATE ZIR_DRS_SUBSCR\_ParamAR03.
+    DATA LT_PARAM_AP01 TYPE TABLE FOR CREATE ZIR_DRS_SUBSCR\_ParamAP01.
+    DATA LT_PARAM_AP02 TYPE TABLE FOR CREATE ZIR_DRS_SUBSCR\_ParamAP02.
+    DATA LT_PARAM_AP03 TYPE TABLE FOR CREATE ZIR_DRS_SUBSCR\_ParamAP03.
 
     DATA(LV_IDX) = 0.
     LOOP AT LT_SOURCE_SUBSCR ASSIGNING FIELD-SYMBOL(<SOURCE>).
@@ -442,30 +452,143 @@ CLASS LHC_SUBSCRIPTION IMPLEMENTATION.
                       EmailCc = <SOURCE>-EmailCc )
              TO LT_SUBSCR.
 
-      " Create GL01 params via composition (keys inherited from parent)
-      LOOP AT LT_SOURCE_GL01 ASSIGNING FIELD-SYMBOL(<GL01>)
-           WHERE SubscrUuid = <SOURCE>-SubscrUuid.
-        APPEND VALUE #( %CID_REF = LV_CID
-                        %TARGET = VALUE #( (
-                          %CID        = |GL01_{ LV_IDX }|
-                          %IS_DRAFT   = <SOURCE>-%IS_DRAFT
-                          CompanyCode = <GL01>-CompanyCode
-*                          FiscalYear  = <gl01>-FiscalYear
-*                          FiscalPeriod = <gl01>-FiscalPeriod
-*                          Currency    = <gl01>-Currency
-*                          GlAccount   = <gl01>-GlAccount
-                          MaxRows     = <GL01>-MaxRows ) ) )
-               TO LT_PARAM_GL01.
-      ENDLOOP.
+      " --- GL01 Params (Updated based on image) ---
+      IF LT_SOURCE_GL01 IS NOT INITIAL.
+        LOOP AT LT_SOURCE_GL01 ASSIGNING FIELD-SYMBOL(<GL01>) WHERE SubscrUuid = <SOURCE>-SubscrUuid.
+          APPEND VALUE #( %CID_REF = LV_CID
+                          %TARGET = VALUE #( (
+                            %CID           = |GL01_{ LV_IDX }|
+                            %IS_DRAFT      = <SOURCE>-%IS_DRAFT
+                            CompanyCode    = <GL01>-CompanyCode
+                            GlAccountFr    = <GL01>-GlAccountFr
+                            GlAccountTo    = <GL01>-GlAccountTo
+                            FiscalPeriodFr = <GL01>-FiscalPeriodFr
+                            FiscalPeriodTo = <GL01>-FiscalPeriodTo
+                            FiscalYearFr   = <GL01>-FiscalYearFr
+                            FiscalYearTo   = <GL01>-FiscalYearTo
+                            MaxRows        = <GL01>-MaxRows ) ) )
+                 TO LT_PARAM_GL01.
+        ENDLOOP.
+      ENDIF.
+
+      " --- AR01 Params ---
+      IF LT_SOURCE_AR01 IS NOT INITIAL.
+        LOOP AT LT_SOURCE_AR01 ASSIGNING FIELD-SYMBOL(<AR01>) WHERE SubscrUuid = <SOURCE>-SubscrUuid.
+          APPEND VALUE #( %CID_REF = LV_CID
+                          %TARGET = VALUE #( (
+                            %CID          = |AR01_{ LV_IDX }|
+                            %IS_DRAFT     = <SOURCE>-%IS_DRAFT
+                            CompanyCode   = <AR01>-CompanyCode
+                            CustomerFrom  = <AR01>-CustomerFrom
+                            CustomerTo    = <AR01>-CustomerTo
+                            KeyDate       = <AR01>-KeyDate
+                            MaxRows       = <AR01>-MaxRows ) ) )
+                 TO LT_PARAM_AR01.
+        ENDLOOP.
+      ENDIF.
+
+      " --- AR02 Params ---
+      IF LT_SOURCE_AR02 IS NOT INITIAL.
+        LOOP AT LT_SOURCE_AR02 ASSIGNING FIELD-SYMBOL(<AR02>) WHERE SubscrUuid = <SOURCE>-SubscrUuid.
+          APPEND VALUE #( %CID_REF = LV_CID
+                          %TARGET = VALUE #( (
+                            %CID          = |AR02_{ LV_IDX }|
+                            %IS_DRAFT     = <SOURCE>-%IS_DRAFT
+                            CompanyCode   = <AR02>-CompanyCode
+                            CustomerFrom  = <AR02>-CustomerFrom
+                            CustomerTo    = <AR02>-CustomerTo
+                            FiscalYear    = <AR02>-FiscalYear
+                            MaxRows       = <AR02>-MaxRows ) ) )
+                 TO LT_PARAM_AR02.
+        ENDLOOP.
+      ENDIF.
+
+      " --- AR03 Params ---
+      IF LT_SOURCE_AR03 IS NOT INITIAL.
+        LOOP AT LT_SOURCE_AR03 ASSIGNING FIELD-SYMBOL(<AR03>) WHERE SubscrUuid = <SOURCE>-SubscrUuid.
+          APPEND VALUE #( %CID_REF = LV_CID
+                          %TARGET = VALUE #( (
+                            %CID          = |AR03_{ LV_IDX }|
+                            %IS_DRAFT     = <SOURCE>-%IS_DRAFT
+                            CompanyCode   = <AR03>-CompanyCode
+                            CustomerFrom  = <AR03>-CustomerFrom
+                            CustomerTo    = <AR03>-CustomerTo
+                            KeyDate       = <AR03>-KeyDate
+                            MaxRows       = <AR03>-MaxRows ) ) )
+                 TO LT_PARAM_AR03.
+        ENDLOOP.
+      ENDIF.
+
+      " --- AP01 Params ---
+      IF LT_SOURCE_AP01 IS NOT INITIAL.
+        LOOP AT LT_SOURCE_AP01 ASSIGNING FIELD-SYMBOL(<AP01>) WHERE SubscrUuid = <SOURCE>-SubscrUuid.
+          APPEND VALUE #( %CID_REF = LV_CID
+                          %TARGET = VALUE #( (
+                            %CID          = |AP01_{ LV_IDX }|
+                            %IS_DRAFT     = <SOURCE>-%IS_DRAFT
+                            CompanyCode   = <AP01>-CompanyCode
+                            VendorFrom    = <AP01>-VendorFrom
+                            VendorTo      = <AP01>-VendorTo
+                            KeyDate       = <AP01>-KeyDate
+                            MaxRows       = <AP01>-MaxRows ) ) )
+                 TO LT_PARAM_AP01.
+        ENDLOOP.
+      ENDIF.
+
+      " --- AP02 Params ---
+      IF LT_SOURCE_AR02 IS NOT INITIAL.
+        LOOP AT LT_SOURCE_AP02 ASSIGNING FIELD-SYMBOL(<AP02>) WHERE SubscrUuid = <SOURCE>-SubscrUuid.
+          APPEND VALUE #( %CID_REF = LV_CID
+                          %TARGET = VALUE #( (
+                            %CID         = |AP02_{ LV_IDX }|
+                            %IS_DRAFT    = <SOURCE>-%IS_DRAFT
+                            CompanyCode  = <AP02>-CompanyCode
+                            VendorFrom   = <AP02>-VendorFrom
+                            VendorTo     = <AP02>-VendorTo
+                            FiscalYear   = <AP02>-FiscalYear
+                            MaxRows      = <AP02>-MaxRows ) ) )
+                 TO LT_PARAM_AP02.
+        ENDLOOP.
+      ENDIF.
+
+      " --- AP03 Params ---
+      IF LT_SOURCE_AP03 IS NOT INITIAL.
+        LOOP AT LT_SOURCE_AP03 ASSIGNING FIELD-SYMBOL(<AP03>) WHERE SubscrUuid = <SOURCE>-SubscrUuid.
+          APPEND VALUE #( %CID_REF = LV_CID
+                          %TARGET = VALUE #( (
+                            %CID         = |AP03_{ LV_IDX }|
+                            %IS_DRAFT    = <SOURCE>-%IS_DRAFT
+                            CompanyCode  = <AP03>-CompanyCode
+                            VendorFrom   = <AP03>-VendorFrom
+                            VendorTo     = <AP03>-VendorTo
+                            KeyDate      = <AP03>-KeyDate
+                            MaxRows      = <AP03>-MaxRows ) ) )
+                 TO LT_PARAM_AP03.
+        ENDLOOP.
+      ENDIF.
 
       LV_NEW_SUBSCR_ID = LV_NEW_SUBSCR_ID + 1.
     ENDLOOP.
 
-    " Create subscriptions via RAP
+*    " Create subscriptions via RAP
+*    MODIFY ENTITIES OF ZIR_DRS_SUBSCR IN LOCAL MODE
+*      ENTITY Subscription
+*        CREATE FROM LT_SUBSCR
+*        CREATE BY \_ParamGL01 FROM LT_PARAM_GL01
+*      MAPPED DATA(LT_MAPPED)
+*      FAILED DATA(LT_CREATE_FAILED)
+*      REPORTED DATA(LT_REPORTED).
+    " Create subscriptions and all associations via RAP
     MODIFY ENTITIES OF ZIR_DRS_SUBSCR IN LOCAL MODE
       ENTITY Subscription
         CREATE FROM LT_SUBSCR
         CREATE BY \_ParamGL01 FROM LT_PARAM_GL01
+        CREATE BY \_ParamAR01 FROM LT_PARAM_AR01
+        CREATE BY \_ParamAR02 FROM LT_PARAM_AR02
+        CREATE BY \_ParamAR03 FROM LT_PARAM_AR03
+        CREATE BY \_ParamAP01 FROM LT_PARAM_AP01
+        CREATE BY \_ParamAP02 FROM LT_PARAM_AP02
+        CREATE BY \_ParamAP03 FROM LT_PARAM_AP03
       MAPPED DATA(LT_MAPPED)
       FAILED DATA(LT_CREATE_FAILED)
       REPORTED DATA(LT_REPORTED).
@@ -482,7 +605,7 @@ CLASS LHC_SUBSCRIPTION IMPLEMENTATION.
   ENDMETHOD.
 
 
- METHOD createReportParams.
+  METHOD createReportParams.
     " ═══════════════════════════════════════════════════════════════════════════
     " CREATE REPORT PARAMETERS: Generic action based on ReportId
     " Uses composition - creates ParamGL01 via _ParamGL01 association
@@ -582,7 +705,7 @@ CLASS LHC_SUBSCRIPTION IMPLEMENTATION.
             ) TO LT_CREATE_GL01.
           ENDIF.
 
-        "===================AR Report Parameter==================================
+          "===================AR Report Parameter==================================
         WHEN 'AR-01'.
           READ TABLE LT_EXISTING_AR01 WITH KEY SubscrUuid = <SUBSCR>-SubscrUuid TRANSPORTING NO FIELDS.
           IF SY-SUBRC = 0.
@@ -599,7 +722,9 @@ CLASS LHC_SUBSCRIPTION IMPLEMENTATION.
               %TKY = CORRESPONDING #( <SUBSCR> )
               %TARGET = VALUE #( (
                 %CID        = |{ <SUBSCR>-ReportId }_{ SY-TABIX }|
-                %IS_DRAFT   = <SUBSCR>-%IS_DRAFT ) )
+                %IS_DRAFT   = <SUBSCR>-%IS_DRAFT
+                CompanyCode = <SUBSCR>-Bukrs
+                KeyDate     = '' ) )
             ) TO LT_CREATE_AR01.
           ENDIF.
 
@@ -643,7 +768,7 @@ CLASS LHC_SUBSCRIPTION IMPLEMENTATION.
             ) TO LT_CREATE_AR03.
           ENDIF.
 
-        "===================AP Report Parameter==================================
+          "===================AP Report Parameter==================================
         WHEN 'AP-01'.
           READ TABLE LT_EXISTING_AP01 WITH KEY SubscrUuid = <SUBSCR>-SubscrUuid TRANSPORTING NO FIELDS.
           IF SY-SUBRC = 0.
@@ -909,139 +1034,207 @@ CLASS LHC_SUBSCRIPTION IMPLEMENTATION.
       IF LS_SUB-SubscrName IS INITIAL.
         APPEND VALUE #( %TKY = LS_SUB-%TKY ) TO FAILED-Subscription.
         APPEND VALUE #( %TKY = LS_SUB-%TKY
-          %MSG = NEW_MESSAGE_WITH_TEXT(
-            SEVERITY = IF_ABAP_BEHV_MESSAGE=>SEVERITY-ERROR
-            TEXT = 'Description is required' )
-          %ELEMENT-SubscrName = IF_ABAP_BEHV=>MK-ON )
+          %MSG = NEW_MESSAGE(
+            ID       = GC_MSG_CLASS
+            NUMBER   = '001' "Description is required
+            SEVERITY = IF_ABAP_BEHV_MESSAGE=>SEVERITY-ERROR )
+          %ELEMENT-ReportID = IF_ABAP_BEHV=>MK-ON )
         TO REPORTED-Subscription.
       ENDIF.
     ENDLOOP.
   ENDMETHOD.
 
+
+  "054: The report is yet to be generated
+  "055: &1 Report has not been prepared
+  "056: &1 parameters are incomplete
   METHOD validateReport.
     " Read entities
     READ ENTITIES OF ZIR_DRS_SUBSCR IN LOCAL MODE
-    ENTITY Subscription FIELDS ( ReportId ) WITH CORRESPONDING #( KEYS )
-    RESULT DATA(LT_SUBS).
+      ENTITY Subscription FIELDS ( ReportId ) WITH CORRESPONDING #( KEYS )
+      RESULT DATA(LT_SUBS).
 
     LOOP AT LT_SUBS INTO DATA(LS_SUB).
+      DATA(LV_MSG_NO) = CONV SYMSGNO( '' ).
+
+      " 1. Validate ReportID existence
       IF LS_SUB-ReportID IS INITIAL.
         APPEND VALUE #( %TKY = LS_SUB-%TKY ) TO FAILED-Subscription.
         APPEND VALUE #( %TKY = LS_SUB-%TKY
-          %MSG = NEW_MESSAGE_WITH_TEXT(
-            SEVERITY = IF_ABAP_BEHV_MESSAGE=>SEVERITY-ERROR
-            TEXT = 'The report is yet to be generated' )
+          %MSG = NEW_MESSAGE(
+            ID       = GC_MSG_CLASS
+            NUMBER   = '054' " 'The report is yet to be generated'
+            SEVERITY = IF_ABAP_BEHV_MESSAGE=>SEVERITY-ERROR )
           %ELEMENT-ReportID = IF_ABAP_BEHV=>MK-ON )
         TO REPORTED-Subscription.
 
+        CONTINUE.
       ENDIF.
 
-
-      "Validate Parameters
+      " 2. Validate Parameters
       CASE LS_SUB-ReportId.
         WHEN 'GL-01'.
           READ ENTITIES OF ZIR_DRS_SUBSCR IN LOCAL MODE
             ENTITY Subscription BY \_ParamGL01 ALL FIELDS WITH CORRESPONDING #( KEYS ) RESULT DATA(LT_GL01).
-          IF LT_GL01 IS INITIAL OR
-             LT_GL01[ 1 ]-CompanyCode IS INITIAL OR LT_GL01[ 1 ]-FiscalYear IS INITIAL OR
-             LT_GL01[ 1 ]-FiscalPeriodFr IS INITIAL OR LT_GL01[ 1 ]-FiscalPeriodTo IS INITIAL OR
-             LT_GL01[ 1 ]-GlAccountFr IS INITIAL OR LT_GL01[ 1 ]-GlAccountTo IS INITIAL
-             .
 
-            DATA(Message) = 'GL Report has not been prepared'.
+          IF LT_GL01 IS INITIAL.
+            LV_MSG_NO = '055'. " '&1 Report has not been prepared'
+          ELSE.
+            DATA(LS_GL01) = LT_GL01[ 1 ].
+            IF LS_GL01-CompanyCode IS INITIAL OR LS_GL01-FiscalYear IS INITIAL OR
+               LS_GL01-FiscalPeriodFr IS INITIAL OR LS_GL01-FiscalPeriodTo IS INITIAL OR
+               LS_GL01-GlAccountFr IS INITIAL OR LS_GL01-GlAccountTo IS INITIAL.
+              LV_MSG_NO = '056'. " '&1 parameters are incomplete'
+            ENDIF.
           ENDIF.
 
         WHEN 'AR-01'.
-
           READ ENTITIES OF ZIR_DRS_SUBSCR IN LOCAL MODE
             ENTITY Subscription BY \_ParamAR01 ALL FIELDS WITH CORRESPONDING #( KEYS ) RESULT DATA(LT_AR01).
 
-          IF LT_AR01 IS INITIAL OR
-             LT_AR01[ 1 ]-CompanyCode IS INITIAL OR LT_AR01[ 1 ]-KeyDate IS INITIAL OR
-             LT_AR01[ 1 ]-CustomerFrom IS INITIAL OR LT_AR01[ 1 ]-CustomerTo IS INITIAL.
-
-            Message = 'AR01 Report has not been prepared'.
+          IF LT_AR01 IS INITIAL.
+            LV_MSG_NO = '055'.
+          ELSE.
+            DATA(LS_AR01) = LT_AR01[ 1 ].
+            IF LS_AR01-CompanyCode IS INITIAL OR LS_AR01-KeyDate IS INITIAL.
+              LV_MSG_NO = '056'.
+            ENDIF.
           ENDIF.
 
         WHEN 'AR-02'.
-
           READ ENTITIES OF ZIR_DRS_SUBSCR IN LOCAL MODE
             ENTITY Subscription BY \_ParamAR02 ALL FIELDS WITH CORRESPONDING #( KEYS ) RESULT DATA(LT_AR02).
 
-          IF LT_AR02 IS INITIAL OR
-             LT_AR02[ 1 ]-CompanyCode IS INITIAL OR LT_AR02[ 1 ]-FiscalYear IS INITIAL OR
-             LT_AR02[ 1 ]-CustomerFrom IS INITIAL OR LT_AR02[ 1 ]-CustomerTo IS INITIAL.
-
-            Message = 'AR01 Report has not been prepared'.
+          IF LT_AR02 IS INITIAL.
+            LV_MSG_NO = '055'.
+          ELSE.
+            DATA(LS_AR02) = LT_AR02[ 1 ].
+            IF LS_AR02-CompanyCode IS INITIAL OR LS_AR02-FiscalYear IS INITIAL.
+              LV_MSG_NO = '056'.
+            ENDIF.
           ENDIF.
 
         WHEN 'AR-03'.
-
           READ ENTITIES OF ZIR_DRS_SUBSCR IN LOCAL MODE
             ENTITY Subscription BY \_ParamAR03 ALL FIELDS WITH CORRESPONDING #( KEYS ) RESULT DATA(LT_AR03).
 
-          IF LT_AR03 IS INITIAL OR
-             LT_AR03[ 1 ]-CompanyCode IS INITIAL OR LT_AR03[ 1 ]-KeyDate IS INITIAL OR
-             LT_AR03[ 1 ]-CustomerFrom IS INITIAL OR LT_AR03[ 1 ]-CustomerTo IS INITIAL.
-
-            Message = 'AR03 Report has not been prepared'.
+          IF LT_AR03 IS INITIAL.
+            LV_MSG_NO = '055'.
+          ELSE.
+            DATA(LS_AR03) = LT_AR03[ 1 ].
+            IF LS_AR03-CompanyCode IS INITIAL OR LS_AR03-KeyDate IS INITIAL.
+              LV_MSG_NO = '056'.
+            ENDIF.
           ENDIF.
 
         WHEN 'AP-01'.
-
           READ ENTITIES OF ZIR_DRS_SUBSCR IN LOCAL MODE
             ENTITY Subscription BY \_ParamAP01 ALL FIELDS WITH CORRESPONDING #( KEYS ) RESULT DATA(LT_AP01).
 
-          IF LT_AP01 IS INITIAL OR
-             LT_AP01[ 1 ]-CompanyCode IS INITIAL OR LT_AP01[ 1 ]-KeyDate IS INITIAL OR
-             LT_AP01[ 1 ]-VendorFrom IS INITIAL OR LT_AP01[ 1 ]-VendorTo IS INITIAL.
-
-            Message = 'AP01 Report has not been prepared'.
+          IF LT_AP01 IS INITIAL.
+            LV_MSG_NO = '055'.
+          ELSE.
+            DATA(LS_AP01) = LT_AP01[ 1 ].
+            IF LS_AP01-CompanyCode IS INITIAL OR LS_AP01-KeyDate IS INITIAL.
+              LV_MSG_NO = '056'.
+            ENDIF.
           ENDIF.
 
         WHEN 'AP-02'.
-
           READ ENTITIES OF ZIR_DRS_SUBSCR IN LOCAL MODE
             ENTITY Subscription BY \_ParamAP02 ALL FIELDS WITH CORRESPONDING #( KEYS ) RESULT DATA(LT_AP02).
 
-          IF LT_AP02 IS INITIAL OR
-             LT_AP02[ 1 ]-CompanyCode IS INITIAL OR LT_AP02[ 1 ]-FiscalYear IS INITIAL OR
-             LT_AP02[ 1 ]-VendorFrom IS INITIAL OR LT_AP02[ 1 ]-VendorTo IS INITIAL.
-
-            Message = 'AP02 Report has not been prepared'.
+          IF LT_AP02 IS INITIAL.
+            LV_MSG_NO = '055'.
+          ELSE.
+            DATA(LS_AP02) = LT_AP02[ 1 ].
+            IF LS_AP02-CompanyCode IS INITIAL OR LS_AP02-FiscalYear IS INITIAL.
+              LV_MSG_NO = '056'.
+            ENDIF.
           ENDIF.
 
         WHEN 'AP-03'.
-
           READ ENTITIES OF ZIR_DRS_SUBSCR IN LOCAL MODE
             ENTITY Subscription BY \_ParamAP03 ALL FIELDS WITH CORRESPONDING #( KEYS ) RESULT DATA(LT_AP03).
 
-          IF LT_AP03 IS INITIAL OR
-             LT_AP03[ 1 ]-CompanyCode IS INITIAL OR LT_AP03[ 1 ]-KeyDate IS INITIAL OR
-             LT_AP03[ 1 ]-VendorFrom IS INITIAL OR LT_AP03[ 1 ]-VendorTo IS INITIAL.
-
-            Message = 'AR03 Report has not been prepared'.
+          IF LT_AP03 IS INITIAL.
+            LV_MSG_NO = '055'.
+          ELSE.
+            DATA(LS_AP03) = LT_AP03[ 1 ].
+            IF LS_AP03-CompanyCode IS INITIAL OR LS_AP03-KeyDate IS INITIAL.
+              LV_MSG_NO = '056'.
+            ENDIF.
           ENDIF.
 
       ENDCASE.
+
+      " 3. Ghi lỗi bằng Message Class
+      IF LV_MSG_NO IS NOT INITIAL.
+        APPEND VALUE #( %TKY = LS_SUB-%TKY ) TO FAILED-Subscription.
+        APPEND VALUE #( %TKY = LS_SUB-%TKY
+          %MSG = NEW_MESSAGE(
+            ID       = GC_MSG_CLASS
+            NUMBER   = LV_MSG_NO
+            SEVERITY = IF_ABAP_BEHV_MESSAGE=>SEVERITY-ERROR
+            V1       = LS_SUB-ReportId )
+          %ELEMENT-ReportID = IF_ABAP_BEHV=>MK-ON )
+        TO REPORTED-Subscription.
+      ENDIF.
+
+    ENDLOOP.
+  ENDMETHOD.
+
+  METHOD CleanupOnReportChange.
+
+    DATA: LT_DEL_CUSTOMERS TYPE TABLE FOR DELETE ZIR_DRS_SUBSCR\\Customers,
+          LT_DEL_VENDORS   TYPE TABLE FOR DELETE ZIR_DRS_SUBSCR\\Vendors.
+
+    " Read current Report
+    READ ENTITIES OF ZIR_DRS_SUBSCR IN LOCAL MODE
+      ENTITY Subscription
+        FIELDS ( ReportId ) WITH CORRESPONDING #( KEYS )
+      RESULT DATA(LT_SUBSCRIPTIONS).
+
+
+    LOOP AT LT_SUBSCRIPTIONS INTO DATA(LS_SUB).
+
+      "Convert to Report AP -> Remove all Customer
+      IF LS_SUB-ReportId CP 'AP*'.
+
+        "Get all Customer from Customer list
+        READ ENTITIES OF ZIR_DRS_SUBSCR IN LOCAL MODE
+          ENTITY Subscription BY \_Customers
+            ALL FIELDS WITH VALUE #( ( %TKY = LS_SUB-%TKY ) )
+          RESULT DATA(LT_CUSTOMERS).
+
+        LT_DEL_CUSTOMERS = CORRESPONDING #( BASE ( LT_DEL_CUSTOMERS ) LT_CUSTOMERS ).
+
+        "Convert to Report AR -> Remove all Vendor
+      ELSEIF LS_SUB-ReportId CP 'AR*'.
+
+        "Get all Vendor from Vendor list
+        READ ENTITIES OF ZIR_DRS_SUBSCR IN LOCAL MODE
+          ENTITY Subscription BY \_Vendors
+            ALL FIELDS WITH VALUE #( ( %TKY = LS_SUB-%TKY ) )
+          RESULT DATA(LT_VENDORS).
+
+        LT_DEL_VENDORS = CORRESPONDING #( BASE ( LT_DEL_VENDORS ) LT_VENDORS ).
+
+      ENDIF.
     ENDLOOP.
 
-    APPEND VALUE #( %TKY = LS_SUB-%TKY ) TO FAILED-Subscription.
-    APPEND VALUE #( %TKY = LS_SUB-%TKY
-      %MSG = NEW_MESSAGE_WITH_TEXT(
-        SEVERITY = IF_ABAP_BEHV_MESSAGE=>SEVERITY-ERROR
-        TEXT = Message )
-      %ELEMENT-ReportID = IF_ABAP_BEHV=>MK-ON )
-    TO REPORTED-Subscription.
+    IF LT_DEL_CUSTOMERS IS NOT INITIAL.
+      MODIFY ENTITIES OF ZIR_DRS_SUBSCR IN LOCAL MODE
+        ENTITY Customers
+          DELETE FROM LT_DEL_CUSTOMERS.
+    ENDIF.
+
+    IF LT_DEL_VENDORS IS NOT INITIAL.
+      MODIFY ENTITIES OF ZIR_DRS_SUBSCR IN LOCAL MODE
+        ENTITY Vendors
+          DELETE FROM LT_DEL_VENDORS.
+    ENDIF.
 
   ENDMETHOD.
 
-*  METHOD report_error.
-*    APPEND VALUE #( %tky = tky ) TO failed.
-*    APPEND VALUE #( %tky = tky
-*                    %msg = new_message_with_text(
-*                             severity = if_abap_behv_message=>severity-error
-*                             text     = msg )
-*                  ) TO reported.
-*  ENDMETHOD.
 ENDCLASS.

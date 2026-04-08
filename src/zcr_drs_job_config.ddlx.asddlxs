@@ -105,11 +105,16 @@ annotate entity ZCR_DRS_JOB_CONFIG with
       { type: #FOR_ACTION, dataAction: 'refreshStatus', label: 'Refresh Status', position: 30 }
     ]
   }
+  
+  @UI: {
+    fieldGroup: [ { qualifier: 'GeneralSettings', position: 10 } ]
+  }
+  @EndUserText.label: 'Description'
   JobText;
 
   @UI: {
     lineItem: [ { position: 20, importance: #HIGH } ],
-    fieldGroup: [ { qualifier: 'GeneralSettings', position: 10 } ]
+    fieldGroup: [ { qualifier: 'GeneralSettings', position: 20 } ]
   }
   @EndUserText.label: 'Run Type'
   @Consumption.valueHelpDefinition: [{

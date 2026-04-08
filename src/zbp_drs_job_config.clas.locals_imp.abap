@@ -303,6 +303,7 @@ CLASS lhc_DrsJobConfig IMPLEMENTATION.
     ENDLOOP.
   ENDMETHOD.
 
+
   METHOD validatePeriodicGranularity.
     READ ENTITIES OF ZIR_DRS_JOB_CONFIG IN LOCAL MODE
       ENTITY DrsJobConfig
@@ -330,6 +331,7 @@ CLASS lhc_DrsJobConfig IMPLEMENTATION.
     ENDLOOP.
   ENDMETHOD.
 
+
   METHOD validateShiftDirection.
     READ ENTITIES OF ZIR_DRS_JOB_CONFIG IN LOCAL MODE
       ENTITY DrsJobConfig
@@ -356,6 +358,7 @@ CLASS lhc_DrsJobConfig IMPLEMENTATION.
     ENDLOOP.
   ENDMETHOD.
 
+
   METHOD validateStartRestriction.
     READ ENTITIES OF ZIR_DRS_JOB_CONFIG IN LOCAL MODE
       ENTITY DrsJobConfig
@@ -381,6 +384,7 @@ CLASS lhc_DrsJobConfig IMPLEMENTATION.
       ENDIF.
     ENDLOOP.
   ENDMETHOD.
+
 
   METHOD validateCalendarId.
     READ ENTITIES OF ZIR_DRS_JOB_CONFIG IN LOCAL MODE
@@ -410,6 +414,7 @@ CLASS lhc_DrsJobConfig IMPLEMENTATION.
       ENDIF.
     ENDLOOP.
   ENDMETHOD.
+
 
   METHOD validateRunSettings.
     " Read entities
@@ -922,75 +927,33 @@ CLASS lhc_DrsJobConfig IMPLEMENTATION.
                 CASE LS_JOB-PeriodicGranularity.
                   WHEN 'MI'. LV_INTERVAL_SECS = LS_JOB-PeriodicValue * 60.
                   WHEN 'H'.  LV_INTERVAL_SECS = LS_JOB-PeriodicValue * 3600.
-                  WHEN 'D'.  LV_INTERVAL_SECS = LS_JOB-PeriodicValue * 86400.
                 ENDCASE.
 
-                IF LS_JOB-PeriodicGranularity = 'W'.
-                  " W (Weekly): count actual matching weekdays in [start..end] range.
-                  " Old formula (total_weeks * selected_days) used integer division
-                  " by 604800 → truncated to 0 for ranges < 7 days → only 1 iteration.
-                  " New approach: loop day-by-day and count matching selected weekdays.
-                  DATA LV_W_ITER_DATE TYPE D.
-                  LV_W_ITER_DATE = LV_P_START_DATE.
-                  LV_CALC_ITER = 0.
-                  WHILE LV_W_ITER_DATE <= LV_P_END_DATE.
-                    DATA(LV_W_ITER_DOW) = CL_APJ_FW_UTILITIES=>COMPUTE_DAY( IV_DATE = LV_W_ITER_DATE ).
-                    CASE LV_W_ITER_DOW.
-                      WHEN 1. IF LS_JOB-OnMonday    = ABAP_TRUE. LV_CALC_ITER = LV_CALC_ITER + 1. ENDIF.
-                      WHEN 2. IF LS_JOB-OnTuesday   = ABAP_TRUE. LV_CALC_ITER = LV_CALC_ITER + 1. ENDIF.
-                      WHEN 3. IF LS_JOB-OnWednesday = ABAP_TRUE. LV_CALC_ITER = LV_CALC_ITER + 1. ENDIF.
-                      WHEN 4. IF LS_JOB-OnThursday  = ABAP_TRUE. LV_CALC_ITER = LV_CALC_ITER + 1. ENDIF.
-                      WHEN 5. IF LS_JOB-OnFriday    = ABAP_TRUE. LV_CALC_ITER = LV_CALC_ITER + 1. ENDIF.
-                      WHEN 6. IF LS_JOB-OnSaturday  = ABAP_TRUE. LV_CALC_ITER = LV_CALC_ITER + 1. ENDIF.
-                      WHEN 7. IF LS_JOB-OnSunday    = ABAP_TRUE. LV_CALC_ITER = LV_CALC_ITER + 1. ENDIF.
-                    ENDCASE.
-                    LV_W_ITER_DATE = LV_W_ITER_DATE + 1.
-                  ENDWHILE.
-                ELSEIF LS_JOB-PeriodicGranularity = 'MO'
-                OR LS_JOB-PeriodicGranularity = 'WM'.
-                  " Month-based: dynamic calendar month difference (months vary 28-31 days)
-                  DATA LV_SCH_MONTH_DIFF TYPE I.
-                  LV_SCH_MONTH_DIFF =
-                      ( LV_P_END_DATE+0(4) - LV_P_START_DATE+0(4) ) * 12
-                    + ( LV_P_END_DATE+4(2) - LV_P_START_DATE+4(2) ).
-                  LV_CALC_ITER = LV_SCH_MONTH_DIFF / LS_JOB-PeriodicValue.
-                  " Same month: target run day may still fall within range → allow 1
-                  IF LV_CALC_ITER <= 0.
-                    LV_CALC_ITER = 1.
-                  ENDIF.
-                ELSEIF LV_INTERVAL_SECS > 0.
-*                  LV_CALC_ITER = LV_DIFF_SECS / LV_INTERVAL_SECS.
-                  IF LS_JOB-PeriodicGranularity = 'D'.
-                    " Test case D: Bỏ qua tự tính iterations, set dummy = 1 để qua hàm check guard
-                    LV_CALC_ITER = 1.
-                  ELSE.
+                IF LS_JOB-PeriodicGranularity = 'MI' OR LS_JOB-PeriodicGranularity = 'H'.
+                  IF LV_INTERVAL_SECS > 0.
                     LV_CALC_ITER = LV_DIFF_SECS / LV_INTERVAL_SECS.
                   ENDIF.
-                ENDIF.
 
-                " Guard: range must cover at least one full interval
-                IF LV_CALC_ITER <= 0.
-                  APPEND VALUE #( %TKY = LS_JOB-%TKY ) TO FAILED-DRSJOBCONFIG.
-                  APPEND VALUE #( %TKY = LS_JOB-%TKY
-                    %MSG = NEW_MESSAGE(
-                      ID       = GC_MSG_CLASS
-                      NUMBER   = '022'
-                      SEVERITY = IF_ABAP_BEHV_MESSAGE=>SEVERITY-ERROR
-                      V1       = LS_JOB-PeriodicValue
-                      V2       = LS_JOB-PeriodicGranularity ) )
-                  TO REPORTED-DRSJOBCONFIG.
-                  CONTINUE.
-                ENDIF.
+                  " Guard: range must cover at least one full interval for MI and H
+                  IF LV_CALC_ITER <= 0.
+                    APPEND VALUE #( %TKY = LS_JOB-%TKY ) TO FAILED-DRSJOBCONFIG.
+                    APPEND VALUE #( %TKY = LS_JOB-%TKY
+                      %MSG = NEW_MESSAGE(
+                        ID       = GC_MSG_CLASS
+                        NUMBER   = '022'
+                        SEVERITY = IF_ABAP_BEHV_MESSAGE=>SEVERITY-ERROR
+                        V1       = LS_JOB-PeriodicValue
+                        V2       = LS_JOB-PeriodicGranularity ) )
+                    TO REPORTED-DRSJOBCONFIG.
+                    CONTINUE.
+                  ENDIF.
 
-*                LS_END_INFO-TYPE           = 'NUM'.
-*                LS_END_INFO-MAX_ITERATIONS = LV_CALC_ITER.
-                 IF LS_JOB-PeriodicGranularity = 'W' OR LS_JOB-PeriodicGranularity = 'D' OR LS_JOB-PeriodicGranularity = 'MO' OR LS_JOB-PeriodicGranularity = 'WM'.
-                  " Test case W, D, MO & WM: Bỏ qua Iterations, ép dùng chuẩn DATE theo yêu cầu
-                  LS_END_INFO-TYPE      = 'DATE'.
-                  LS_END_INFO-TIMESTAMP = LV_P_END_UTC.
-                ELSE.
                   LS_END_INFO-TYPE           = 'NUM'.
                   LS_END_INFO-MAX_ITERATIONS = LV_CALC_ITER.
+                ELSE.
+                  " W, D, MO, WM support DATE end info properly
+                  LS_END_INFO-TYPE      = 'DATE'.
+                  LS_END_INFO-TIMESTAMP = LV_P_END_UTC.
                 ENDIF.
               ELSE.
                 " No EndTimestamp — use manually entered MaxIterations
@@ -1357,8 +1320,10 @@ CLASS lhc_DrsJobConfig IMPLEMENTATION.
           DATA(LV_REFRESH_BAPI) = LX_REFRESH_APJ->GET_BAPIRET2( ).
           DATA(LV_REFRESH_LT)   = LX_REFRESH_APJ->GET_LONGTEXT( ).
           DATA(LV_REFRESH_MSG)  = COND STRING(
-            WHEN LV_REFRESH_BAPI-MESSAGE IS NOT INITIAL THEN LV_REFRESH_BAPI-MESSAGE
-            WHEN LV_REFRESH_LT           IS NOT INITIAL THEN LV_REFRESH_LT
+            WHEN LV_REFRESH_BAPI-MESSAGE IS NOT INITIAL
+            THEN LV_REFRESH_BAPI-MESSAGE
+            WHEN LV_REFRESH_LT           IS NOT INITIAL
+            THEN LV_REFRESH_LT
             ELSE LX_REFRESH_APJ->GET_TEXT( ) ).
           MODIFY ENTITIES OF ZIR_DRS_JOB_CONFIG IN LOCAL MODE
             ENTITY DrsJobConfig

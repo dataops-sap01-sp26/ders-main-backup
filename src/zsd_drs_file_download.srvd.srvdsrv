@@ -1,4 +1,0 @@
-@EndUserText.label: 'File Download Service Definition'
-define service ZSD_DRS_FILE_DOWNLOAD {
-  expose ZI_DRS_FILE_DOWNLOAD as FileDownloadSet;
-}

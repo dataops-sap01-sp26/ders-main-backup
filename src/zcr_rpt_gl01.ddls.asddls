@@ -40,7 +40,8 @@ define root view entity ZCR_RPT_GL01
 
       @UI.hidden: true
       LocalCurrency,
-
+      
+      
 //      /* Association */
      _Items : redirected to composition child ZC_RPT_GL01_I
 }

@@ -176,6 +176,24 @@
      <MSGNR>053</MSGNR>
      <TEXT>Report type &amp;1 does not have configurable parameters</TEXT>
     </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZMSG_DRS_SP26_SAP01</ARBGB>
+     <MSGNR>054</MSGNR>
+     <TEXT>The report is yet to be generated</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZMSG_DRS_SP26_SAP01</ARBGB>
+     <MSGNR>055</MSGNR>
+     <TEXT>&amp;1 Report has not been prepared</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZMSG_DRS_SP26_SAP01</ARBGB>
+     <MSGNR>056</MSGNR>
+     <TEXT>&amp;1 parameters are incomplete</TEXT>
+    </T100>
    </T100>
   </asx:values>
  </asx:abap>

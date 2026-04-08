@@ -36,23 +36,23 @@ annotate entity ZC_DRS_PARAM_GL01 with
 
   @UI: {
   lineItem:       [ { position: 20, importance: #LOW } ],
-  identification: [ { position: 20 } ],
+  identification: [ { position: 30 } ],
   fieldGroup:     [ { qualifier: 'SubscriptionParams', position: 20 } ]
   }
   @EndUserText.label: 'G/L Account Fr'
   GlAccountFr;
 
   @UI: {
-    lineItem:       [ { position: 50, importance: #LOW } ],
+    lineItem:       [ { position: 30, importance: #LOW } ],
     identification: [ { position: 50 } ],
-    fieldGroup:     [ { qualifier: 'SubscriptionParams', position: 50 } ]
+    fieldGroup:     [ { qualifier: 'SubscriptionParams', position: 30 } ]
   }
   @EndUserText.label: 'G/L Account To'
   GlAccountTo;
 
   @UI: {
     lineItem:       [ { position: 40, importance: #HIGH } ],
-    identification: [ { position: 40 } ],
+    identification: [ { position: 20 } ],
     fieldGroup:     [ { qualifier: 'SubscriptionParams', position: 40 } ]
   }
   @EndUserText.label: 'Fiscal Period Fr'
@@ -60,19 +60,27 @@ annotate entity ZC_DRS_PARAM_GL01 with
 
   @UI: {
     lineItem:       [ { position: 50, importance: #HIGH } ],
-    identification: [ { position: 50} ],
+    identification: [ { position: 30} ],
     fieldGroup:     [ { qualifier: 'SubscriptionParams', position: 50 } ]
   }
   @EndUserText.label: 'Fiscal Period To'
   FiscalPeriodTo;
 
   @UI: {
-    lineItem:       [ { position: 55, importance: #HIGH } ],
-    identification: [ { position: 55 } ],
-    fieldGroup:     [ { qualifier: 'SubscriptionParams', position: 55 } ]
+    lineItem:       [ { position: 60, importance: #HIGH } ],
+    identification: [ { position: 60 } ],
+    fieldGroup:     [ { qualifier: 'SubscriptionParams', position: 60 } ]
   }
-  @EndUserText.label: 'Fiscal Year'
-  FiscalYear;
+  @EndUserText.label: 'Fiscal Year Fr'
+  FiscalYearFr;
+  
+  @UI: {
+    lineItem:       [ { position: 70, importance: #HIGH } ],
+    identification: [ { position: 80 } ],
+    fieldGroup:     [ { qualifier: 'SubscriptionParams', position: 80 } ]
+  }
+  @EndUserText.label: 'Fiscal Year To'
+  FiscalYearTo;
 
   //  @UI: {
   //    lineItem:       [ { position: 50, importance: #MEDIUM } ],
@@ -85,9 +93,9 @@ annotate entity ZC_DRS_PARAM_GL01 with
 
 
   @UI: {
-    lineItem:       [ { position: 60, importance: #LOW } ],
-    identification: [ { position: 60 } ],
-    fieldGroup:     [ { qualifier: 'SubscriptionParams', position: 20 } ]
+    lineItem:       [ { position: 80, importance: #LOW } ],
+    identification: [ { position: 70 } ],
+    fieldGroup:     [ { qualifier: 'SubscriptionParams', position: 70 } ]
   }
   @EndUserText.label: 'Max Rows'
   MaxRows;
