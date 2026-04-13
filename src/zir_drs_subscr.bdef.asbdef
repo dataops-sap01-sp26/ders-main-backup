@@ -138,16 +138,22 @@ authorization dependent by _Subscription
   SubscrUuid,
   SubscrId;
 
-  //  field ( mandatory )
-  //  CompanyCode,
-  //  FiscalYear,
-  //  FiscalPeriodFr,
-  //  FiscalPeriodTo,
-  //  GlAccountFr,
-  //  GlAccountTo;
+  field ( mandatory )
+  CompanyCode
+  //    GlAccountFr,
+  //    GlAccountTo
+  ;
 
   // Parent association (required for composition)
   association _Subscription { with draft; }
+
+  //Validation
+  validation validateFromTo on save
+  {
+    create;
+    update;
+    field GlAccountFr, GlAccountTo, FiscalPeriodFr, FiscalPeriodTo, FiscalYearFr, FiscalYearTo;
+  }
 
   // ─────────────────────────────────────────────────────────────────────────────
   // MAPPINGS
@@ -188,13 +194,20 @@ authorization dependent by _Subscription
   SubscrUuid,
   SubscrId;
 
-  //  field ( mandatory )
-  //  CompanyCode,
-  //  keyDate;
+  field ( mandatory )
+  CompanyCode,
+  keyDate;
 
   // Parent association (required for composition)
   association _Subscription { with draft; }
 
+  //Validation
+  validation validateFromTo on save
+  {
+    create;
+    update;
+    field CustomerFrom, CustomerTo;
+  }
 
   // ─────────────────────────────────────────────────────────────────────────────
   // MAPPINGS
@@ -231,13 +244,18 @@ authorization dependent by _Subscription
 
   field ( mandatory )
   CompanyCode,
-  CustomerFrom,
-  CustomerTo,
   FiscalYear;
 
   // Parent association (required for composition)
   association _Subscription { with draft; }
 
+  //Validation
+  validation validateFromTo on save
+  {
+    create;
+    update;
+    field CustomerFrom, CustomerTo;
+  }
 
   // ─────────────────────────────────────────────────────────────────────────────
   // MAPPINGS
@@ -277,13 +295,18 @@ authorization dependent by _Subscription
 
   field ( mandatory )
   CompanyCode,
-  CustomerFrom,
-  CustomerTo,
   keyDate;
 
   // Parent association (required for composition)
   association _Subscription { with draft; }
 
+  //Validation
+  validation validateFromTo on save
+  {
+    create;
+    update;
+    field CustomerFrom, CustomerTo;
+  }
 
   // ─────────────────────────────────────────────────────────────────────────────
   // MAPPINGS
@@ -318,14 +341,20 @@ authorization dependent by _Subscription
   SubscrUuid,
   SubscrId;
 
-  //  field ( mandatory )
-  //  CompanyCode,
-  //  VendorFrom,
-  //  VendorTo,
-  //  keyDate;
+  field ( mandatory )
+  CompanyCode,
+  keyDate;
 
   // Parent association (required for composition)
   association _Subscription { with draft; }
+
+  //Validation
+  validation validateFromTo on save
+  {
+    create;
+    update;
+    field VendorFrom, VendorTo;
+  }
 
 
   // ─────────────────────────────────────────────────────────────────────────────
@@ -363,12 +392,18 @@ authorization dependent by _Subscription
 
   field ( mandatory )
   CompanyCode,
-  VendorFrom,
-  VendorTo,
   FiscalYear;
 
   // Parent association (required for composition)
   association _Subscription { with draft; }
+
+  //Validation
+  validation validateFromTo on save
+  {
+    create;
+    update;
+    field VendorFrom, VendorTo;
+  }
 
 
   // ─────────────────────────────────────────────────────────────────────────────
@@ -406,12 +441,18 @@ authorization dependent by _Subscription
 
   field ( mandatory )
   CompanyCode,
-  VendorFrom,
-  VendorTo,
   keyDate;
 
   // Parent association (required for composition)
   association _Subscription { with draft; }
+
+  //Validation
+  validation validateFromTo on save
+  {
+    create;
+    update;
+    field VendorFrom, VendorTo;
+  }
 
 
   // ─────────────────────────────────────────────────────────────────────────────
@@ -450,6 +491,8 @@ authorization dependent by _Subscription
 
   // Parent association (required for composition)
   association _Subscription { with draft; }
+
+
 
 
   // ─────────────────────────────────────────────────────────────────────────────

@@ -42,4 +42,5 @@ define service ZSD_DRS_MAIN_O4 {
   expose ZI_RPT_AR03_I as AR03_ARAgingReportDetail;
   expose ZCR_RPT_GL01 as GL01_GLAccountBalances;
   expose ZC_RPT_GL01_I as GL01_GLAccountBalancesDetail;
+  expose ZIR_DRS_USER_SESSION as UserSession;
 }

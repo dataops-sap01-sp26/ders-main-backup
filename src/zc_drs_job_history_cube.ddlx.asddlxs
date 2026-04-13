@@ -26,8 +26,16 @@
     visualizations: [{
       type: #AS_CHART,
       qualifier: 'ChartDefault'
+    }]
+  }, 
+  {
+    sortOrder: [{
+      by: 'JobId',
+      direction: #DESC
     }],
-    requestAtLeast: [ 'FileDownloadUrl' ]
+    visualizations: [{
+      type: #AS_LINEITEM
+    }]
   }]
 }
 annotate entity ZI_DRS_JOB_HISTORY_CUBE with

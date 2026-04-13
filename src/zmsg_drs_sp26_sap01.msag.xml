@@ -11,6 +11,12 @@
     <T100>
      <SPRSL>E</SPRSL>
      <ARBGB>ZMSG_DRS_SP26_SAP01</ARBGB>
+     <MSGNR>000</MSGNR>
+     <TEXT>Job execution failed: &amp;1</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZMSG_DRS_SP26_SAP01</ARBGB>
      <MSGNR>001</MSGNR>
      <TEXT>Description is required</TEXT>
     </T100>
@@ -161,6 +167,90 @@
     <T100>
      <SPRSL>E</SPRSL>
      <ARBGB>ZMSG_DRS_SP26_SAP01</ARBGB>
+     <MSGNR>026</MSGNR>
+     <TEXT>Job configuration not found</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZMSG_DRS_SP26_SAP01</ARBGB>
+     <MSGNR>027</MSGNR>
+     <TEXT>Subscription not found</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZMSG_DRS_SP26_SAP01</ARBGB>
+     <MSGNR>028</MSGNR>
+     <TEXT>Job history record not found</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZMSG_DRS_SP26_SAP01</ARBGB>
+     <MSGNR>029</MSGNR>
+     <TEXT>Job configuration not found by UUID</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZMSG_DRS_SP26_SAP01</ARBGB>
+     <MSGNR>030</MSGNR>
+     <TEXT>Job configuration not found by ID</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZMSG_DRS_SP26_SAP01</ARBGB>
+     <MSGNR>031</MSGNR>
+     <TEXT>Failed to initialize report class</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZMSG_DRS_SP26_SAP01</ARBGB>
+     <MSGNR>032</MSGNR>
+     <TEXT>Execution of report failed</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZMSG_DRS_SP26_SAP01</ARBGB>
+     <MSGNR>033</MSGNR>
+     <TEXT>Failed to generate UUID</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZMSG_DRS_SP26_SAP01</ARBGB>
+     <MSGNR>034</MSGNR>
+     <TEXT>Failed to store file to database</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZMSG_DRS_SP26_SAP01</ARBGB>
+     <MSGNR>035</MSGNR>
+     <TEXT>Report class name is empty</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZMSG_DRS_SP26_SAP01</ARBGB>
+     <MSGNR>036</MSGNR>
+     <TEXT>Failed to dynamically instantiate report class</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZMSG_DRS_SP26_SAP01</ARBGB>
+     <MSGNR>037</MSGNR>
+     <TEXT>Report registry entry not found or inactive</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZMSG_DRS_SP26_SAP01</ARBGB>
+     <MSGNR>038</MSGNR>
+     <TEXT>File formatter class is missing or inactive for report &amp;1</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZMSG_DRS_SP26_SAP01</ARBGB>
+     <MSGNR>039</MSGNR>
+     <TEXT>Report parameters not found for report ID &amp;1</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZMSG_DRS_SP26_SAP01</ARBGB>
      <MSGNR>051</MSGNR>
      <TEXT>&amp;1 parameters already exist for this subscription</TEXT>
     </T100>
@@ -193,6 +283,36 @@
      <ARBGB>ZMSG_DRS_SP26_SAP01</ARBGB>
      <MSGNR>056</MSGNR>
      <TEXT>&amp;1 parameters are incomplete</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZMSG_DRS_SP26_SAP01</ARBGB>
+     <MSGNR>057</MSGNR>
+     <TEXT>G/L Account From must be less than or equal to G/L Account  To</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZMSG_DRS_SP26_SAP01</ARBGB>
+     <MSGNR>058</MSGNR>
+     <TEXT>Fiscal Period From must be less than or equal to  Fiscal Period To</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZMSG_DRS_SP26_SAP01</ARBGB>
+     <MSGNR>059</MSGNR>
+     <TEXT>Fiscal Period From must be less than or equal to Fiscal Period To</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZMSG_DRS_SP26_SAP01</ARBGB>
+     <MSGNR>060</MSGNR>
+     <TEXT>Customer From must be less than or equal to Customer To</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZMSG_DRS_SP26_SAP01</ARBGB>
+     <MSGNR>061</MSGNR>
+     <TEXT>Vendor From must be less than or equal to Vendor To</TEXT>
     </T100>
    </T100>
   </asx:values>

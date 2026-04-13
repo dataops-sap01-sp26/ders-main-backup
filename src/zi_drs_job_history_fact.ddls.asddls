@@ -58,9 +58,10 @@ define view entity ZI_DRS_JOB_HISTORY_FACT
 
       cast( 1 as abap.int4 )                                       as JobCountTotal,
 
-      // Tạo URL tải file động dựa trên Standalone OData V4 (Ép UUID sang chuỗi Format chuẩn 8-4-4-4-12)
+      // Tạo URL tải file động dựa trên DrsFile OData V4 (Ép UUID sang chuỗi Format chuẩn 8-4-4-4-12)
+      // Mở rộng thêm tham số IsActiveEntity=true (do DrsFile có Draft Framework nên OData Engine yêu cầu đủ 2 keys: FileUuid & IsActiveEntity)
       cast( case when _File.FileName is null then ''
-            else concat( '/sap/opu/odata4/sap/zui_drs_main_o4/srvd/sap/zsd_drs_main_o4/0001/DrsFile(',
+            else concat( '/sap/opu/odata4/sap/zui_drs_main_o4/srvd/sap/zsd_drs_main_o4/0001/DrsFile(FileUuid=',
                  concat( substring( bintohex( JobHistoryAnalytics.file_uuid ), 1, 8 ),
                  concat( '-',
                  concat( substring( bintohex( JobHistoryAnalytics.file_uuid ), 9, 4 ),
@@ -70,9 +71,8 @@ define view entity ZI_DRS_JOB_HISTORY_FACT
                  concat( substring( bintohex( JobHistoryAnalytics.file_uuid ), 17, 4 ),
                  concat( '-',
                  concat( substring( bintohex( JobHistoryAnalytics.file_uuid ), 21, 12 ),
-                               ')/FileContent'
+                               ',IsActiveEntity=true)/FileContent'
                        ) ) ) ) ) ) ) ) ) ) end as abap.char(255) ) as FileDownloadUrl,
-
 
       _JobConfig.JobId                                             as JobId,
       _JobConfig.JobText                                           as JobText,

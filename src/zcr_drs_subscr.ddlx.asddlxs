@@ -140,7 +140,9 @@ annotate entity ZCR_DRS_SUBSCR with
   SubscrId;
 
   @UI: {
-    lineItem:       [ { position: 20, importance: #HIGH } ]
+    lineItem:       [ { position: 20, importance: #HIGH } ],
+    fieldGroup:     [ { qualifier: 'GeneralInfo', position: 20 } ],
+    selectionField: [ { position: 20 } ]
   }
   @EndUserText.label: 'Description'
   SubscrName;
@@ -216,11 +218,11 @@ annotate entity ZCR_DRS_SUBSCR with
   @UI.hidden: true
   HideParamAP03;
   
-  @UI.hidden: true
-  HideCustomerList;
-  
-  @UI.hidden: true
-  HideVendorList;
+//  @UI.hidden: true
+//  HideCustomerList;
+//  
+//  @UI.hidden: true
+//  HideVendorList;
   
   @UI.fieldGroup: [ { qualifier: 'AdminData', position: 10 } ]
   @EndUserText.label: 'Created By'

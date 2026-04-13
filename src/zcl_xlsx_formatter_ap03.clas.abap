@@ -183,9 +183,23 @@ CLASS ZCL_XLSX_FORMATTER_AP03 IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD BUILD_SHEET.
-    SELECT SINGLE * FROM ZDRS_PARAM_AP03
+    SELECT SINGLE FROM ZDRS_PARAM_AP03
+      FIELDS COMPANY_CODE,
+             KEY_DATE,
+             MAX_ROWS,
+             VENDOR_FROM,
+             VENDOR_TO
       WHERE SUBSCR_UUID = @MS_PARAMS-SUBSCR_UUID
-      INTO @DATA(LS_PARAM).
+      INTO @DATA(LS_SPEC_PARAM).
+
+    IF SY-SUBRC <> 0.
+      " Message: Report parameters not found for report ID &1
+      RAISE EXCEPTION TYPE CX_APJ_RT
+        MESSAGE ID 'ZMSG_DRS_SP26_SAP01'
+        TYPE 'E'
+        NUMBER '039'
+        WITH MS_PARAMS-REPORT_ID.
+    ENDIF.
 
     DATA(LV_GEN_DATE) = |{ SY-DATUM+6(2) }/{ SY-DATUM+4(2) }/{ SY-DATUM(4) }|.
 
@@ -244,10 +258,10 @@ CLASS ZCL_XLSX_FORMATTER_AP03 IMPLEMENTATION.
 
     LV_ROWS = LV_ROWS &&
       '<row r="2" ht="18" customHeight="1">' &&
-      |<c r="A2" t="inlineStr" s="2"><is><t>Company code: { LS_PARAM-COMPANY_CODE }</t></is></c>| &&
+      |<c r="A2" t="inlineStr" s="2"><is><t>Company code: { LS_SPEC_PARAM-COMPANY_CODE }</t></is></c>| &&
       '</row>'.
 
-    ASSIGN COMPONENT 'KEY_DATE' OF STRUCTURE LS_PARAM TO FIELD-SYMBOL(<LV_KEY_DATE>).
+    ASSIGN COMPONENT 'KEY_DATE' OF STRUCTURE LS_SPEC_PARAM TO FIELD-SYMBOL(<LV_KEY_DATE>).
     DATA LV_KEY_DATE_STR TYPE STRING.
     IF SY-SUBRC = 0.
       LV_KEY_DATE_STR = CONDENSE( |{ <LV_KEY_DATE> }| ).

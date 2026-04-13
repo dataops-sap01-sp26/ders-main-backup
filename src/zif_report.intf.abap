@@ -18,6 +18,7 @@ INTERFACE ZIF_REPORT
 
   " Execute the report: query data using params → format → return file content
   METHODS EXECUTE
-    RETURNING VALUE(RS_RESULT) TYPE TY_RESULT.
+    RETURNING VALUE(RS_RESULT) TYPE TY_RESULT
+    RAISING   CX_APJ_RT.
 
 ENDINTERFACE.

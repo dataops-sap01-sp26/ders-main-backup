@@ -62,7 +62,8 @@ define root view entity ZIR_DRS_JOB_CONFIG
       case job_status
       when 'F' then 3  // Finished = Green
       when 'S' then 5  // Scheduled = Blue
-      when 'A' then 1  // Failed, Cancel = Red
+      when 'C' then 2  // Cancel = Yellow
+      when 'A' then 1  // Failed = Red
       else 0
       end                                                         as JobStatusCriticality,
 

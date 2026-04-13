@@ -30,11 +30,19 @@ define view entity ZC_DRS_PARAM_GL01 as projection on ZI_DRS_PARAM_GL01
     @Consumption.valueHelpDefinition: [{ entity: { name: 'I_CurrencyStdVH', element: 'Currency' } }]
     Currency,
     
-    @Consumption.valueHelpDefinition: [{ entity: { name: 'I_GLAccountStdVH', element: 'GLAccount' } }]
+    @Consumption.valueHelpDefinition: [{ 
+        entity: { name: 'I_GLAccountInCompanyCodeStdVH', element: 'GLAccount' },
+        additionalBinding: [{ localElement: 'CompanyCode', element: 'CompanyCode', usage: #FILTER }] 
+    }]
     GlAccountFr,
 
-    @Consumption.valueHelpDefinition: [{ entity: { name: 'I_GLAccountStdVH', element: 'GLAccount' } }]
+    @Consumption.valueHelpDefinition: [{ 
+        entity: { name: 'I_GLAccountInCompanyCodeStdVH', element: 'GLAccount' },
+        additionalBinding: [{ localElement: 'CompanyCode', element: 'CompanyCode', usage: #FILTER }] 
+    }]
     GlAccountTo,
+    
+    
     MaxRows,
     
     /* Associations */

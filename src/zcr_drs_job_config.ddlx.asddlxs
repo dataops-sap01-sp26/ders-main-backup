@@ -5,7 +5,16 @@
     typeNamePlural: 'Job Config',
     title: { type: #STANDARD, value: 'JobId' },
     description: { value: 'JobText' }
-  }
+  },
+  presentationVariant: [{
+    sortOrder: [{
+      by: 'JobId',
+      direction: #DESC
+    }],
+    visualizations: [{
+      type: #AS_LINEITEM
+    }]
+  }]
 }
 annotate entity ZCR_DRS_JOB_CONFIG with
 {
@@ -105,7 +114,7 @@ annotate entity ZCR_DRS_JOB_CONFIG with
       { type: #FOR_ACTION, dataAction: 'refreshStatus', label: 'Refresh Status', position: 30 }
     ]
   }
-  
+
   @UI: {
     fieldGroup: [ { qualifier: 'GeneralSettings', position: 10 } ]
   }
@@ -297,6 +306,7 @@ annotate entity ZCR_DRS_JOB_CONFIG with
     fieldGroup: [ { qualifier: 'JobStatus', position: 30, criticality: 'JobStatusCriticality' } ],
     selectionField: [ { position: 50 } ]
   }
+   @EndUserText.label: 'Job Status'
   JobStatus;
 
   @UI.hidden: true

@@ -28,12 +28,23 @@ define view entity ZC_DRS_PARAM_AP01
       }]
       VendorFrom,
 
-      @Consumption.valueHelpDefinition: [{ entity: { name: 'I_Supplier_VH', element: 'Supplier' } }]
+      @Consumption.valueHelpDefinition: [
+          { entity: { 
+            name: 'I_Supplier_VH', 
+            element: 'Supplier' 
+          },
+          additionalBinding: [{
+              localElement: 'CompanyCode',        
+              element: 'CompanyCode',             
+              usage: #FILTER                      
+          }]
+      }]
       VendorTo,
 
 
       KeyDate,
-
+      
+      
       MaxRows,
 
       /* Associations */

@@ -14,18 +14,20 @@ CLASS ZCL_REPORT_AP03 DEFINITION
 
     METHODS QUERY_DATA
       EXPORTING ER_DATA     TYPE REF TO DATA
-                ET_COL_META TYPE ZIF_FILE_FORMATTER=>TT_COL_META.
+                ET_COL_META TYPE ZIF_FILE_FORMATTER=>TT_COL_META
+      RAISING   CX_APJ_RT.
 
     METHODS BUILD_COL_META
       IMPORTING IO_STRUCT        TYPE REF TO CL_ABAP_STRUCTDESCR
-      RETURNING VALUE(RT_RESULT) TYPE ZIF_FILE_FORMATTER=>TT_COL_META.
+      RETURNING VALUE(RT_RESULT) TYPE ZIF_FILE_FORMATTER=>TT_COL_META
+      RAISING   CX_APJ_RT.
 
     " Resolve formatter via ZCL_FORMATTER_FACTORY.
     " Raises CX_SY_CREATE_OBJECT_ERROR when no formatter is available
     " (not registered, or class not yet activated).
     METHODS CREATE_FORMATTER
       RETURNING VALUE(RO_FORMATTER) TYPE REF TO ZIF_FILE_FORMATTER
-      RAISING   CX_SY_CREATE_OBJECT_ERROR.
+      RAISING   CX_APJ_RT.
 ENDCLASS.
 
 
@@ -50,7 +52,12 @@ CLASS ZCL_REPORT_AP03 IMPLEMENTATION.
       CATCH CX_SY_CREATE_OBJECT_ERROR INTO DATA(LX).
         " Configuration error: no formatter registered for this report.
         " Re-raise so the job layer (ZCL_JOB_BUSINESS_LOGIC) can log and skip.
-        RAISE EXCEPTION LX.
+        " Message: File formatter class is missing or inactive for report &1
+        RAISE EXCEPTION TYPE CX_APJ_RT
+          MESSAGE ID 'ZMSG_DRS_SP26_SAP01'
+          TYPE 'E'
+          NUMBER '038'
+          WITH MS_PARAMS-REPORT_ID.
     ENDTRY.
 
     " 3. Generate file
@@ -69,9 +76,23 @@ CLASS ZCL_REPORT_AP03 IMPLEMENTATION.
 
   METHOD QUERY_DATA.
     " 1. Fetch parameters from AP03 table
-    SELECT SINGLE * FROM ZDRS_PARAM_AP03
+    SELECT SINGLE FROM ZDRS_PARAM_AP03
+      FIELDS COMPANY_CODE,
+             KEY_DATE,
+             MAX_ROWS,
+             VENDOR_FROM,
+             VENDOR_TO
       WHERE SUBSCR_UUID = @MS_PARAMS-SUBSCR_UUID
       INTO @DATA(LS_SPEC_PARAM).
+
+    IF SY-SUBRC <> 0.
+      " Message: Report parameters not found for report ID &1
+      RAISE EXCEPTION TYPE CX_APJ_RT
+        MESSAGE ID 'ZMSG_DRS_SP26_SAP01'
+        TYPE 'E'
+        NUMBER '039'
+        WITH MS_PARAMS-REPORT_ID.
+    ENDIF.
 
     DATA(LV_MAX) = COND I( WHEN LS_SPEC_PARAM-MAX_ROWS > 0 THEN LS_SPEC_PARAM-MAX_ROWS ELSE 5000 ).
 
@@ -112,9 +133,9 @@ CLASS ZCL_REPORT_AP03 IMPLEMENTATION.
     ASSIGN ER_DATA->* TO <LT_OUT>.
     <LT_OUT> = LT_ap03.
 
-    DATA(LO_STRUCT) = CAST CL_ABAP_STRUCTDESCR(
-      CL_ABAP_TYPEDESCR=>DESCRIBE_BY_DATA( VALUE #( LT_ap03[ 1 ] OPTIONAL ) ) ).
-    ET_COL_META = BUILD_COL_META( LO_STRUCT ).
+*    DATA(LO_STRUCT) = CAST CL_ABAP_STRUCTDESCR(
+*      CL_ABAP_TYPEDESCR=>DESCRIBE_BY_DATA( VALUE #( LT_ap03[ 1 ] OPTIONAL ) ) ).
+*    ET_COL_META = BUILD_COL_META( LO_STRUCT ).
   ENDMETHOD.
 
 
@@ -142,8 +163,12 @@ CLASS ZCL_REPORT_AP03 IMPLEMENTATION.
     "   (b) the registered class name has not been activated yet.
     " Both are configuration errors — raise so the caller can react.
     IF RO_FORMATTER IS NOT BOUND.
-*      RAISE EXCEPTION TYPE CX_SY_CREATE_OBJECT_ERROR
-*        MESSAGE e001(00) WITH MS_PARAMS-REPORT_ID MS_PARAMS-OUTPUT_FORMAT.
+      " Message: File formatter class is missing or inactive for report &1
+      RAISE EXCEPTION TYPE CX_APJ_RT
+        MESSAGE ID 'ZMSG_DRS_SP26_SAP01'
+        TYPE 'E'
+        NUMBER '038'
+        WITH MS_PARAMS-REPORT_ID.
     ENDIF.
   ENDMETHOD.
 

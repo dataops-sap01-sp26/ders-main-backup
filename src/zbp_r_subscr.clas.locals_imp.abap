@@ -1,6 +1,12 @@
 *&---------------------------------------------------------------------*
 *& Local Classes for Subscription Behavior
 *& COMPOSITION: ParamGL01 is child entity (lifecycle managed by parent)
+*& COMPOSITION: ParamAR01 is child entity (lifecycle managed by parent)
+*& COMPOSITION: ParamAR02 is child entity (lifecycle managed by parent)
+*& COMPOSITION: ParamAR03 is child entity (lifecycle managed by parent)
+*& COMPOSITION: ParamAP01 is child entity (lifecycle managed by parent)
+*& COMPOSITION: ParamAP02 is child entity (lifecycle managed by parent)
+*& COMPOSITION: ParamAP03 is child entity (lifecycle managed by parent)
 *&---------------------------------------------------------------------*
 CLASS LHC_SUBSCRIPTION DEFINITION INHERITING FROM CL_ABAP_BEHAVIOR_HANDLER.
   PRIVATE SECTION.
@@ -51,7 +57,347 @@ CLASS LHC_SUBSCRIPTION DEFINITION INHERITING FROM CL_ABAP_BEHAVIOR_HANDLER.
       IMPORTING KEYS FOR Subscription~validateReport.
 
 ENDCLASS.
+*&---------------------------------------------------------------------*
+*& Local Classes for GL01 Behavior
+*& COMPOSITION: ParamGL01 is child entity (lifecycle managed by parent)
+*&---------------------------------------------------------------------*
+CLASS LHC_PARAMGL01 DEFINITION INHERITING FROM CL_ABAP_BEHAVIOR_HANDLER.
 
+  PRIVATE SECTION.
+
+    METHODS validateFromTo FOR VALIDATE ON SAVE
+      IMPORTING KEYS FOR ParamGL01~validateFromTo.
+
+ENDCLASS.
+
+CLASS LHC_PARAMGL01 IMPLEMENTATION.
+
+  METHOD validateFromTo.
+
+    "Read data entered by user on Screen
+    READ ENTITIES OF ZIR_DRS_SUBSCR IN LOCAL MODE
+      ENTITY ParamGL01
+        FIELDS ( GlAccountFr GlAccountTo FiscalPeriodFr FiscalPeriodTo FiscalYearFr FiscalYearTo )
+        WITH CORRESPONDING #( KEYS )
+      RESULT DATA(LT_PARAM_GL01).
+
+    "
+    LOOP AT LT_PARAM_GL01 ASSIGNING FIELD-SYMBOL(<FS_GL01>).
+
+      " Checked G/L Account
+      IF <FS_GL01>-GlAccountFr IS NOT INITIAL AND <FS_GL01>-GlAccountTo IS NOT INITIAL.
+        IF <FS_GL01>-GlAccountFr > <FS_GL01>-GlAccountTo.
+          APPEND VALUE #( %TKY = <FS_GL01>-%TKY ) TO FAILED-PARAMGL01.
+          APPEND VALUE #(
+            %TKY = <FS_GL01>-%TKY
+            %MSG = NEW_MESSAGE(
+                     ID       = 'ZMSG_DRS_SP26_SAP01'
+                     NUMBER   = '057'
+                     SEVERITY = IF_ABAP_BEHV_MESSAGE=>SEVERITY-ERROR )
+            %ELEMENT-GlAccountFr = IF_ABAP_BEHV=>MK-ON
+            %ELEMENT-GlAccountTo = IF_ABAP_BEHV=>MK-ON
+          ) TO REPORTED-PARAMGL01.
+        ENDIF.
+      ENDIF.
+
+      " Checked Fiscal Period
+      IF <FS_GL01>-FiscalPeriodFr IS NOT INITIAL AND <FS_GL01>-FiscalPeriodTo IS NOT INITIAL.
+        IF <FS_GL01>-FiscalPeriodFr > <FS_GL01>-FiscalPeriodTo.
+          APPEND VALUE #( %TKY = <FS_GL01>-%TKY ) TO FAILED-PARAMGL01.
+          APPEND VALUE #(
+            %TKY = <FS_GL01>-%TKY
+            %MSG = NEW_MESSAGE(
+                     ID       = 'ZMSG_DRS_SP26_SAP01'
+                     NUMBER   = '058'
+                     SEVERITY = IF_ABAP_BEHV_MESSAGE=>SEVERITY-ERROR )
+            %ELEMENT-FiscalPeriodFr = IF_ABAP_BEHV=>MK-ON
+            %ELEMENT-FiscalPeriodTo = IF_ABAP_BEHV=>MK-ON
+          ) TO REPORTED-PARAMGL01.
+        ENDIF.
+      ENDIF.
+
+      " Checked Fiscal Year
+      IF <FS_GL01>-FiscalYearFr IS NOT INITIAL AND <FS_GL01>-FiscalYearTo IS NOT INITIAL.
+        IF <FS_GL01>-FiscalYearFr > <FS_GL01>-FiscalYearTo.
+          APPEND VALUE #( %TKY = <FS_GL01>-%TKY ) TO FAILED-PARAMGL01.
+          APPEND VALUE #(
+            %TKY = <FS_GL01>-%TKY
+            %MSG = NEW_MESSAGE(
+                     ID       = 'ZMSG_DRS_SP26_SAP01'
+                     NUMBER   = '059'
+                     SEVERITY = IF_ABAP_BEHV_MESSAGE=>SEVERITY-ERROR )
+            %ELEMENT-FiscalYearFr = IF_ABAP_BEHV=>MK-ON
+            %ELEMENT-FiscalYearTo = IF_ABAP_BEHV=>MK-ON
+          ) TO REPORTED-PARAMGL01.
+        ENDIF.
+      ENDIF.
+
+    ENDLOOP.
+  ENDMETHOD.
+
+ENDCLASS.
+*&---------------------------------------------------------------------*
+*& Local Classes for AR01 Behavior
+*& COMPOSITION: ParamAR01 is child entity (lifecycle managed by parent)
+*&---------------------------------------------------------------------*
+CLASS LHC_PARAMAR01 DEFINITION INHERITING FROM CL_ABAP_BEHAVIOR_HANDLER.
+
+  PRIVATE SECTION.
+
+    METHODS validateFromTo FOR VALIDATE ON SAVE
+      IMPORTING KEYS FOR ParamAR01~validateFromTo.
+
+ENDCLASS.
+
+CLASS LHC_PARAMAR01 IMPLEMENTATION.
+
+  METHOD validateFromTo.
+    "Read data entered by user on Screen
+    READ ENTITIES OF ZIR_DRS_SUBSCR IN LOCAL MODE
+        ENTITY ParamAR01
+            FIELDS ( CUSTOMERFROM CUSTOMERTO )
+            WITH CORRESPONDING #( KEYS )
+        RESULT DATA(LT_PARAM_AR01).
+
+    LOOP AT LT_PARAM_AR01 ASSIGNING FIELD-SYMBOL(<FS_AR01>).
+      " Checked Customer
+      IF <FS_AR01>-CustomerFrom IS NOT INITIAL AND <FS_AR01>-CustomerTo IS NOT INITIAL.
+        IF <FS_AR01>-CustomerFrom > <FS_AR01>-CustomerTo.
+          APPEND VALUE #( %TKY = <FS_AR01>-%TKY ) TO FAILED-PARAMAR01.
+          APPEND VALUE #(
+            %TKY = <FS_AR01>-%TKY
+            %MSG = NEW_MESSAGE(
+                     ID       = 'ZMSG_DRS_SP26_SAP01'
+                     NUMBER   = '060'
+                     SEVERITY = IF_ABAP_BEHV_MESSAGE=>SEVERITY-ERROR )
+            %ELEMENT-CustomerFrom = IF_ABAP_BEHV=>MK-ON
+            %ELEMENT-CustomerTo = IF_ABAP_BEHV=>MK-ON
+          ) TO REPORTED-PARAMAR01.
+        ENDIF.
+      ENDIF.
+    ENDLOOP.
+
+
+  ENDMETHOD.
+
+ENDCLASS.
+*&---------------------------------------------------------------------*
+*& Local Classes for AR02 Behavior
+*& COMPOSITION: ParamAR02 is child entity (lifecycle managed by parent)
+*&---------------------------------------------------------------------*
+CLASS LHC_PARAMAR02 DEFINITION INHERITING FROM CL_ABAP_BEHAVIOR_HANDLER.
+
+  PRIVATE SECTION.
+
+    METHODS validateFromTo FOR VALIDATE ON SAVE
+      IMPORTING KEYS FOR ParamAR02~validateFromTo.
+
+ENDCLASS.
+
+CLASS LHC_PARAMAR02 IMPLEMENTATION.
+
+  METHOD validateFromTo.
+    "Read data entered by user on Screen
+    READ ENTITIES OF ZIR_DRS_SUBSCR IN LOCAL MODE
+        ENTITY ParamAR02
+            FIELDS ( CUSTOMERFROM CUSTOMERTO )
+            WITH CORRESPONDING #( KEYS )
+        RESULT DATA(LT_PARAM_AR02).
+
+    LOOP AT LT_PARAM_AR02 ASSIGNING FIELD-SYMBOL(<FS_AR02>).
+      " Checked Customer
+      IF <FS_AR02>-CustomerFrom IS NOT INITIAL AND <FS_AR02>-CustomerTo IS NOT INITIAL.
+        IF <FS_AR02>-CustomerFrom > <FS_AR02>-CustomerTo.
+          APPEND VALUE #( %TKY = <FS_AR02>-%TKY ) TO FAILED-PARAMAR02.
+          APPEND VALUE #(
+            %TKY = <FS_AR02>-%TKY
+            %MSG = NEW_MESSAGE(
+                     ID       = 'ZMSG_DRS_SP26_SAP01'
+                     NUMBER   = '060'
+                     SEVERITY = IF_ABAP_BEHV_MESSAGE=>SEVERITY-ERROR )
+            %ELEMENT-CustomerFrom = IF_ABAP_BEHV=>MK-ON
+            %ELEMENT-CustomerTo = IF_ABAP_BEHV=>MK-ON
+          ) TO REPORTED-PARAMAR02.
+        ENDIF.
+      ENDIF.
+    ENDLOOP.
+  ENDMETHOD.
+
+ENDCLASS.
+*&---------------------------------------------------------------------*
+*& Local Classes for AR03 Behavior
+*& COMPOSITION: ParamAR03 is child entity (lifecycle managed by parent)
+*&---------------------------------------------------------------------*
+CLASS LHC_PARAMAR03 DEFINITION INHERITING FROM CL_ABAP_BEHAVIOR_HANDLER.
+
+  PRIVATE SECTION.
+
+    METHODS validateFromTo FOR VALIDATE ON SAVE
+      IMPORTING KEYS FOR ParamAR03~validateFromTo.
+
+ENDCLASS.
+
+CLASS LHC_PARAMAR03 IMPLEMENTATION.
+
+  METHOD validateFromTo.
+    "Read data entered by user on Screen
+    READ ENTITIES OF ZIR_DRS_SUBSCR IN LOCAL MODE
+        ENTITY ParamAR03
+            FIELDS ( CUSTOMERFROM CUSTOMERTO )
+            WITH CORRESPONDING #( KEYS )
+        RESULT DATA(LT_PARAM_AR03).
+
+    LOOP AT LT_PARAM_AR03 ASSIGNING FIELD-SYMBOL(<FS_AR03>).
+      " Checked Customer
+      IF <FS_AR03>-CustomerFrom IS NOT INITIAL AND <FS_AR03>-CustomerTo IS NOT INITIAL.
+        IF <FS_AR03>-CustomerFrom > <FS_AR03>-CustomerTo.
+          APPEND VALUE #( %TKY = <FS_AR03>-%TKY ) TO FAILED-PARAMAR03.
+          APPEND VALUE #(
+            %TKY = <FS_AR03>-%TKY
+            %MSG = NEW_MESSAGE(
+                     ID       = 'ZMSG_DRS_SP26_SAP01'
+                     NUMBER   = '060'
+                     SEVERITY = IF_ABAP_BEHV_MESSAGE=>SEVERITY-ERROR )
+            %ELEMENT-CustomerFrom = IF_ABAP_BEHV=>MK-ON
+            %ELEMENT-CustomerTo = IF_ABAP_BEHV=>MK-ON
+          ) TO REPORTED-PARAMAR03.
+        ENDIF.
+      ENDIF.
+    ENDLOOP.
+  ENDMETHOD.
+
+ENDCLASS.
+*&---------------------------------------------------------------------*
+*& Local Classes for AR01 Behavior
+*& COMPOSITION: ParamAR01 is child entity (lifecycle managed by parent)
+*&---------------------------------------------------------------------*
+CLASS LHC_PARAMAP01 DEFINITION INHERITING FROM CL_ABAP_BEHAVIOR_HANDLER.
+
+  PRIVATE SECTION.
+
+    METHODS validateFromTo FOR VALIDATE ON SAVE
+      IMPORTING KEYS FOR ParamAP01~validateFromTo.
+
+ENDCLASS.
+
+CLASS LHC_PARAMAP01 IMPLEMENTATION.
+
+  METHOD validateFromTo.
+    "Read data entered by user on Screen
+    READ ENTITIES OF ZIR_DRS_SUBSCR IN LOCAL MODE
+        ENTITY ParamAP01
+            FIELDS ( VendorFrom VendorTo )
+            WITH CORRESPONDING #( KEYS )
+        RESULT DATA(LT_PARAM_AP01).
+
+    LOOP AT LT_PARAM_AP01 ASSIGNING FIELD-SYMBOL(<FS_AP01>).
+      " Checked Customer
+      IF <FS_AP01>-VendorFrom IS NOT INITIAL AND <FS_AP01>-VendorTo IS NOT INITIAL.
+        IF <FS_AP01>-VendorFrom > <FS_AP01>-VendorTo.
+          APPEND VALUE #( %TKY = <FS_AP01>-%TKY ) TO FAILED-PARAMAP01.
+          APPEND VALUE #(
+            %TKY = <FS_AP01>-%TKY
+            %MSG = NEW_MESSAGE(
+                     ID       = 'ZMSG_DRS_SP26_SAP01'
+                     NUMBER   = '061'
+                     SEVERITY = IF_ABAP_BEHV_MESSAGE=>SEVERITY-ERROR )
+            %ELEMENT-VendorFrom = IF_ABAP_BEHV=>MK-ON
+            %ELEMENT-VendorTo = IF_ABAP_BEHV=>MK-ON
+          ) TO REPORTED-PARAMAP01.
+        ENDIF.
+      ENDIF.
+    ENDLOOP.
+
+
+  ENDMETHOD.
+
+ENDCLASS.
+*&---------------------------------------------------------------------*
+*& Local Classes for AR02 Behavior
+*& COMPOSITION: ParamAR02 is child entity (lifecycle managed by parent)
+*&---------------------------------------------------------------------*
+CLASS LHC_PARAMAP02 DEFINITION INHERITING FROM CL_ABAP_BEHAVIOR_HANDLER.
+
+  PRIVATE SECTION.
+
+    METHODS validateFromTo FOR VALIDATE ON SAVE
+      IMPORTING KEYS FOR ParamAP02~validateFromTo.
+
+ENDCLASS.
+
+CLASS LHC_PARAMAP02 IMPLEMENTATION.
+
+  METHOD validateFromTo.
+    "Read data entered by user on Screen
+    READ ENTITIES OF ZIR_DRS_SUBSCR IN LOCAL MODE
+        ENTITY ParamAP02
+            FIELDS ( VendorFrom VendorTo )
+            WITH CORRESPONDING #( KEYS )
+        RESULT DATA(LT_PARAM_AP02).
+
+    LOOP AT LT_PARAM_AP02 ASSIGNING FIELD-SYMBOL(<FS_AP02>).
+      " Checked Customer
+      IF <FS_AP02>-VendorFrom IS NOT INITIAL AND <FS_AP02>-VendorTo IS NOT INITIAL.
+        IF <FS_AP02>-VendorFrom > <FS_AP02>-VendorTo.
+          APPEND VALUE #( %TKY = <FS_AP02>-%TKY ) TO FAILED-PARAMAP01.
+          APPEND VALUE #(
+            %TKY = <FS_AP02>-%TKY
+            %MSG = NEW_MESSAGE(
+                     ID       = 'ZMSG_DRS_SP26_SAP01'
+                     NUMBER   = '061'
+                     SEVERITY = IF_ABAP_BEHV_MESSAGE=>SEVERITY-ERROR )
+            %ELEMENT-VendorFrom = IF_ABAP_BEHV=>MK-ON
+            %ELEMENT-VendorTo = IF_ABAP_BEHV=>MK-ON
+          ) TO REPORTED-PARAMAP02.
+        ENDIF.
+      ENDIF.
+    ENDLOOP.
+  ENDMETHOD.
+
+ENDCLASS.
+*&---------------------------------------------------------------------*
+*& Local Classes for AR03 Behavior
+*& COMPOSITION: ParamAR03 is child entity (lifecycle managed by parent)
+*&---------------------------------------------------------------------*
+CLASS LHC_PARAMAP03 DEFINITION INHERITING FROM CL_ABAP_BEHAVIOR_HANDLER.
+
+  PRIVATE SECTION.
+
+    METHODS validateFromTo FOR VALIDATE ON SAVE
+      IMPORTING KEYS FOR ParamAP03~validateFromTo.
+
+ENDCLASS.
+
+CLASS LHC_PARAMAP03 IMPLEMENTATION.
+
+  METHOD validateFromTo.
+    "Read data entered by user on Screen
+    READ ENTITIES OF ZIR_DRS_SUBSCR IN LOCAL MODE
+        ENTITY ParamAP03
+            FIELDS ( VendorFrom VendorTo )
+            WITH CORRESPONDING #( KEYS )
+        RESULT DATA(LT_PARAM_AP03).
+
+    LOOP AT LT_PARAM_AP03 ASSIGNING FIELD-SYMBOL(<FS_AP03>).
+      " Checked Customer
+      IF <FS_AP03>-VendorFrom IS NOT INITIAL AND <FS_AP03>-VendorTo IS NOT INITIAL.
+        IF <FS_AP03>-VendorFrom > <FS_AP03>-VendorTo.
+          APPEND VALUE #( %TKY = <FS_AP03>-%TKY ) TO FAILED-PARAMAP01.
+          APPEND VALUE #(
+            %TKY = <FS_AP03>-%TKY
+            %MSG = NEW_MESSAGE(
+                     ID       = 'ZMSG_DRS_SP26_SAP01'
+                     NUMBER   = '061'
+                     SEVERITY = IF_ABAP_BEHV_MESSAGE=>SEVERITY-ERROR )
+            %ELEMENT-VendorFrom = IF_ABAP_BEHV=>MK-ON
+            %ELEMENT-VendorTo = IF_ABAP_BEHV=>MK-ON
+          ) TO REPORTED-PARAMAP03.
+        ENDIF.
+      ENDIF.
+    ENDLOOP.
+  ENDMETHOD.
+
+ENDCLASS.
 
 CLASS LHC_SUBSCRIPTION IMPLEMENTATION.
 
@@ -116,8 +462,8 @@ CLASS LHC_SUBSCRIPTION IMPLEMENTATION.
         " Condition 2: Check report access (only if ReportId is filled)
         IF <LS_SUBSCR>-ReportId IS NOT INITIAL.
           AUTHORITY-CHECK OBJECT 'ZDRS_REP'
-            ID 'ZREP_ID' FIELD <LS_SUBSCR>-ReportId
-            ID 'ACTVT'   FIELD '03'.
+          ID 'ZREP_ID' FIELD <LS_SUBSCR>-ReportId
+          ID 'ACTVT'   FIELD '03'.
           IF SY-SUBRC <> 0.
             LV_UPDATE_AUTH = IF_ABAP_BEHV=>AUTH-UNAUTHORIZED.
             LV_DELETE_AUTH = IF_ABAP_BEHV=>AUTH-UNAUTHORIZED.
@@ -128,8 +474,8 @@ CLASS LHC_SUBSCRIPTION IMPLEMENTATION.
         IF LV_UPDATE_AUTH = IF_ABAP_BEHV=>AUTH-ALLOWED
           AND <LS_SUBSCR>-Bukrs IS NOT INITIAL.
           AUTHORITY-CHECK OBJECT 'F_BKPF_BUK'
-            ID 'BUKRS' FIELD <LS_SUBSCR>-Bukrs
-            ID 'ACTVT' FIELD '03'.
+          ID 'BUKRS' FIELD <LS_SUBSCR>-Bukrs
+          ID 'ACTVT' FIELD '03'.
           IF SY-SUBRC <> 0.
             LV_UPDATE_AUTH = IF_ABAP_BEHV=>AUTH-UNAUTHORIZED.
             LV_DELETE_AUTH = IF_ABAP_BEHV=>AUTH-UNAUTHORIZED.
@@ -237,13 +583,20 @@ CLASS LHC_SUBSCRIPTION IMPLEMENTATION.
 
   METHOD EARLYNUMBERING_CREATE.
     " Generate UUID and Subscription ID for new subscriptions
-    DATA: LV_SUBSCR_ID TYPE N LENGTH 6,
-          LV_UUID      TYPE SYSUUID_X16,
-          LV_ID        TYPE N LENGTH 6.
+    DATA: LV_CURRENT_MAX   TYPE N LENGTH 6,
+          LV_NEW_SUBSCR_ID TYPE N LENGTH 6,
+          LV_UUID          TYPE SYSUUID_X16,
+          LV_ID            TYPE N LENGTH 6.
 
     " Get max subscr_id from DB and increment
-    SELECT MAX( SUBSCR_ID ) FROM ZDRS_SUBSCR INTO @DATA(LV_MAX_ID).
-    LV_SUBSCR_ID = LV_MAX_ID + 1.
+    SELECT SINGLE MAX( SUBSCR_ID ) FROM ZDRS_SUBSCR INTO @DATA(LV_MAX_ACTIVE).
+
+    " Get max subscr_id from Draft DB and increment
+    SELECT SINGLE MAX( SUBSCRID ) FROM ZDRS_D_SUBSCR INTO @DATA(LV_MAX_DRAFT).
+
+    LV_CURRENT_MAX = NMAX( VAL1 = LV_MAX_ACTIVE VAL2 = LV_MAX_DRAFT ).
+
+    LV_NEW_SUBSCR_ID = LV_CURRENT_MAX + 1.
 
     " MUST return mapped for ALL entities (including draft)
     LOOP AT ENTITIES ASSIGNING FIELD-SYMBOL(<ENTITY>).
@@ -256,8 +609,8 @@ CLASS LHC_SUBSCRIPTION IMPLEMENTATION.
 
       " Use provided SubscrId or generate new one
       IF <ENTITY>-SubscrId IS INITIAL.
-        LV_ID = LV_SUBSCR_ID.
-        LV_SUBSCR_ID = LV_SUBSCR_ID + 1.
+        LV_ID = LV_NEW_SUBSCR_ID.
+        LV_NEW_SUBSCR_ID = LV_NEW_SUBSCR_ID + 1.
       ELSE.
         LV_ID = <ENTITY>-SubscrId.
       ENDIF.
@@ -570,14 +923,6 @@ CLASS LHC_SUBSCRIPTION IMPLEMENTATION.
       LV_NEW_SUBSCR_ID = LV_NEW_SUBSCR_ID + 1.
     ENDLOOP.
 
-*    " Create subscriptions via RAP
-*    MODIFY ENTITIES OF ZIR_DRS_SUBSCR IN LOCAL MODE
-*      ENTITY Subscription
-*        CREATE FROM LT_SUBSCR
-*        CREATE BY \_ParamGL01 FROM LT_PARAM_GL01
-*      MAPPED DATA(LT_MAPPED)
-*      FAILED DATA(LT_CREATE_FAILED)
-*      REPORTED DATA(LT_REPORTED).
     " Create subscriptions and all associations via RAP
     MODIFY ENTITIES OF ZIR_DRS_SUBSCR IN LOCAL MODE
       ENTITY Subscription
@@ -701,7 +1046,9 @@ CLASS LHC_SUBSCRIPTION IMPLEMENTATION.
               %TKY = CORRESPONDING #( <SUBSCR> )
               %TARGET = VALUE #( (
                 %CID        = |{ <SUBSCR>-ReportId }_{ SY-TABIX }|
-                %IS_DRAFT   = <SUBSCR>-%IS_DRAFT ) )
+                %IS_DRAFT   = <SUBSCR>-%IS_DRAFT
+                MaxRows     = 100
+                %CONTROL-MaxRows = IF_ABAP_BEHV=>MK-ON ) )
             ) TO LT_CREATE_GL01.
           ENDIF.
 
@@ -723,8 +1070,8 @@ CLASS LHC_SUBSCRIPTION IMPLEMENTATION.
               %TARGET = VALUE #( (
                 %CID        = |{ <SUBSCR>-ReportId }_{ SY-TABIX }|
                 %IS_DRAFT   = <SUBSCR>-%IS_DRAFT
-                CompanyCode = <SUBSCR>-Bukrs
-                KeyDate     = '' ) )
+                MaxRows     = 100
+                %CONTROL-MaxRows = IF_ABAP_BEHV=>MK-ON ) )
             ) TO LT_CREATE_AR01.
           ENDIF.
 
@@ -744,7 +1091,9 @@ CLASS LHC_SUBSCRIPTION IMPLEMENTATION.
               %TKY = CORRESPONDING #( <SUBSCR> )
               %TARGET = VALUE #( (
                 %CID        = |{ <SUBSCR>-ReportId }_{ SY-TABIX }|
-                %IS_DRAFT   = <SUBSCR>-%IS_DRAFT ) )
+                %IS_DRAFT   = <SUBSCR>-%IS_DRAFT
+                MaxRows     = 100
+                %CONTROL-MaxRows = IF_ABAP_BEHV=>MK-ON ) )
             ) TO LT_CREATE_AR02.
           ENDIF.
 
@@ -764,7 +1113,9 @@ CLASS LHC_SUBSCRIPTION IMPLEMENTATION.
               %TKY = CORRESPONDING #( <SUBSCR> )
               %TARGET = VALUE #( (
                 %CID        = |{ <SUBSCR>-ReportId }_{ SY-TABIX }|
-                %IS_DRAFT   = <SUBSCR>-%IS_DRAFT ) )
+                %IS_DRAFT   = <SUBSCR>-%IS_DRAFT
+                MaxRows     = 100
+                %CONTROL-MaxRows = IF_ABAP_BEHV=>MK-ON ) )
             ) TO LT_CREATE_AR03.
           ENDIF.
 
@@ -785,7 +1136,9 @@ CLASS LHC_SUBSCRIPTION IMPLEMENTATION.
               %TKY = CORRESPONDING #( <SUBSCR> )
               %TARGET = VALUE #( (
                 %CID        = |{ <SUBSCR>-ReportId }_{ SY-TABIX }|
-                %IS_DRAFT   = <SUBSCR>-%IS_DRAFT ) )
+                %IS_DRAFT   = <SUBSCR>-%IS_DRAFT
+                MaxRows     = 100
+                %CONTROL-MaxRows = IF_ABAP_BEHV=>MK-ON ) )
             ) TO LT_CREATE_AP01.
           ENDIF.
 
@@ -805,7 +1158,9 @@ CLASS LHC_SUBSCRIPTION IMPLEMENTATION.
               %TKY = CORRESPONDING #( <SUBSCR> )
               %TARGET = VALUE #( (
                 %CID        = |{ <SUBSCR>-ReportId }_{ SY-TABIX }|
-                %IS_DRAFT   = <SUBSCR>-%IS_DRAFT ) )
+                %IS_DRAFT   = <SUBSCR>-%IS_DRAFT
+                MaxRows     = 100
+                %CONTROL-MaxRows = IF_ABAP_BEHV=>MK-ON ) )
             ) TO LT_CREATE_AP02.
           ENDIF.
 
@@ -825,7 +1180,9 @@ CLASS LHC_SUBSCRIPTION IMPLEMENTATION.
               %TKY = CORRESPONDING #( <SUBSCR> )
               %TARGET = VALUE #( (
                 %CID        = |{ <SUBSCR>-ReportId }_{ SY-TABIX }|
-                %IS_DRAFT   = <SUBSCR>-%IS_DRAFT ) )
+                %IS_DRAFT   = <SUBSCR>-%IS_DRAFT
+                MaxRows     = 100
+                %CONTROL-MaxRows = IF_ABAP_BEHV=>MK-ON ) )
             ) TO LT_CREATE_AP03.
           ENDIF.
 
@@ -1081,9 +1438,11 @@ CLASS LHC_SUBSCRIPTION IMPLEMENTATION.
             LV_MSG_NO = '055'. " '&1 Report has not been prepared'
           ELSE.
             DATA(LS_GL01) = LT_GL01[ 1 ].
-            IF LS_GL01-CompanyCode IS INITIAL OR LS_GL01-FiscalYear IS INITIAL OR
-               LS_GL01-FiscalPeriodFr IS INITIAL OR LS_GL01-FiscalPeriodTo IS INITIAL OR
-               LS_GL01-GlAccountFr IS INITIAL OR LS_GL01-GlAccountTo IS INITIAL.
+            IF LS_GL01-CompanyCode IS INITIAL
+*            OR LS_GL01-FiscalYear IS INITIAL
+*           OR    LS_GL01-FiscalPeriodFr IS INITIAL OR LS_GL01-FiscalPeriodTo IS INITIAL OR
+*               LS_GL01-GlAccountFr IS INITIAL OR LS_GL01-GlAccountTo IS INITIAL
+.
               LV_MSG_NO = '056'. " '&1 parameters are incomplete'
             ENDIF.
           ENDIF.

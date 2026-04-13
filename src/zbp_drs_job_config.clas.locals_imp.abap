@@ -7,6 +7,8 @@ CLASS lhc_DrsJobConfig DEFINITION INHERITING FROM CL_ABAP_BEHAVIOR_HANDLER.
     CONSTANTS GC_SNRO_OBJECT TYPE NROBJ VALUE 'ZDRS_JOBID'.
     " Message class
     CONSTANTS GC_MSG_CLASS TYPE SYMSGID VALUE 'ZMSG_DRS_SP26_SAP01'.
+    " APJ single-char status: Cancelled (see GET_INSTANCE_FEATURES terminal list)
+    CONSTANTS GC_JOB_STATUS_CANCELLED TYPE CL_APJ_RT_API=>TY_JOB_STATUS VALUE 'C'.
 
     METHODS GET_GLOBAL_AUTHORIZATIONS FOR GLOBAL AUTHORIZATION
       IMPORTING REQUEST REQUESTED_AUTHORIZATIONS FOR DrsJobConfig RESULT RESULT.
@@ -676,8 +678,8 @@ CLASS lhc_DrsJobConfig IMPLEMENTATION.
               " MO/WM/W: skip fixed-interval range check.
               " MO/WM — APJ decides the actual run date based on MONTH_INFO.
               " W — multi-weekday runs (e.g. Mon+Wed+Fri) have variable intervals;
-              " fixed 604800s check rejects valid short ranges. scheduleJob handles
-              " W iteration count using weeks-based calculation instead.
+              " fixed 604800s check rejects valid short ranges. scheduleJob Delegates
+              " the stop condition natively to SAP APJ using the DATE payload instead.
               IF LS_JOB-PeriodicGranularity <> 'MO'
               AND LS_JOB-PeriodicGranularity <> 'WM'
               AND LS_JOB-PeriodicGranularity <> 'W'.
@@ -884,19 +886,17 @@ CLASS lhc_DrsJobConfig IMPLEMENTATION.
               " ─────────────────────────────────────────────────────────────────────
               " Known limitations & design decisions:
               " ─────────────────────────────────────────────────────────────────────
-              " 1. EndInfoType = 'DATE' does NOT work on this SAP TUM environment
-              "    APJ ignores is_end_info-timestamp completely → job runs forever
-              "    Workaround: always use type='NUM' (max_iterations) instead
+              " 1. EndInfoType = 'DATE' behavior on this SAP TUM environment
+              "    - Works properly for granularities W, D, MO, WM.
+              "    - Fails/rejected for MI, H (Minute, Hour).
+              "    Workaround: For MI and H, we manually calculate MAX_ITERATIONS
+              "    (type='NUM') based on the duration between start and end timestamps.
               "
-              " 2. CALC_ITER for granularity 'MO'/'WM'
-              "    Uses calendar month difference instead of fixed seconds.
-              "    Same-month range → allows at least 1 iteration.
-              "
-              " 3. "Run forever" mode NOT supported
+              " 2. "Run forever" mode NOT supported
               "    Validation enforces: must provide EndTimestamp OR MaxIterations > 0
               "    Prevents accidental infinite jobs consuming system resources.
               "
-              " 4. EndInfoType field exists in DB/CDS/BDEF but not written
+              " 3. EndInfoType field exists in DB/CDS/BDEF but not written
               "    Field 'end_info_type' is defined across all layers but code does
               "    not persist it (always leaves initial). Future enhancement candidate.
               " ─────────────────────────────────────────────────────────────────────
@@ -1216,10 +1216,13 @@ CLASS lhc_DrsJobConfig IMPLEMENTATION.
               IV_JOBNAME  = LS_JOB-JobName
               IV_JOBCOUNT = LS_JOB-JobCount ).
 
-          " Fetch the actual status from SAP after cancel
-          " (avoids hardcoding 'A' — SAP may return 'C', 'A', etc.)
+          " Prefer live status from SAP; after cancel the job row may disappear (APJ doc) or GET_JOB_STATUS may fail on auth.
           DATA LV_CANCEL_STATUS      TYPE CL_APJ_RT_API=>TY_JOB_STATUS.
           DATA LV_CANCEL_STATUS_TEXT TYPE CL_APJ_RT_API=>TY_JOB_STATUS_TEXT.
+          DATA LV_CANCEL_MSG         TYPE STRING.
+          CLEAR LV_CANCEL_STATUS.
+          CLEAR LV_CANCEL_STATUS_TEXT.
+          CLEAR LV_CANCEL_MSG.
           TRY.
               CL_APJ_RT_API=>GET_JOB_STATUS(
                 EXPORTING
@@ -1228,20 +1231,35 @@ CLASS lhc_DrsJobConfig IMPLEMENTATION.
                 IMPORTING
                   EV_JOB_STATUS      = LV_CANCEL_STATUS
                   EV_JOB_STATUS_TEXT = LV_CANCEL_STATUS_TEXT ).
-            CATCH CX_APJ_RT.
-              " Fallback if status fetch fails right after cancel
-              LV_CANCEL_STATUS      = 'A'.
-              LV_CANCEL_STATUS_TEXT = 'Cancelled'.
+              LV_CANCEL_MSG = |Job cancelled successfully|.
+            CATCH CX_APJ_RT INTO DATA(LX_CANCEL_STATUS).
+              DATA(LV_SK) = LX_CANCEL_STATUS->IF_T100_MESSAGE~T100KEY.
+              IF LV_SK-msgid = CX_APJ_RT=>CX_JOB_DOESNT_EXIST-msgid
+                 AND LV_SK-msgno = CX_APJ_RT=>CX_JOB_DOESNT_EXIST-msgno.
+                " Job deleted from APJ_V_JOB_STATUS after cancel (e.g. not yet started / periodic chain) — no row to read.
+                LV_CANCEL_STATUS      = GC_JOB_STATUS_CANCELLED.
+                LV_CANCEL_STATUS_TEXT = 'Cancelled'.
+                LV_CANCEL_MSG         = |Job cancelled successfully|.
+              ELSEIF LV_SK-msgid = CX_APJ_RT=>CX_NO_AUTH_TO_READ_DETAILS-msgid
+                 AND LV_SK-msgno = CX_APJ_RT=>CX_NO_AUTH_TO_READ_DETAILS-msgno.
+                " Cancel succeeded; current user cannot read status (GET_JOB_STATUS ownership rule).
+                LV_CANCEL_STATUS      = GC_JOB_STATUS_CANCELLED.
+                LV_CANCEL_STATUS_TEXT = 'Cancelled'.
+                LV_CANCEL_MSG         = |Job cancelled successfully. Status not refreshed (authorization).|.
+              ELSE.
+                LV_CANCEL_STATUS      = GC_JOB_STATUS_CANCELLED.
+                LV_CANCEL_STATUS_TEXT = 'Cancelled'.
+                LV_CANCEL_MSG         = |Job cancelled successfully. Status not refreshed (see details).|.
+              ENDIF.
           ENDTRY.
 
-          " Update entity with real status returned by SAP
           MODIFY ENTITIES OF ZIR_DRS_JOB_CONFIG IN LOCAL MODE
             ENTITY DrsJobConfig
             UPDATE FIELDS ( JobStatus JobStatusText Message )
             WITH VALUE #( ( %TKY = LS_JOB-%TKY
               JobStatus     = LV_CANCEL_STATUS
               JobStatusText = LV_CANCEL_STATUS_TEXT
-              Message       = |Job cancelled successfully| ) )
+              Message       = LV_CANCEL_MSG ) )
             REPORTED DATA(LT_REPORTED).
 
         CATCH CX_APJ_RT INTO DATA(LX_APJ).

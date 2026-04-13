@@ -1,45 +1,45 @@
-CLASS zcl_xlsx_formatter_ap02 DEFINITION
+CLASS ZCL_XLSX_FORMATTER_AP02 DEFINITION
   PUBLIC
   FINAL
   CREATE PUBLIC.
 
   PUBLIC SECTION.
-    INTERFACES zif_file_formatter.
+    INTERFACES ZIF_FILE_FORMATTER.
 
-    METHODS constructor
-      IMPORTING is_params TYPE zif_report=>ty_params.
+    METHODS CONSTRUCTOR
+      IMPORTING IS_PARAMS TYPE ZIF_REPORT=>TY_PARAMS.
 
   PRIVATE SECTION.
-    DATA ms_params TYPE zif_report=>ty_params.
+    DATA MS_PARAMS TYPE ZIF_REPORT=>TY_PARAMS.
 
-    METHODS build_styles
-      RETURNING VALUE(rv_xml) TYPE string.
+    METHODS BUILD_STYLES
+      RETURNING VALUE(RV_XML) TYPE STRING.
 
-    METHODS build_sheet
-      IMPORTING ir_data       TYPE REF TO data
-                it_col_meta   TYPE zif_file_formatter=>tt_col_meta
-      RETURNING VALUE(rv_xml) TYPE string.
+    METHODS BUILD_SHEET
+      IMPORTING IR_DATA       TYPE REF TO DATA
+                IT_COL_META   TYPE ZIF_FILE_FORMATTER=>TT_COL_META
+      RETURNING VALUE(RV_XML) TYPE STRING.
 
-    METHODS col_letter
-      IMPORTING iv_index         TYPE i
-      RETURNING VALUE(rv_letter) TYPE string.
+    METHODS COL_LETTER
+      IMPORTING IV_INDEX         TYPE I
+      RETURNING VALUE(RV_LETTER) TYPE STRING.
 
 ENDCLASS.
 
-CLASS zcl_xlsx_formatter_ap02 IMPLEMENTATION.
+CLASS ZCL_XLSX_FORMATTER_AP02 IMPLEMENTATION.
 
-  METHOD constructor.
-    ms_params = is_params.
+  METHOD CONSTRUCTOR.
+    MS_PARAMS = IS_PARAMS.
   ENDMETHOD.
 
-  METHOD zif_file_formatter~generate.
-    rs_result-extension = 'xlsx'.
-    rs_result-mime_type = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'.
+  METHOD ZIF_FILE_FORMATTER~GENERATE.
+    RS_RESULT-EXTENSION = 'xlsx'.
+    RS_RESULT-MIME_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'.
 
-    DATA(lv_conv) = cl_abap_conv_codepage=>create_out( codepage = `UTF-8` ).
-    DATA(lo_zip)  = NEW cl_abap_zip( ).
+    DATA(LV_CONV) = CL_ABAP_CONV_CODEPAGE=>CREATE_OUT( CODEPAGE = `UTF-8` ).
+    DATA(LO_ZIP)  = NEW CL_ABAP_ZIP( ).
 
-    lo_zip->add( name = '[Content_Types].xml' content = lv_conv->convert(
+    LO_ZIP->ADD( NAME = '[Content_Types].xml' CONTENT = LV_CONV->CONVERT(
       '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' &&
       '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">' &&
       '<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>' &&
@@ -52,7 +52,7 @@ CLASS zcl_xlsx_formatter_ap02 IMPLEMENTATION.
         ' ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/>' &&
       '</Types>' ) ).
 
-    lo_zip->add( name = '_rels/.rels' content = lv_conv->convert(
+    LO_ZIP->ADD( NAME = '_rels/.rels' CONTENT = LV_CONV->CONVERT(
       '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' &&
       '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">' &&
       '<Relationship Id="rId1"' &&
@@ -60,7 +60,7 @@ CLASS zcl_xlsx_formatter_ap02 IMPLEMENTATION.
         ' Target="xl/workbook.xml"/>' &&
       '</Relationships>' ) ).
 
-    lo_zip->add( name = 'xl/_rels/workbook.xml.rels' content = lv_conv->convert(
+    LO_ZIP->ADD( NAME = 'xl/_rels/workbook.xml.rels' CONTENT = LV_CONV->CONVERT(
       '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' &&
       '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">' &&
       '<Relationship Id="rId1"' &&
@@ -71,7 +71,7 @@ CLASS zcl_xlsx_formatter_ap02 IMPLEMENTATION.
         ' Target="styles.xml"/>' &&
       '</Relationships>' ) ).
 
-    lo_zip->add( name = 'xl/workbook.xml' content = lv_conv->convert(
+    LO_ZIP->ADD( NAME = 'xl/workbook.xml' CONTENT = LV_CONV->CONVERT(
       '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' &&
       '<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"' &&
         ' xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">' &&
@@ -80,23 +80,23 @@ CLASS zcl_xlsx_formatter_ap02 IMPLEMENTATION.
       '</sheets>' &&
       '</workbook>' ) ).
 
-    lo_zip->add( name    = 'xl/styles.xml'
-                 content = lv_conv->convert( build_styles( ) ) ).
+    LO_ZIP->ADD( NAME    = 'xl/styles.xml'
+                 CONTENT = LV_CONV->CONVERT( BUILD_STYLES( ) ) ).
 
-    lo_zip->add( name    = 'xl/worksheets/sheet1.xml'
-                 content = lv_conv->convert(
-                   build_sheet( ir_data = ir_data it_col_meta = it_col_meta ) ) ).
+    LO_ZIP->ADD( NAME    = 'xl/worksheets/sheet1.xml'
+                 CONTENT = LV_CONV->CONVERT(
+                   BUILD_SHEET( IR_DATA = IR_DATA IT_COL_META = IT_COL_META ) ) ).
 
-    rs_result-xstring = lo_zip->save( ).
+    RS_RESULT-XSTRING = LO_ZIP->SAVE( ).
   ENDMETHOD.
 
-  METHOD build_styles.
-    DATA(lv_numfmts) =
+  METHOD BUILD_STYLES.
+    DATA(LV_NUMFMTS) =
       '<numFmts count="1">' &&
       '<numFmt numFmtId="164" formatCode="#,##0;-#,##0;&quot;-&quot;"/>' &&
       '</numFmts>'.
 
-    DATA(lv_fonts) =
+    DATA(LV_FONTS) =
       '<fonts count="4">' &&
       '<font><sz val="11"/><name val="Arial"/></font>' &&
       '<font><sz val="10"/><name val="Arial"/></font>' &&
@@ -104,7 +104,7 @@ CLASS zcl_xlsx_formatter_ap02 IMPLEMENTATION.
       '<font><b/><sz val="14"/><name val="Arial"/></font>' &&
       '</fonts>'.
 
-    DATA(lv_fills) =
+    DATA(LV_FILLS) =
       '<fills count="3">' &&
       '<fill><patternFill patternType="none"/></fill>' &&
       '<fill><patternFill patternType="gray125"/></fill>' &&
@@ -113,7 +113,7 @@ CLASS zcl_xlsx_formatter_ap02 IMPLEMENTATION.
       '</patternFill></fill>' &&
       '</fills>'.
 
-    DATA(lv_borders) =
+    DATA(LV_BORDERS) =
       '<borders count="2">' &&
       '<border><left/><right/><top/><bottom/><diagonal/></border>' &&
       '<border>' &&
@@ -125,12 +125,12 @@ CLASS zcl_xlsx_formatter_ap02 IMPLEMENTATION.
       '</border>' &&
       '</borders>'.
 
-    DATA(lv_csxfs) =
+    DATA(LV_CSXFS) =
       '<cellStyleXfs count="1">' &&
       '<xf numFmtId="0" fontId="0" fillId="0" borderId="0"/>' &&
       '</cellStyleXfs>'.
 
-    DATA(lv_cxfs) =
+    DATA(LV_CXFS) =
       '<cellXfs count="11">' &&
       '<xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/>' &&
       '<xf numFmtId="0" fontId="3" fillId="0" borderId="0" xfId="0"' &&
@@ -175,51 +175,65 @@ CLASS zcl_xlsx_formatter_ap02 IMPLEMENTATION.
       '</xf>' &&
       '</cellXfs>'.
 
-    rv_xml =
+    RV_XML =
       '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' &&
       '<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">' &&
-      lv_numfmts && lv_fonts && lv_fills && lv_borders && lv_csxfs && lv_cxfs &&
+      LV_NUMFMTS && LV_FONTS && LV_FILLS && LV_BORDERS && LV_CSXFS && LV_CXFS &&
       '</styleSheet>'.
   ENDMETHOD.
 
-  METHOD build_sheet.
-    SELECT SINGLE * FROM zdrs_param_ap02
-      WHERE subscr_uuid = @ms_params-subscr_uuid
-      INTO @DATA(ls_param).
+  METHOD BUILD_SHEET.
+    SELECT SINGLE FROM ZDRS_PARAM_AP02
+      FIELDS COMPANY_CODE,
+             FISCAL_YEAR,
+             MAX_ROWS,
+             VENDOR_FROM,
+             VENDOR_TO
+      WHERE SUBSCR_UUID = @MS_PARAMS-SUBSCR_UUID
+      INTO @DATA(LS_SPEC_PARAM).
 
-    DATA(lv_gen_date) = |{ sy-datum+6(2) }/{ sy-datum+4(2) }/{ sy-datum(4) }|.
+    IF SY-SUBRC <> 0.
+      " Message: Report parameters not found for report ID &1
+      RAISE EXCEPTION TYPE CX_APJ_RT
+        MESSAGE ID 'ZMSG_DRS_SP26_SAP01'
+        TYPE 'E'
+        NUMBER '039'
+        WITH MS_PARAMS-REPORT_ID.
+    ENDIF.
 
-    FIELD-SYMBOLS <lt_data> TYPE STANDARD TABLE.
-    ASSIGN ir_data->* TO <lt_data>.
+    DATA(LV_GEN_DATE) = |{ SY-DATUM+6(2) }/{ SY-DATUM+4(2) }/{ SY-DATUM(4) }|.
 
-    DATA(lv_data_cnt)   = lines( <lt_data> ).
-    DATA(lv_data_first) = 8.
-    DATA(lv_data_last)  = lv_data_first + lv_data_cnt - 1.
-    DATA(lv_tot_start)  = lv_data_last + 2.
+    FIELD-SYMBOLS <LT_DATA> TYPE STANDARD TABLE.
+    ASSIGN IR_DATA->* TO <LT_DATA>.
 
-    DATA lv_currency TYPE string.
-    READ TABLE <lt_data> INDEX 1 ASSIGNING FIELD-SYMBOL(<ls_first>).
-    IF sy-subrc = 0.
-      ASSIGN COMPONENT 'LOCALCURRENCY' OF STRUCTURE <ls_first> TO FIELD-SYMBOL(<lv_first_cur>).
-      IF sy-subrc = 0.
-        lv_currency = condense( |{ <lv_first_cur> }| ).
+    DATA(LV_DATA_CNT)   = LINES( <LT_DATA> ).
+    DATA(LV_DATA_FIRST) = 8.
+    DATA(LV_DATA_LAST)  = LV_DATA_FIRST + LV_DATA_CNT - 1.
+    DATA(LV_TOT_START)  = LV_DATA_LAST + 2.
+
+    DATA LV_CURRENCY TYPE STRING.
+    READ TABLE <LT_DATA> INDEX 1 ASSIGNING FIELD-SYMBOL(<LS_FIRST>).
+    IF SY-SUBRC = 0.
+      ASSIGN COMPONENT 'LOCALCURRENCY' OF STRUCTURE <LS_FIRST> TO FIELD-SYMBOL(<LV_FIRST_CUR>).
+      IF SY-SUBRC = 0.
+        LV_CURRENCY = CONDENSE( |{ <LV_FIRST_CUR> }| ).
       ENDIF.
     ENDIF.
 
-    DATA lt_unique_sup TYPE hashed TABLE OF string WITH UNIQUE KEY table_line.
-    LOOP AT <lt_data> ASSIGNING FIELD-SYMBOL(<ls_uc>).
-      ASSIGN COMPONENT 'SUPPLIER' OF STRUCTURE <ls_uc> TO FIELD-SYMBOL(<lv_uc_val>).
-      IF sy-subrc = 0.
-        DATA(lv_uc_str) = condense( |{ <lv_uc_val> }| ).
+    DATA LT_UNIQUE_SUP TYPE HASHED TABLE OF STRING WITH UNIQUE KEY TABLE_LINE.
+    LOOP AT <LT_DATA> ASSIGNING FIELD-SYMBOL(<LS_UC>).
+      ASSIGN COMPONENT 'SUPPLIER' OF STRUCTURE <LS_UC> TO FIELD-SYMBOL(<LV_UC_VAL>).
+      IF SY-SUBRC = 0.
+        DATA(LV_UC_STR) = CONDENSE( |{ <LV_UC_VAL> }| ).
         TRY.
-            INSERT lv_uc_str INTO TABLE lt_unique_sup.
-          CATCH cx_sy_itab_duplicate_key.
+            INSERT LV_UC_STR INTO TABLE LT_UNIQUE_SUP.
+          CATCH CX_SY_ITAB_DUPLICATE_KEY.
         ENDTRY.
       ENDIF.
     ENDLOOP.
-    DATA(lv_sup_cnt) = lines( lt_unique_sup ).
+    DATA(LV_SUP_CNT) = LINES( LT_UNIQUE_SUP ).
 
-    DATA(lv_cols) =
+    DATA(LV_COLS) =
       '<cols>' &&
       '<col min="1"  max="1"  width="6"  customWidth="1"/>' &&
       '<col min="2"  max="2"  width="14" customWidth="1"/>' &&
@@ -234,7 +248,7 @@ CLASS zcl_xlsx_formatter_ap02 IMPLEMENTATION.
       '<col min="11" max="11" width="12" customWidth="1"/>' &&
       '</cols>'.
 
-    DATA lv_rows TYPE string.
+    DATA LV_ROWS TYPE STRING.
 
     LV_ROWS = LV_ROWS &&
       '<row r="1" ht="35" customHeight="1">' &&
@@ -245,30 +259,30 @@ CLASS zcl_xlsx_formatter_ap02 IMPLEMENTATION.
 
     LV_ROWS = LV_ROWS &&
       '<row r="2" ht="18" customHeight="1">' &&
-      |<c r="A2" t="inlineStr" s="2"><is><t>Company code: { ls_param-company_code }</t></is></c>| &&
+      |<c r="A2" t="inlineStr" s="2"><is><t>Company code: { LS_SPEC_PARAM-COMPANY_CODE }</t></is></c>| &&
       '</row>'.
 
-    ASSIGN COMPONENT 'KEY_DATE' OF STRUCTURE ls_param TO FIELD-SYMBOL(<lv_key_date>).
-    DATA lv_key_date_str TYPE string.
-    IF sy-subrc = 0.
-      lv_key_date_str = condense( |{ <lv_key_date> }| ).
+    ASSIGN COMPONENT 'KEY_DATE' OF STRUCTURE LS_SPEC_PARAM TO FIELD-SYMBOL(<LV_KEY_DATE>).
+    DATA LV_KEY_DATE_STR TYPE STRING.
+    IF SY-SUBRC = 0.
+      LV_KEY_DATE_STR = CONDENSE( |{ <LV_KEY_DATE> }| ).
     ELSE.
-      lv_key_date_str = 'N/A'.
+      LV_KEY_DATE_STR = 'N/A'.
     ENDIF.
 
     LV_ROWS = LV_ROWS &&
       '<row r="3" ht="18" customHeight="1">' &&
-      |<c r="A3" t="inlineStr" s="2"><is><t>Key Date: { lv_key_date_str }</t></is></c>| &&
+      |<c r="A3" t="inlineStr" s="2"><is><t>Key Date: { LV_KEY_DATE_STR }</t></is></c>| &&
       '</row>'.
 
     LV_ROWS = LV_ROWS &&
       '<row r="4" ht="18" customHeight="1">' &&
-      |<c r="A4" t="inlineStr" s="2"><is><t>Currency: { lv_currency }</t></is></c>| &&
+      |<c r="A4" t="inlineStr" s="2"><is><t>Currency: { LV_CURRENCY }</t></is></c>| &&
       '</row>'.
 
     LV_ROWS = LV_ROWS &&
       '<row r="5" ht="18" customHeight="1">' &&
-      |<c r="A5" t="inlineStr" s="2"><is><t>Generated on: { lv_gen_date }</t></is></c>| &&
+      |<c r="A5" t="inlineStr" s="2"><is><t>Generated on: { LV_GEN_DATE }</t></is></c>| &&
       '</row>'.
 
     LV_ROWS = LV_ROWS && '<row r="6" ht="8" customHeight="1"/>'.
@@ -288,102 +302,102 @@ CLASS zcl_xlsx_formatter_ap02 IMPLEMENTATION.
       '<c r="K7" t="inlineStr" s="3"><is><t>Currency</t></is></c>'          &&
       '</row>'.
 
-    TYPES: BEGIN OF ty_col_map,
-             field  TYPE string,
-             is_num TYPE abap_bool,
-           END OF ty_col_map.
-    TYPES tt_col_map TYPE STANDARD TABLE OF ty_col_map WITH DEFAULT KEY.
+    TYPES: BEGIN OF TY_COL_MAP,
+             FIELD  TYPE STRING,
+             IS_NUM TYPE ABAP_BOOL,
+           END OF TY_COL_MAP.
+    TYPES TT_COL_MAP TYPE STANDARD TABLE OF TY_COL_MAP WITH DEFAULT KEY.
 
-    DATA(lt_map) = VALUE tt_col_map(
-      ( field = 'SUPPLIER'       is_num = abap_false )
-      ( field = 'SUPPLIERNAME'   is_num = abap_false )
-      ( field = 'ADDRESS'        is_num = abap_false )
-      ( field = 'POSTINGDATE'    is_num = abap_false )
-      ( field = 'OPENINGBALANCE' is_num = abap_true  )
-      ( field = 'DEBIT'          is_num = abap_true  )
-      ( field = 'CREDIT'         is_num = abap_true  )
-      ( field = 'PERIODACTIVITY' is_num = abap_true  )
-      ( field = 'CLOSINGBALANCE' is_num = abap_true  )
-      ( field = 'LOCALCURRENCY'  is_num = abap_false )
+    DATA(LT_MAP) = VALUE TT_COL_MAP(
+      ( FIELD = 'SUPPLIER'       IS_NUM = ABAP_FALSE )
+      ( FIELD = 'SUPPLIERNAME'   IS_NUM = ABAP_FALSE )
+      ( FIELD = 'ADDRESS'        IS_NUM = ABAP_FALSE )
+      ( FIELD = 'POSTINGDATE'    IS_NUM = ABAP_FALSE )
+      ( FIELD = 'OPENINGBALANCE' IS_NUM = ABAP_TRUE  )
+      ( FIELD = 'DEBIT'          IS_NUM = ABAP_TRUE  )
+      ( FIELD = 'CREDIT'         IS_NUM = ABAP_TRUE  )
+      ( FIELD = 'PERIODACTIVITY' IS_NUM = ABAP_TRUE  )
+      ( FIELD = 'CLOSINGBALANCE' IS_NUM = ABAP_TRUE  )
+      ( FIELD = 'LOCALCURRENCY'  IS_NUM = ABAP_FALSE )
     ).
 
-    DATA: lv_val_str   TYPE string,
-          lv_txt_style TYPE string,
-          lv_col_idx   TYPE i,
-          lv_row_num   TYPE i,
-          lv_seq       TYPE i.
+    DATA: LV_VAL_STR   TYPE STRING,
+          LV_TXT_STYLE TYPE STRING,
+          LV_COL_IDX   TYPE I,
+          LV_ROW_NUM   TYPE I,
+          LV_SEQ       TYPE I.
 
-    lv_row_num = lv_data_first.
-    lv_seq     = 1.
+    LV_ROW_NUM = LV_DATA_FIRST.
+    LV_SEQ     = 1.
 
-    LOOP AT <lt_data> ASSIGNING FIELD-SYMBOL(<ls_row>).
-      lv_rows = lv_rows && |<row r="{ lv_row_num }" ht="18" customHeight="1">|.
+    LOOP AT <LT_DATA> ASSIGNING FIELD-SYMBOL(<LS_ROW>).
+      LV_ROWS = LV_ROWS && |<row r="{ LV_ROW_NUM }" ht="18" customHeight="1">|.
 
-      lv_rows = lv_rows &&
-        |<c r="A{ lv_row_num }" s="8"><v>{ lv_seq }</v></c>|.
+      LV_ROWS = LV_ROWS &&
+        |<c r="A{ LV_ROW_NUM }" s="8"><v>{ LV_SEQ }</v></c>|.
 
-      lv_col_idx = 2.
-      LOOP AT lt_map INTO DATA(ls_map).
-        DATA(lv_cl) = col_letter( lv_col_idx ).
-        ASSIGN COMPONENT ls_map-field OF STRUCTURE <ls_row> TO FIELD-SYMBOL(<lv_val>).
-        CLEAR lv_val_str.
-        IF sy-subrc = 0.
-          lv_val_str = condense( |{ <lv_val> }| ).
+      LV_COL_IDX = 2.
+      LOOP AT LT_MAP INTO DATA(LS_MAP).
+        DATA(LV_CL) = COL_LETTER( LV_COL_IDX ).
+        ASSIGN COMPONENT LS_MAP-FIELD OF STRUCTURE <LS_ROW> TO FIELD-SYMBOL(<LV_VAL>).
+        CLEAR LV_VAL_STR.
+        IF SY-SUBRC = 0.
+          LV_VAL_STR = CONDENSE( |{ <LV_VAL> }| ).
         ENDIF.
 
-        IF ls_map-is_num = abap_true.
-          lv_rows = lv_rows && |<c r="{ lv_cl }{ lv_row_num }" s="5"><v>{ lv_val_str }</v></c>|.
+        IF LS_MAP-IS_NUM = ABAP_TRUE.
+          LV_ROWS = LV_ROWS && |<c r="{ LV_CL }{ LV_ROW_NUM }" s="5"><v>{ LV_VAL_STR }</v></c>|.
         ELSE.
-          lv_txt_style = COND #( WHEN lv_col_idx = 11 THEN '8' ELSE '6' ).
-          lv_rows = lv_rows && |<c r="{ lv_cl }{ lv_row_num }" t="inlineStr" s="{ lv_txt_style }">| &&
-                               |<is><t>{ lv_val_str }</t></is></c>|.
+          LV_TXT_STYLE = COND #( WHEN LV_COL_IDX = 11 THEN '8' ELSE '6' ).
+          LV_ROWS = LV_ROWS && |<c r="{ LV_CL }{ LV_ROW_NUM }" t="inlineStr" s="{ LV_TXT_STYLE }">| &&
+                               |<is><t>{ LV_VAL_STR }</t></is></c>|.
         ENDIF.
 
-        lv_col_idx = lv_col_idx + 1.
+        LV_COL_IDX = LV_COL_IDX + 1.
       ENDLOOP.
 
-      lv_rows    = lv_rows && '</row>'.
-      lv_row_num = lv_row_num + 1.
-      lv_seq     = lv_seq + 1.
+      LV_ROWS    = LV_ROWS && '</row>'.
+      LV_ROW_NUM = LV_ROW_NUM + 1.
+      LV_SEQ     = LV_SEQ + 1.
     ENDLOOP.
 
-    DATA(lv_t1) = lv_tot_start.
-    DATA(lv_t2) = lv_tot_start + 1.
-    DATA(lv_t3) = lv_tot_start + 2.
-    DATA(lv_t4) = lv_tot_start + 3.
-    DATA(lv_t5) = lv_tot_start + 4.
+    DATA(LV_T1) = LV_TOT_START.
+    DATA(LV_T2) = LV_TOT_START + 1.
+    DATA(LV_T3) = LV_TOT_START + 2.
+    DATA(LV_T4) = LV_TOT_START + 3.
+    DATA(LV_T5) = LV_TOT_START + 4.
 
-    lv_rows = lv_rows &&
-      |<row r="{ lv_t1 }" ht="18" customHeight="1">| &&
-      |<c r="A{ lv_t1 }" t="inlineStr" s="9"><is><t>Total Supplier:</t></is></c>| &&
-      |<c r="B{ lv_t1 }" s="8"><v>{ lv_sup_cnt }</v></c>| &&
+    LV_ROWS = LV_ROWS &&
+      |<row r="{ LV_T1 }" ht="18" customHeight="1">| &&
+      |<c r="A{ LV_T1 }" t="inlineStr" s="9"><is><t>Total Supplier:</t></is></c>| &&
+      |<c r="B{ LV_T1 }" s="8"><v>{ LV_SUP_CNT }</v></c>| &&
       '</row>'.
 
-    lv_rows = lv_rows &&
-      |<row r="{ lv_t2 }" ht="18" customHeight="1">| &&
-      |<c r="A{ lv_t2 }" t="inlineStr" s="9"><is><t>Total Opening Balance:</t></is></c>| &&
-      |<c r="B{ lv_t2 }" s="10"><f>SUM(F{ lv_data_first }:F{ lv_data_last })</f></c>| &&
+    LV_ROWS = LV_ROWS &&
+      |<row r="{ LV_T2 }" ht="18" customHeight="1">| &&
+      |<c r="A{ LV_T2 }" t="inlineStr" s="9"><is><t>Total Opening Balance:</t></is></c>| &&
+      |<c r="B{ LV_T2 }" s="10"><f>SUM(F{ LV_DATA_FIRST }:F{ LV_DATA_LAST })</f></c>| &&
       '</row>'.
 
-    lv_rows = lv_rows &&
-      |<row r="{ lv_t3 }" ht="18" customHeight="1">| &&
-      |<c r="A{ lv_t3 }" t="inlineStr" s="9"><is><t>Total Debit:</t></is></c>| &&
-      |<c r="B{ lv_t3 }" s="10"><f>SUM(G{ lv_data_first }:G{ lv_data_last })</f></c>| &&
+    LV_ROWS = LV_ROWS &&
+      |<row r="{ LV_T3 }" ht="18" customHeight="1">| &&
+      |<c r="A{ LV_T3 }" t="inlineStr" s="9"><is><t>Total Debit:</t></is></c>| &&
+      |<c r="B{ LV_T3 }" s="10"><f>SUM(G{ LV_DATA_FIRST }:G{ LV_DATA_LAST })</f></c>| &&
       '</row>'.
 
-    lv_rows = lv_rows &&
-      |<row r="{ lv_t4 }" ht="18" customHeight="1">| &&
-      |<c r="A{ lv_t4 }" t="inlineStr" s="9"><is><t>Total Credit:</t></is></c>| &&
-      |<c r="B{ lv_t4 }" s="10"><f>SUM(H{ lv_data_first }:H{ lv_data_last })</f></c>| &&
+    LV_ROWS = LV_ROWS &&
+      |<row r="{ LV_T4 }" ht="18" customHeight="1">| &&
+      |<c r="A{ LV_T4 }" t="inlineStr" s="9"><is><t>Total Credit:</t></is></c>| &&
+      |<c r="B{ LV_T4 }" s="10"><f>SUM(H{ LV_DATA_FIRST }:H{ LV_DATA_LAST })</f></c>| &&
       '</row>'.
 
-    lv_rows = lv_rows &&
-      |<row r="{ lv_t5 }" ht="18" customHeight="1">| &&
-      |<c r="A{ lv_t5 }" t="inlineStr" s="9"><is><t>Total Closing Balance:</t></is></c>| &&
-      |<c r="B{ lv_t5 }" s="10"><f>SUM(J{ lv_data_first }:J{ lv_data_last })</f></c>| &&
+    LV_ROWS = LV_ROWS &&
+      |<row r="{ LV_T5 }" ht="18" customHeight="1">| &&
+      |<c r="A{ LV_T5 }" t="inlineStr" s="9"><is><t>Total Closing Balance:</t></is></c>| &&
+      |<c r="B{ LV_T5 }" s="10"><f>SUM(J{ LV_DATA_FIRST }:J{ LV_DATA_LAST })</f></c>| &&
       '</row>'.
 
-    DATA(lv_merges) =
+    DATA(LV_MERGES) =
       '<mergeCells count="5">' &&
       '<mergeCell ref="A1:K1"/>' &&
       '<mergeCell ref="A2:K2"/>' &&
@@ -392,25 +406,25 @@ CLASS zcl_xlsx_formatter_ap02 IMPLEMENTATION.
       '<mergeCell ref="A5:K5"/>' &&
       '</mergeCells>'.
 
-    rv_xml =
+    RV_XML =
       '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' &&
       '<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">' &&
-      lv_cols &&
-      '<sheetData>' && lv_rows && '</sheetData>' &&
-      lv_merges &&
+      LV_COLS &&
+      '<sheetData>' && LV_ROWS && '</sheetData>' &&
+      LV_MERGES &&
       '</worksheet>'.
   ENDMETHOD.
 
-  METHOD col_letter.
-    IF iv_index <= 26.
-      rv_letter = substring( val = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-                             off = iv_index - 1
-                             len = 1 ).
+  METHOD COL_LETTER.
+    IF IV_INDEX <= 26.
+      RV_LETTER = SUBSTRING( VAL = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+                             OFF = IV_INDEX - 1
+                             LEN = 1 ).
     ELSE.
-      DATA(lv_hi) = ( iv_index - 1 ) DIV 26.
-      DATA(lv_lo) = ( iv_index - 1 ) MOD 26.
-      rv_letter = substring( val = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' off = lv_hi - 1 len = 1 ) &&
-                  substring( val = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' off = lv_lo len = 1 ).
+      DATA(LV_HI) = ( IV_INDEX - 1 ) DIV 26.
+      DATA(LV_LO) = ( IV_INDEX - 1 ) MOD 26.
+      RV_LETTER = SUBSTRING( VAL = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' OFF = LV_HI - 1 LEN = 1 ) &&
+                  SUBSTRING( VAL = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' OFF = LV_LO LEN = 1 ).
     ENDIF.
   ENDMETHOD.
 

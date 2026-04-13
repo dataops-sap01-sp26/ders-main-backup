@@ -3,7 +3,7 @@
 // PURPOSE: CRUD + Activate/Deactivate actions (US-E1-007)
 // NAMING: Same name as root entity per FPT convention
 // ═══════════════════════════════════════════════════════════════════════════════
-managed implementation in class ZBP_IR_DRS_CATALOG unique;
+managed implementation in class ZBP_DRS_CATALOG unique;
 strict ( 2 );
 with draft;
 

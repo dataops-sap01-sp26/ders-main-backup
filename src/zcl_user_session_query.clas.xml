@@ -3,15 +3,13 @@
  <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
   <asx:values>
    <VSEOCLASS>
-    <CLSNAME>ZBP_IR_DRS_CATALOG</CLSNAME>
+    <CLSNAME>ZCL_USER_SESSION_QUERY</CLSNAME>
     <LANGU>E</LANGU>
-    <DESCRIPT>ZBP_IR_DRS_CATALOG</DESCRIPT>
-    <CATEGORY>06</CATEGORY>
+    <DESCRIPT>zcl_user_session_query</DESCRIPT>
     <STATE>1</STATE>
     <CLSCCINCL>X</CLSCCINCL>
     <FIXPT>X</FIXPT>
     <UNICODE>X</UNICODE>
-    <CLSDEFINT>ZIR_DRS_CATALOG</CLSDEFINT>
    </VSEOCLASS>
   </asx:values>
  </asx:abap>

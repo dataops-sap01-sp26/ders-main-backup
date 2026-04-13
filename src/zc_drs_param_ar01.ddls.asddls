@@ -14,10 +14,30 @@ define view entity ZC_DRS_PARAM_AR01 as projection on ZI_DRS_PARAM_AR01
     @Consumption.valueHelpDefinition: [{ entity: { name: 'I_CompanyCodeStdVH', element: 'CompanyCode' } }]
     CompanyCode,
     
-    @Consumption.valueHelpDefinition: [{ entity: { name: 'I_Customer_VH', element: 'Customer' } }]
+    @Consumption.valueHelpDefinition: [
+                { entity: {
+                  name: 'I_Customer_VH',
+                  element: 'Customer'
+                },
+                additionalBinding: [{
+                    localElement: 'CompanyCode',
+                    element: 'CompanyCode',
+                    usage: #FILTER
+                }]
+            }]
     CustomerFrom,
 
-    @Consumption.valueHelpDefinition: [{ entity: { name: 'I_Customer_VH', element: 'Customer' } }]
+    @Consumption.valueHelpDefinition: [
+                { entity: {
+                  name: 'I_Customer_VH',
+                  element: 'Customer'
+                },
+                additionalBinding: [{
+                    localElement: 'CompanyCode',
+                    element: 'CompanyCode',
+                    usage: #FILTER
+                }]
+            }]
     CustomerTo,
     
     KeyDate,
