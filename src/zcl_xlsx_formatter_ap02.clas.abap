@@ -262,17 +262,17 @@ CLASS ZCL_XLSX_FORMATTER_AP02 IMPLEMENTATION.
       |<c r="A2" t="inlineStr" s="2"><is><t>Company code: { LS_SPEC_PARAM-COMPANY_CODE }</t></is></c>| &&
       '</row>'.
 
-    ASSIGN COMPONENT 'KEY_DATE' OF STRUCTURE LS_SPEC_PARAM TO FIELD-SYMBOL(<LV_KEY_DATE>).
-    DATA LV_KEY_DATE_STR TYPE STRING.
+    ASSIGN COMPONENT 'FISCAL_YEAR' OF STRUCTURE LS_SPEC_PARAM TO FIELD-SYMBOL(<LV_FY>).
+    DATA LV_FY_STR TYPE STRING.
     IF SY-SUBRC = 0.
-      LV_KEY_DATE_STR = CONDENSE( |{ <LV_KEY_DATE> }| ).
+      LV_FY_STR = CONDENSE( |{ <LV_FY> }| ).
     ELSE.
-      LV_KEY_DATE_STR = 'N/A'.
+      LV_FY_STR = 'N/A'.
     ENDIF.
 
     LV_ROWS = LV_ROWS &&
       '<row r="3" ht="18" customHeight="1">' &&
-      |<c r="A3" t="inlineStr" s="2"><is><t>Key Date: { LV_KEY_DATE_STR }</t></is></c>| &&
+      |<c r="A3" t="inlineStr" s="2"><is><t>Fiscal Year: { LV_FY_STR }</t></is></c>| &&
       '</row>'.
 
     LV_ROWS = LV_ROWS &&
@@ -342,7 +342,15 @@ CLASS ZCL_XLSX_FORMATTER_AP02 IMPLEMENTATION.
         ASSIGN COMPONENT LS_MAP-FIELD OF STRUCTURE <LS_ROW> TO FIELD-SYMBOL(<LV_VAL>).
         CLEAR LV_VAL_STR.
         IF SY-SUBRC = 0.
-          LV_VAL_STR = CONDENSE( |{ <LV_VAL> }| ).
+          IF LS_MAP-IS_NUM = ABAP_TRUE.
+            " Format number correctly for XML <v> tag (no commas, minus at front)
+            DATA LV_NUM_VAL TYPE DECFLOAT34.
+            LV_NUM_VAL = <LV_VAL>.
+            LV_VAL_STR = CONDENSE( |{ LV_NUM_VAL NUMBER = RAW }| ).
+          ELSE.
+            " Escape special chars to prevent Excel XML corruption
+            LV_VAL_STR = ESCAPE( VAL = CONDENSE( |{ <LV_VAL> }| ) FORMAT = CL_ABAP_FORMAT=>E_XML_ATTR ).
+          ENDIF.
         ENDIF.
 
         IF LS_MAP-IS_NUM = ABAP_TRUE.

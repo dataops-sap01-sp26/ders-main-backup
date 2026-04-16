@@ -1,4 +1,0 @@
-@EndUserText.label: 'Job History Analytics Service Definition'
-define service ZSD_DRS_JH_ANALYTICS {
-  expose ZI_DRS_JOB_HISTORY_CUBE as JobHistoryAnalytics;
-}

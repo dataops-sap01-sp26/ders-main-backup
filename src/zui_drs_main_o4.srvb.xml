@@ -16,15 +16,15 @@
      <BIND_TYPE_VERSION>V4</BIND_TYPE_VERSION>
      <SERVICES>
       <item>
-       <SERVICE_NAME>ZSD_DRS_MAIN_O4</SERVICE_NAME>
+       <SERVICE_NAME>ZSD_DRS_MAIN</SERVICE_NAME>
        <SERVICE_CONTENT>
         <item>
          <SERVICE_VERSION>0001</SERVICE_VERSION>
          <RELEASE_STATE>NOT_RELEASED</RELEASE_STATE>
          <SRVD_REF>
-          <URI>/sap/bc/adt/ddic/srvd/sources/zsd_drs_main_o4</URI>
+          <URI>/sap/bc/adt/ddic/srvd/sources/zsd_drs_main</URI>
           <TYPE>SRVD/SRV</TYPE>
-          <NAME>ZSD_DRS_MAIN_O4</NAME>
+          <NAME>ZSD_DRS_MAIN</NAME>
          </SRVD_REF>
          <BIND_TYPE_DATA>
           <CONTENT>

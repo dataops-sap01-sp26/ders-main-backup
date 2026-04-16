@@ -116,13 +116,23 @@ CLASS ZCL_REPORT_AR01 IMPLEMENTATION.
              CustomerName,
              TotalOpenAmount,
              LocalCurrency,
-             MaxDaysOverdue
+             MaxDaysOverdue,
+             NetDueDate
       WHERE COMPANYCODE = @LS_SPEC_PARAM-COMPANY_CODE
         AND CUSTOMER    IN @LT_CUSTOMER_RANGE
         AND NETDUEDATE <= @LS_SPEC_PARAM-KEY_DATE
       ORDER BY COMPANYCODE, CUSTOMER
       INTO TABLE @DATA(LT_AR01)
       UP TO @LV_MAX ROWS.
+
+    IF SY-SUBRC <> 0 AND SY-SUBRC <> 4.
+      " Message: Report parameters not found for report ID &1
+      RAISE EXCEPTION TYPE CX_APJ_RT
+        MESSAGE ID 'ZMSG_DRS_SP26_SAP01'
+        TYPE 'E'
+        NUMBER '040'
+        WITH MS_PARAMS-REPORT_ID.
+    ENDIF.
 
     CREATE DATA ER_DATA LIKE LT_AR01.
     FIELD-SYMBOLS <LT_OUT> TYPE STANDARD TABLE.

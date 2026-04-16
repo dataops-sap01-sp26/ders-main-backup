@@ -6,43 +6,40 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 // CHILD PROJECTION: AP03 Parameters - Composition child of Subscription
 // ═══════════════════════════════════════════════════════════════════════════════
-define view entity ZC_DRS_PARAM_AP03 as projection on ZI_DRS_PARAM_AP03
+define view entity ZC_DRS_PARAM_AP03
+  as projection on ZI_DRS_PARAM_AP03
 {
-    key SubscrUuid,
-    key SubscrId,
-    
-    @Consumption.valueHelpDefinition: [{ entity: { name: 'I_CompanyCodeStdVH', element: 'CompanyCode' } }]
-    CompanyCode,
+  key SubscrUuid,
+  key SubscrId,
 
-    @Consumption.valueHelpDefinition: [
-                { entity: {
-                  name: 'I_Supplier_VH',
-                  element: 'Supplier'
-                },
-                additionalBinding: [{
-                    localElement: 'CompanyCode',
-                    element: 'CompanyCode',
-                    usage: #FILTER
-                }]
-            }]
-    VendorFrom,
+      @Consumption.valueHelpDefinition: [{
+          entity: { name: 'I_CompanyCode', element: 'CompanyCode' }
+        }]
+      CompanyCode,
 
-    @Consumption.valueHelpDefinition: [
-                { entity: {
-                  name: 'I_Supplier_VH',
-                  element: 'Supplier'
-                },
-                additionalBinding: [{
-                    localElement: 'CompanyCode',
-                    element: 'CompanyCode',
-                    usage: #FILTER
-                }]
-            }]
-    VendorTo,
-    
-    KeyDate,
-    
-    MaxRows,
-    /* Associations */
-    _Subscription : redirected to parent ZCR_DRS_SUBSCR
+      @Consumption.valueHelpDefinition: [{
+      entity: { name: 'I_SupplierCompany', element: 'Supplier' },
+      additionalBinding: [{
+        localElement: 'CompanyCode',
+        element: 'CompanyCode',
+        usage: #FILTER_AND_RESULT
+      }]
+      }]
+      VendorFrom,
+
+      @Consumption.valueHelpDefinition: [{
+      entity: { name: 'I_SupplierCompany', element: 'Supplier' },
+      additionalBinding: [{
+        localElement: 'CompanyCode',
+        element: 'CompanyCode',
+        usage: #FILTER_AND_RESULT
+      }]
+      }]
+      VendorTo,
+
+      KeyDate,
+
+      MaxRows,
+      /* Associations */
+      _Subscription : redirected to parent ZCR_DRS_SUBSCR
 }

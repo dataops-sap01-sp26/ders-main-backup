@@ -14,11 +14,11 @@ ENDCLASS.
 CLASS ZCL_SETUP_CATALOG_AND_TEMPLATE IMPLEMENTATION.
 METHOD if_oo_adt_classrun~main.
 
-    CONSTANTS lc_catalog_name      TYPE cl_apj_dt_create_content=>ty_catalog_name  VALUE 'ZDRS_JOB_CATALOG_V2'.
+    CONSTANTS lc_catalog_name      TYPE cl_apj_dt_create_content=>ty_catalog_name  VALUE 'ZDRS_JOB_CATALOG'.
     CONSTANTS lc_catalog_text      TYPE cl_apj_dt_create_content=>ty_text          VALUE 'My first simple application job'.
     CONSTANTS lc_class_name        TYPE cl_apj_dt_create_content=>ty_class_name    VALUE 'ZCL_JOB_BUSINESS_LOGIC'.
 
-    CONSTANTS lc_template_name     TYPE cl_apj_dt_create_content=>ty_template_name VALUE 'ZDRS_JOB_TEMPLATE_V2'.
+    CONSTANTS lc_template_name     TYPE cl_apj_dt_create_content=>ty_template_name VALUE 'ZDRS_JOB_TEMPLATE'.
     CONSTANTS lc_template_text     TYPE cl_apj_dt_create_content=>ty_text          VALUE 'My first simple job template'.
 
     CONSTANTS lc_transport_request TYPE cl_apj_dt_create_content=>ty_transport_request VALUE 'S40K915426'.

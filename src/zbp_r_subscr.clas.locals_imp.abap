@@ -65,24 +65,50 @@ CLASS LHC_PARAMGL01 DEFINITION INHERITING FROM CL_ABAP_BEHAVIOR_HANDLER.
 
   PRIVATE SECTION.
 
-    METHODS validateFromTo FOR VALIDATE ON SAVE
-      IMPORTING KEYS FOR ParamGL01~validateFromTo.
+    METHODS validateParam FOR VALIDATE ON SAVE
+      IMPORTING KEYS FOR ParamGL01~validateParam.
 
 ENDCLASS.
 
 CLASS LHC_PARAMGL01 IMPLEMENTATION.
 
-  METHOD validateFromTo.
+  METHOD validateParam.
 
     "Read data entered by user on Screen
     READ ENTITIES OF ZIR_DRS_SUBSCR IN LOCAL MODE
       ENTITY ParamGL01
-        FIELDS ( GlAccountFr GlAccountTo FiscalPeriodFr FiscalPeriodTo FiscalYearFr FiscalYearTo )
+        FIELDS ( CompanyCode GlAccountFr GlAccountTo FiscalPeriodFr FiscalPeriodTo FiscalYearFr FiscalYearTo )
         WITH CORRESPONDING #( KEYS )
       RESULT DATA(LT_PARAM_GL01).
 
     "
     LOOP AT LT_PARAM_GL01 ASSIGNING FIELD-SYMBOL(<FS_GL01>).
+      IF <FS_GL01>-CompanyCode    IS INITIAL OR
+         <FS_GL01>-FiscalYear     IS INITIAL OR
+         <FS_GL01>-FiscalPeriodFr IS INITIAL OR <FS_GL01>-FiscalPeriodTo IS INITIAL OR
+         <FS_GL01>-GlAccountFr    IS INITIAL OR <FS_GL01>-GlAccountTo    IS INITIAL.
+
+        APPEND VALUE #( %TKY = <FS_GL01>-%TKY ) TO FAILED-PARAMGL01.
+        APPEND VALUE #(
+          %TKY = <FS_GL01>-%TKY
+          %MSG = NEW_MESSAGE(
+                   ID       = 'ZMSG_DRS_SP26_SAP01'
+                   NUMBER   = '056' " '&1 parameters are incomplete
+                   V1       = 'GL01'
+                   SEVERITY = IF_ABAP_BEHV_MESSAGE=>SEVERITY-ERROR )
+
+          %ELEMENT-CompanyCode    = COND #( WHEN <FS_GL01>-CompanyCode    IS INITIAL THEN IF_ABAP_BEHV=>MK-ON ELSE IF_ABAP_BEHV=>MK-OFF )
+          %ELEMENT-FiscalYear     = COND #( WHEN <FS_GL01>-FiscalYear     IS INITIAL THEN IF_ABAP_BEHV=>MK-ON ELSE IF_ABAP_BEHV=>MK-OFF )
+*          %ELEMENT-FiscalYearTo   = COND #( WHEN <FS_GL01>-FiscalYearTo   IS INITIAL THEN IF_ABAP_BEHV=>MK-ON ELSE IF_ABAP_BEHV=>MK-OFF )
+          %ELEMENT-FiscalPeriodFr = COND #( WHEN <FS_GL01>-FiscalPeriodFr IS INITIAL THEN IF_ABAP_BEHV=>MK-ON ELSE IF_ABAP_BEHV=>MK-OFF )
+          %ELEMENT-FiscalPeriodTo = COND #( WHEN <FS_GL01>-FiscalPeriodTo IS INITIAL THEN IF_ABAP_BEHV=>MK-ON ELSE IF_ABAP_BEHV=>MK-OFF )
+          %ELEMENT-GlAccountFr    = COND #( WHEN <FS_GL01>-GlAccountFr    IS INITIAL THEN IF_ABAP_BEHV=>MK-ON ELSE IF_ABAP_BEHV=>MK-OFF )
+          %ELEMENT-GlAccountTo    = COND #( WHEN <FS_GL01>-GlAccountTo    IS INITIAL THEN IF_ABAP_BEHV=>MK-ON ELSE IF_ABAP_BEHV=>MK-OFF )
+        ) TO REPORTED-PARAMGL01.
+
+        CONTINUE.
+      ENDIF.
+
 
       " Checked G/L Account
       IF <FS_GL01>-GlAccountFr IS NOT INITIAL AND <FS_GL01>-GlAccountTo IS NOT INITIAL.
@@ -101,36 +127,32 @@ CLASS LHC_PARAMGL01 IMPLEMENTATION.
       ENDIF.
 
       " Checked Fiscal Period
-      IF <FS_GL01>-FiscalPeriodFr IS NOT INITIAL AND <FS_GL01>-FiscalPeriodTo IS NOT INITIAL.
-        IF <FS_GL01>-FiscalPeriodFr > <FS_GL01>-FiscalPeriodTo.
-          APPEND VALUE #( %TKY = <FS_GL01>-%TKY ) TO FAILED-PARAMGL01.
-          APPEND VALUE #(
-            %TKY = <FS_GL01>-%TKY
-            %MSG = NEW_MESSAGE(
-                     ID       = 'ZMSG_DRS_SP26_SAP01'
-                     NUMBER   = '058'
-                     SEVERITY = IF_ABAP_BEHV_MESSAGE=>SEVERITY-ERROR )
-            %ELEMENT-FiscalPeriodFr = IF_ABAP_BEHV=>MK-ON
-            %ELEMENT-FiscalPeriodTo = IF_ABAP_BEHV=>MK-ON
-          ) TO REPORTED-PARAMGL01.
-        ENDIF.
+      IF <FS_GL01>-FiscalPeriodFr > <FS_GL01>-FiscalPeriodTo.
+        APPEND VALUE #( %TKY = <FS_GL01>-%TKY ) TO FAILED-PARAMGL01.
+        APPEND VALUE #(
+          %TKY = <FS_GL01>-%TKY
+          %MSG = NEW_MESSAGE(
+                   ID       = 'ZMSG_DRS_SP26_SAP01'
+                   NUMBER   = '058'
+                   SEVERITY = IF_ABAP_BEHV_MESSAGE=>SEVERITY-ERROR )
+          %ELEMENT-FiscalPeriodFr = IF_ABAP_BEHV=>MK-ON
+          %ELEMENT-FiscalPeriodTo = IF_ABAP_BEHV=>MK-ON
+        ) TO REPORTED-PARAMGL01.
       ENDIF.
 
-      " Checked Fiscal Year
-      IF <FS_GL01>-FiscalYearFr IS NOT INITIAL AND <FS_GL01>-FiscalYearTo IS NOT INITIAL.
-        IF <FS_GL01>-FiscalYearFr > <FS_GL01>-FiscalYearTo.
-          APPEND VALUE #( %TKY = <FS_GL01>-%TKY ) TO FAILED-PARAMGL01.
-          APPEND VALUE #(
-            %TKY = <FS_GL01>-%TKY
-            %MSG = NEW_MESSAGE(
-                     ID       = 'ZMSG_DRS_SP26_SAP01'
-                     NUMBER   = '059'
-                     SEVERITY = IF_ABAP_BEHV_MESSAGE=>SEVERITY-ERROR )
-            %ELEMENT-FiscalYearFr = IF_ABAP_BEHV=>MK-ON
-            %ELEMENT-FiscalYearTo = IF_ABAP_BEHV=>MK-ON
-          ) TO REPORTED-PARAMGL01.
-        ENDIF.
-      ENDIF.
+*      " Checked Fiscal Year
+*      IF <FS_GL01>-FiscalYearFr > <FS_GL01>-FiscalYearTo.
+*        APPEND VALUE #( %TKY = <FS_GL01>-%TKY ) TO FAILED-PARAMGL01.
+*        APPEND VALUE #(
+*          %TKY = <FS_GL01>-%TKY
+*          %MSG = NEW_MESSAGE(
+*                   ID       = 'ZMSG_DRS_SP26_SAP01'
+*                   NUMBER   = '059'
+*                   SEVERITY = IF_ABAP_BEHV_MESSAGE=>SEVERITY-ERROR )
+*          %ELEMENT-FiscalYearFr = IF_ABAP_BEHV=>MK-ON
+*          %ELEMENT-FiscalYearTo = IF_ABAP_BEHV=>MK-ON
+*        ) TO REPORTED-PARAMGL01.
+*      ENDIF.
 
     ENDLOOP.
   ENDMETHOD.
@@ -144,36 +166,57 @@ CLASS LHC_PARAMAR01 DEFINITION INHERITING FROM CL_ABAP_BEHAVIOR_HANDLER.
 
   PRIVATE SECTION.
 
-    METHODS validateFromTo FOR VALIDATE ON SAVE
-      IMPORTING KEYS FOR ParamAR01~validateFromTo.
+    METHODS validateParam FOR VALIDATE ON SAVE
+      IMPORTING KEYS FOR ParamAR01~validateParam.
 
 ENDCLASS.
 
 CLASS LHC_PARAMAR01 IMPLEMENTATION.
 
-  METHOD validateFromTo.
+  METHOD validateParam.
     "Read data entered by user on Screen
     READ ENTITIES OF ZIR_DRS_SUBSCR IN LOCAL MODE
         ENTITY ParamAR01
-            FIELDS ( CUSTOMERFROM CUSTOMERTO )
+            FIELDS ( CompanyCode KeyDate CustomerFrom CustomerTo )
             WITH CORRESPONDING #( KEYS )
         RESULT DATA(LT_PARAM_AR01).
 
     LOOP AT LT_PARAM_AR01 ASSIGNING FIELD-SYMBOL(<FS_AR01>).
+      "Check empty
+      IF <FS_AR01>-CompanyCode   IS INITIAL OR <FS_AR01>-KeyDate IS INITIAL
+      OR <FS_AR01>-CustomerFrom  IS INITIAL OR <FS_AR01>-CustomerTo IS INITIAL.
+
+        APPEND VALUE #( %TKY = <FS_AR01>-%TKY ) TO FAILED-PARAMAR01.
+        APPEND VALUE #(
+          %TKY = <FS_AR01>-%TKY
+          %MSG = NEW_MESSAGE(
+                   ID       = 'ZMSG_DRS_SP26_SAP01'
+                   NUMBER   = '056' "&1 parameters are incomplete
+                   V1       = 'AR01'
+                   SEVERITY = IF_ABAP_BEHV_MESSAGE=>SEVERITY-ERROR )
+
+          %ELEMENT-CompanyCode  = COND #( WHEN <FS_AR01>-CompanyCode    IS INITIAL THEN IF_ABAP_BEHV=>MK-ON ELSE IF_ABAP_BEHV=>MK-OFF )
+          %ELEMENT-KeyDate      = COND #( WHEN <FS_AR01>-KeyDate        IS INITIAL THEN IF_ABAP_BEHV=>MK-ON ELSE IF_ABAP_BEHV=>MK-OFF )
+          %ELEMENT-CustomerFrom = COND #( WHEN <FS_AR01>-CustomerFrom   IS INITIAL THEN IF_ABAP_BEHV=>MK-ON ELSE IF_ABAP_BEHV=>MK-OFF )
+          %ELEMENT-CustomerTo   = COND #( WHEN <FS_AR01>-CustomerTo     IS INITIAL THEN IF_ABAP_BEHV=>MK-ON ELSE IF_ABAP_BEHV=>MK-OFF )
+        ) TO REPORTED-PARAMAR01.
+
+        CONTINUE.
+      ENDIF.
+
+
       " Checked Customer
-      IF <FS_AR01>-CustomerFrom IS NOT INITIAL AND <FS_AR01>-CustomerTo IS NOT INITIAL.
-        IF <FS_AR01>-CustomerFrom > <FS_AR01>-CustomerTo.
-          APPEND VALUE #( %TKY = <FS_AR01>-%TKY ) TO FAILED-PARAMAR01.
-          APPEND VALUE #(
-            %TKY = <FS_AR01>-%TKY
-            %MSG = NEW_MESSAGE(
-                     ID       = 'ZMSG_DRS_SP26_SAP01'
-                     NUMBER   = '060'
-                     SEVERITY = IF_ABAP_BEHV_MESSAGE=>SEVERITY-ERROR )
-            %ELEMENT-CustomerFrom = IF_ABAP_BEHV=>MK-ON
-            %ELEMENT-CustomerTo = IF_ABAP_BEHV=>MK-ON
-          ) TO REPORTED-PARAMAR01.
-        ENDIF.
+      IF <FS_AR01>-CustomerFrom > <FS_AR01>-CustomerTo.
+        APPEND VALUE #( %TKY = <FS_AR01>-%TKY ) TO FAILED-PARAMAR01.
+        APPEND VALUE #(
+          %TKY = <FS_AR01>-%TKY
+          %MSG = NEW_MESSAGE(
+                   ID       = 'ZMSG_DRS_SP26_SAP01'
+                   NUMBER   = '060'
+                   SEVERITY = IF_ABAP_BEHV_MESSAGE=>SEVERITY-ERROR )
+          %ELEMENT-CustomerFrom = IF_ABAP_BEHV=>MK-ON
+          %ELEMENT-CustomerTo = IF_ABAP_BEHV=>MK-ON
+        ) TO REPORTED-PARAMAR01.
       ENDIF.
     ENDLOOP.
 
@@ -189,36 +232,56 @@ CLASS LHC_PARAMAR02 DEFINITION INHERITING FROM CL_ABAP_BEHAVIOR_HANDLER.
 
   PRIVATE SECTION.
 
-    METHODS validateFromTo FOR VALIDATE ON SAVE
-      IMPORTING KEYS FOR ParamAR02~validateFromTo.
+    METHODS validateParam FOR VALIDATE ON SAVE
+      IMPORTING KEYS FOR ParamAR02~validateParam.
 
 ENDCLASS.
 
 CLASS LHC_PARAMAR02 IMPLEMENTATION.
 
-  METHOD validateFromTo.
+  METHOD validateParam.
     "Read data entered by user on Screen
     READ ENTITIES OF ZIR_DRS_SUBSCR IN LOCAL MODE
         ENTITY ParamAR02
-            FIELDS ( CUSTOMERFROM CUSTOMERTO )
+            FIELDS ( CompanyCode FiscalYear CustomerFrom CustomerTo )
             WITH CORRESPONDING #( KEYS )
         RESULT DATA(LT_PARAM_AR02).
 
     LOOP AT LT_PARAM_AR02 ASSIGNING FIELD-SYMBOL(<FS_AR02>).
+      "Check empty
+      IF <FS_AR02>-CompanyCode   IS INITIAL OR <FS_AR02>-FiscalYear IS INITIAL
+      OR <FS_AR02>-CustomerFrom  IS INITIAL OR <FS_AR02>-CustomerTo IS INITIAL.
+
+        APPEND VALUE #( %TKY = <FS_AR02>-%TKY ) TO FAILED-PARAMAR02.
+        APPEND VALUE #(
+          %TKY = <FS_AR02>-%TKY
+          %MSG = NEW_MESSAGE(
+                   ID       = 'ZMSG_DRS_SP26_SAP01'
+                   NUMBER   = '056' "&1 parameters are incomplete
+                   V1       = 'AR02'
+                   SEVERITY = IF_ABAP_BEHV_MESSAGE=>SEVERITY-ERROR )
+
+          %ELEMENT-CompanyCode  = COND #( WHEN <FS_AR02>-CompanyCode    IS INITIAL THEN IF_ABAP_BEHV=>MK-ON ELSE IF_ABAP_BEHV=>MK-OFF )
+          %ELEMENT-FiscalYear   = COND #( WHEN <FS_AR02>-FiscalYear     IS INITIAL THEN IF_ABAP_BEHV=>MK-ON ELSE IF_ABAP_BEHV=>MK-OFF )
+          %ELEMENT-CustomerFrom = COND #( WHEN <FS_AR02>-CustomerFrom   IS INITIAL THEN IF_ABAP_BEHV=>MK-ON ELSE IF_ABAP_BEHV=>MK-OFF )
+          %ELEMENT-CustomerTo   = COND #( WHEN <FS_AR02>-CustomerTo     IS INITIAL THEN IF_ABAP_BEHV=>MK-ON ELSE IF_ABAP_BEHV=>MK-OFF )
+        ) TO REPORTED-PARAMAR02.
+
+        CONTINUE.
+      ENDIF.
+
       " Checked Customer
-      IF <FS_AR02>-CustomerFrom IS NOT INITIAL AND <FS_AR02>-CustomerTo IS NOT INITIAL.
-        IF <FS_AR02>-CustomerFrom > <FS_AR02>-CustomerTo.
-          APPEND VALUE #( %TKY = <FS_AR02>-%TKY ) TO FAILED-PARAMAR02.
-          APPEND VALUE #(
-            %TKY = <FS_AR02>-%TKY
-            %MSG = NEW_MESSAGE(
-                     ID       = 'ZMSG_DRS_SP26_SAP01'
-                     NUMBER   = '060'
-                     SEVERITY = IF_ABAP_BEHV_MESSAGE=>SEVERITY-ERROR )
-            %ELEMENT-CustomerFrom = IF_ABAP_BEHV=>MK-ON
-            %ELEMENT-CustomerTo = IF_ABAP_BEHV=>MK-ON
-          ) TO REPORTED-PARAMAR02.
-        ENDIF.
+      IF <FS_AR02>-CustomerFrom > <FS_AR02>-CustomerTo.
+        APPEND VALUE #( %TKY = <FS_AR02>-%TKY ) TO FAILED-PARAMAR02.
+        APPEND VALUE #(
+          %TKY = <FS_AR02>-%TKY
+          %MSG = NEW_MESSAGE(
+                   ID       = 'ZMSG_DRS_SP26_SAP01'
+                   NUMBER   = '060'
+                   SEVERITY = IF_ABAP_BEHV_MESSAGE=>SEVERITY-ERROR )
+          %ELEMENT-CustomerFrom = IF_ABAP_BEHV=>MK-ON
+          %ELEMENT-CustomerTo = IF_ABAP_BEHV=>MK-ON
+        ) TO REPORTED-PARAMAR02.
       ENDIF.
     ENDLOOP.
   ENDMETHOD.
@@ -232,36 +295,56 @@ CLASS LHC_PARAMAR03 DEFINITION INHERITING FROM CL_ABAP_BEHAVIOR_HANDLER.
 
   PRIVATE SECTION.
 
-    METHODS validateFromTo FOR VALIDATE ON SAVE
-      IMPORTING KEYS FOR ParamAR03~validateFromTo.
+    METHODS validateParam FOR VALIDATE ON SAVE
+      IMPORTING KEYS FOR ParamAR03~validateParam.
 
 ENDCLASS.
 
 CLASS LHC_PARAMAR03 IMPLEMENTATION.
 
-  METHOD validateFromTo.
+  METHOD validateParam.
     "Read data entered by user on Screen
     READ ENTITIES OF ZIR_DRS_SUBSCR IN LOCAL MODE
         ENTITY ParamAR03
-            FIELDS ( CUSTOMERFROM CUSTOMERTO )
+            FIELDS ( CompanyCode KeyDate CustomerFrom CustomerTo )
             WITH CORRESPONDING #( KEYS )
         RESULT DATA(LT_PARAM_AR03).
 
     LOOP AT LT_PARAM_AR03 ASSIGNING FIELD-SYMBOL(<FS_AR03>).
+      "Check empty
+      IF <FS_AR03>-CompanyCode   IS INITIAL OR <FS_AR03>-KeyDate IS INITIAL
+      OR <FS_AR03>-CustomerFrom  IS INITIAL OR <FS_AR03>-CustomerTo IS INITIAL.
+
+        APPEND VALUE #( %TKY = <FS_AR03>-%TKY ) TO FAILED-PARAMAR03.
+        APPEND VALUE #(
+          %TKY = <FS_AR03>-%TKY
+          %MSG = NEW_MESSAGE(
+                   ID       = 'ZMSG_DRS_SP26_SAP01'
+                   NUMBER   = '056' "&1 parameters are incomplete
+                   V1       = 'AR03'
+                   SEVERITY = IF_ABAP_BEHV_MESSAGE=>SEVERITY-ERROR )
+
+          %ELEMENT-CompanyCode  = COND #( WHEN <FS_AR03>-CompanyCode    IS INITIAL THEN IF_ABAP_BEHV=>MK-ON ELSE IF_ABAP_BEHV=>MK-OFF )
+          %ELEMENT-KeyDate      = COND #( WHEN <FS_AR03>-KeyDate        IS INITIAL THEN IF_ABAP_BEHV=>MK-ON ELSE IF_ABAP_BEHV=>MK-OFF )
+          %ELEMENT-CustomerFrom = COND #( WHEN <FS_AR03>-CustomerFrom   IS INITIAL THEN IF_ABAP_BEHV=>MK-ON ELSE IF_ABAP_BEHV=>MK-OFF )
+          %ELEMENT-CustomerTo   = COND #( WHEN <FS_AR03>-CustomerTo     IS INITIAL THEN IF_ABAP_BEHV=>MK-ON ELSE IF_ABAP_BEHV=>MK-OFF )
+        ) TO REPORTED-PARAMAR03.
+
+        CONTINUE.
+      ENDIF.
+
       " Checked Customer
-      IF <FS_AR03>-CustomerFrom IS NOT INITIAL AND <FS_AR03>-CustomerTo IS NOT INITIAL.
-        IF <FS_AR03>-CustomerFrom > <FS_AR03>-CustomerTo.
-          APPEND VALUE #( %TKY = <FS_AR03>-%TKY ) TO FAILED-PARAMAR03.
-          APPEND VALUE #(
-            %TKY = <FS_AR03>-%TKY
-            %MSG = NEW_MESSAGE(
-                     ID       = 'ZMSG_DRS_SP26_SAP01'
-                     NUMBER   = '060'
-                     SEVERITY = IF_ABAP_BEHV_MESSAGE=>SEVERITY-ERROR )
-            %ELEMENT-CustomerFrom = IF_ABAP_BEHV=>MK-ON
-            %ELEMENT-CustomerTo = IF_ABAP_BEHV=>MK-ON
-          ) TO REPORTED-PARAMAR03.
-        ENDIF.
+      IF <FS_AR03>-CustomerFrom > <FS_AR03>-CustomerTo.
+        APPEND VALUE #( %TKY = <FS_AR03>-%TKY ) TO FAILED-PARAMAR03.
+        APPEND VALUE #(
+          %TKY = <FS_AR03>-%TKY
+          %MSG = NEW_MESSAGE(
+                   ID       = 'ZMSG_DRS_SP26_SAP01'
+                   NUMBER   = '060'
+                   SEVERITY = IF_ABAP_BEHV_MESSAGE=>SEVERITY-ERROR )
+          %ELEMENT-CustomerFrom = IF_ABAP_BEHV=>MK-ON
+          %ELEMENT-CustomerTo = IF_ABAP_BEHV=>MK-ON
+        ) TO REPORTED-PARAMAR03.
       ENDIF.
     ENDLOOP.
   ENDMETHOD.
@@ -275,36 +358,56 @@ CLASS LHC_PARAMAP01 DEFINITION INHERITING FROM CL_ABAP_BEHAVIOR_HANDLER.
 
   PRIVATE SECTION.
 
-    METHODS validateFromTo FOR VALIDATE ON SAVE
-      IMPORTING KEYS FOR ParamAP01~validateFromTo.
+    METHODS validateParam FOR VALIDATE ON SAVE
+      IMPORTING KEYS FOR ParamAP01~validateParam.
 
 ENDCLASS.
 
 CLASS LHC_PARAMAP01 IMPLEMENTATION.
 
-  METHOD validateFromTo.
+  METHOD validateParam.
     "Read data entered by user on Screen
     READ ENTITIES OF ZIR_DRS_SUBSCR IN LOCAL MODE
         ENTITY ParamAP01
-            FIELDS ( VendorFrom VendorTo )
+            FIELDS ( CompanyCode KeyDate VendorFrom VendorTo )
             WITH CORRESPONDING #( KEYS )
         RESULT DATA(LT_PARAM_AP01).
 
     LOOP AT LT_PARAM_AP01 ASSIGNING FIELD-SYMBOL(<FS_AP01>).
+      "Check empty
+      IF <FS_AP01>-CompanyCode IS INITIAL OR <FS_AP01>-KeyDate IS INITIAL
+      OR <FS_AP01>-VendorFrom  IS INITIAL OR <FS_AP01>-VendorTo IS INITIAL.
+
+        APPEND VALUE #( %TKY = <FS_AP01>-%TKY ) TO FAILED-PARAMAP01.
+        APPEND VALUE #(
+          %TKY = <FS_AP01>-%TKY
+          %MSG = NEW_MESSAGE(
+                   ID       = 'ZMSG_DRS_SP26_SAP01'
+                   NUMBER   = '056' "&1 parameters are incomplete
+                   V1       = 'AP01'
+                   SEVERITY = IF_ABAP_BEHV_MESSAGE=>SEVERITY-ERROR )
+
+          %ELEMENT-CompanyCode = COND #( WHEN <FS_AP01>-CompanyCode     IS INITIAL THEN IF_ABAP_BEHV=>MK-ON ELSE IF_ABAP_BEHV=>MK-OFF )
+          %ELEMENT-KeyDate     = COND #( WHEN <FS_AP01>-KeyDate         IS INITIAL THEN IF_ABAP_BEHV=>MK-ON ELSE IF_ABAP_BEHV=>MK-OFF )
+          %ELEMENT-VendorFrom  = COND #( WHEN <FS_AP01>-VendorFrom      IS INITIAL THEN IF_ABAP_BEHV=>MK-ON ELSE IF_ABAP_BEHV=>MK-OFF )
+          %ELEMENT-VendorTo    = COND #( WHEN <FS_AP01>-VendorTo        IS INITIAL THEN IF_ABAP_BEHV=>MK-ON ELSE IF_ABAP_BEHV=>MK-OFF )
+        ) TO REPORTED-PARAMAP01.
+
+        CONTINUE.
+      ENDIF.
+
       " Checked Customer
-      IF <FS_AP01>-VendorFrom IS NOT INITIAL AND <FS_AP01>-VendorTo IS NOT INITIAL.
-        IF <FS_AP01>-VendorFrom > <FS_AP01>-VendorTo.
-          APPEND VALUE #( %TKY = <FS_AP01>-%TKY ) TO FAILED-PARAMAP01.
-          APPEND VALUE #(
-            %TKY = <FS_AP01>-%TKY
-            %MSG = NEW_MESSAGE(
-                     ID       = 'ZMSG_DRS_SP26_SAP01'
-                     NUMBER   = '061'
-                     SEVERITY = IF_ABAP_BEHV_MESSAGE=>SEVERITY-ERROR )
-            %ELEMENT-VendorFrom = IF_ABAP_BEHV=>MK-ON
-            %ELEMENT-VendorTo = IF_ABAP_BEHV=>MK-ON
-          ) TO REPORTED-PARAMAP01.
-        ENDIF.
+      IF <FS_AP01>-VendorFrom > <FS_AP01>-VendorTo.
+        APPEND VALUE #( %TKY = <FS_AP01>-%TKY ) TO FAILED-PARAMAP01.
+        APPEND VALUE #(
+          %TKY = <FS_AP01>-%TKY
+          %MSG = NEW_MESSAGE(
+                   ID       = 'ZMSG_DRS_SP26_SAP01'
+                   NUMBER   = '061'
+                   SEVERITY = IF_ABAP_BEHV_MESSAGE=>SEVERITY-ERROR )
+          %ELEMENT-VendorFrom = IF_ABAP_BEHV=>MK-ON
+          %ELEMENT-VendorTo = IF_ABAP_BEHV=>MK-ON
+        ) TO REPORTED-PARAMAP01.
       ENDIF.
     ENDLOOP.
 
@@ -320,36 +423,57 @@ CLASS LHC_PARAMAP02 DEFINITION INHERITING FROM CL_ABAP_BEHAVIOR_HANDLER.
 
   PRIVATE SECTION.
 
-    METHODS validateFromTo FOR VALIDATE ON SAVE
-      IMPORTING KEYS FOR ParamAP02~validateFromTo.
+    METHODS validateParam FOR VALIDATE ON SAVE
+      IMPORTING KEYS FOR ParamAP02~validateParam.
 
 ENDCLASS.
 
 CLASS LHC_PARAMAP02 IMPLEMENTATION.
 
-  METHOD validateFromTo.
+  METHOD validateParam.
     "Read data entered by user on Screen
     READ ENTITIES OF ZIR_DRS_SUBSCR IN LOCAL MODE
         ENTITY ParamAP02
-            FIELDS ( VendorFrom VendorTo )
+            FIELDS ( CompanyCode FiscalYear VendorFrom VendorTo )
             WITH CORRESPONDING #( KEYS )
         RESULT DATA(LT_PARAM_AP02).
 
     LOOP AT LT_PARAM_AP02 ASSIGNING FIELD-SYMBOL(<FS_AP02>).
-      " Checked Customer
-      IF <FS_AP02>-VendorFrom IS NOT INITIAL AND <FS_AP02>-VendorTo IS NOT INITIAL.
-        IF <FS_AP02>-VendorFrom > <FS_AP02>-VendorTo.
-          APPEND VALUE #( %TKY = <FS_AP02>-%TKY ) TO FAILED-PARAMAP01.
-          APPEND VALUE #(
-            %TKY = <FS_AP02>-%TKY
-            %MSG = NEW_MESSAGE(
-                     ID       = 'ZMSG_DRS_SP26_SAP01'
-                     NUMBER   = '061'
-                     SEVERITY = IF_ABAP_BEHV_MESSAGE=>SEVERITY-ERROR )
-            %ELEMENT-VendorFrom = IF_ABAP_BEHV=>MK-ON
-            %ELEMENT-VendorTo = IF_ABAP_BEHV=>MK-ON
-          ) TO REPORTED-PARAMAP02.
-        ENDIF.
+
+      "Check empty
+      IF <FS_AP02>-CompanyCode IS INITIAL OR <FS_AP02>-FiscalYear IS INITIAL
+      OR <FS_AP02>-VendorFrom  IS INITIAL OR <FS_AP02>-VendorTo IS INITIAL.
+
+        APPEND VALUE #( %TKY = <FS_AP02>-%TKY ) TO FAILED-PARAMAP02.
+        APPEND VALUE #(
+          %TKY = <FS_AP02>-%TKY
+          %MSG = NEW_MESSAGE(
+                   ID       = 'ZMSG_DRS_SP26_SAP01'
+                   NUMBER   = '056' "&1 parameters are incomplete
+                   V1       = 'AP02'
+                   SEVERITY = IF_ABAP_BEHV_MESSAGE=>SEVERITY-ERROR )
+
+          %ELEMENT-CompanyCode = COND #( WHEN <FS_AP02>-CompanyCode IS INITIAL THEN IF_ABAP_BEHV=>MK-ON ELSE IF_ABAP_BEHV=>MK-OFF )
+          %ELEMENT-FiscalYear  = COND #( WHEN <FS_AP02>-FiscalYear  IS INITIAL THEN IF_ABAP_BEHV=>MK-ON ELSE IF_ABAP_BEHV=>MK-OFF )
+          %ELEMENT-VendorFrom  = COND #( WHEN <FS_AP02>-VendorFrom  IS INITIAL THEN IF_ABAP_BEHV=>MK-ON ELSE IF_ABAP_BEHV=>MK-OFF )
+          %ELEMENT-VendorTo    = COND #( WHEN <FS_AP02>-VendorTo    IS INITIAL THEN IF_ABAP_BEHV=>MK-ON ELSE IF_ABAP_BEHV=>MK-OFF )
+        ) TO REPORTED-PARAMAP02.
+
+        CONTINUE.
+      ENDIF.
+
+      " Checked Vendor
+      IF <FS_AP02>-VendorFrom > <FS_AP02>-VendorTo.
+        APPEND VALUE #( %TKY = <FS_AP02>-%TKY ) TO FAILED-PARAMAP02.
+        APPEND VALUE #(
+          %TKY = <FS_AP02>-%TKY
+          %MSG = NEW_MESSAGE(
+                   ID       = 'ZMSG_DRS_SP26_SAP01'
+                   NUMBER   = '061'
+                   SEVERITY = IF_ABAP_BEHV_MESSAGE=>SEVERITY-ERROR )
+          %ELEMENT-VendorFrom = IF_ABAP_BEHV=>MK-ON
+          %ELEMENT-VendorTo = IF_ABAP_BEHV=>MK-ON
+        ) TO REPORTED-PARAMAP02.
       ENDIF.
     ENDLOOP.
   ENDMETHOD.
@@ -363,36 +487,56 @@ CLASS LHC_PARAMAP03 DEFINITION INHERITING FROM CL_ABAP_BEHAVIOR_HANDLER.
 
   PRIVATE SECTION.
 
-    METHODS validateFromTo FOR VALIDATE ON SAVE
-      IMPORTING KEYS FOR ParamAP03~validateFromTo.
+    METHODS validateParam FOR VALIDATE ON SAVE
+      IMPORTING KEYS FOR ParamAP03~validateParam.
 
 ENDCLASS.
 
 CLASS LHC_PARAMAP03 IMPLEMENTATION.
 
-  METHOD validateFromTo.
+  METHOD validateParam.
     "Read data entered by user on Screen
     READ ENTITIES OF ZIR_DRS_SUBSCR IN LOCAL MODE
         ENTITY ParamAP03
-            FIELDS ( VendorFrom VendorTo )
+            FIELDS ( CompanyCode KeyDate VendorFrom VendorTo )
             WITH CORRESPONDING #( KEYS )
         RESULT DATA(LT_PARAM_AP03).
 
     LOOP AT LT_PARAM_AP03 ASSIGNING FIELD-SYMBOL(<FS_AP03>).
-      " Checked Customer
-      IF <FS_AP03>-VendorFrom IS NOT INITIAL AND <FS_AP03>-VendorTo IS NOT INITIAL.
-        IF <FS_AP03>-VendorFrom > <FS_AP03>-VendorTo.
-          APPEND VALUE #( %TKY = <FS_AP03>-%TKY ) TO FAILED-PARAMAP01.
-          APPEND VALUE #(
-            %TKY = <FS_AP03>-%TKY
-            %MSG = NEW_MESSAGE(
-                     ID       = 'ZMSG_DRS_SP26_SAP01'
-                     NUMBER   = '061'
-                     SEVERITY = IF_ABAP_BEHV_MESSAGE=>SEVERITY-ERROR )
-            %ELEMENT-VendorFrom = IF_ABAP_BEHV=>MK-ON
-            %ELEMENT-VendorTo = IF_ABAP_BEHV=>MK-ON
-          ) TO REPORTED-PARAMAP03.
-        ENDIF.
+      "Check empty
+      IF <FS_AP03>-CompanyCode IS INITIAL OR <FS_AP03>-KeyDate IS INITIAL
+      OR <FS_AP03>-VendorFrom  IS INITIAL OR <FS_AP03>-VendorTo IS INITIAL.
+
+        APPEND VALUE #( %TKY = <FS_AP03>-%TKY ) TO FAILED-PARAMAP03.
+        APPEND VALUE #(
+          %TKY = <FS_AP03>-%TKY
+          %MSG = NEW_MESSAGE(
+                   ID       = 'ZMSG_DRS_SP26_SAP01'
+                   NUMBER   = '056' "&1 parameters are incomplete
+                   V1       = 'AP03'
+                   SEVERITY = IF_ABAP_BEHV_MESSAGE=>SEVERITY-ERROR )
+
+          %ELEMENT-CompanyCode = COND #( WHEN <FS_AP03>-CompanyCode IS INITIAL THEN IF_ABAP_BEHV=>MK-ON ELSE IF_ABAP_BEHV=>MK-OFF )
+          %ELEMENT-KeyDate     = COND #( WHEN <FS_AP03>-KeyDate     IS INITIAL THEN IF_ABAP_BEHV=>MK-ON ELSE IF_ABAP_BEHV=>MK-OFF )
+          %ELEMENT-VendorFrom  = COND #( WHEN <FS_AP03>-VendorFrom  IS INITIAL THEN IF_ABAP_BEHV=>MK-ON ELSE IF_ABAP_BEHV=>MK-OFF )
+          %ELEMENT-VendorTo    = COND #( WHEN <FS_AP03>-VendorTo    IS INITIAL THEN IF_ABAP_BEHV=>MK-ON ELSE IF_ABAP_BEHV=>MK-OFF )
+        ) TO REPORTED-PARAMAP03.
+
+        CONTINUE.
+      ENDIF.
+
+      " Checked Vendor
+      IF <FS_AP03>-VendorFrom > <FS_AP03>-VendorTo.
+        APPEND VALUE #( %TKY = <FS_AP03>-%TKY ) TO FAILED-PARAMAP03.
+        APPEND VALUE #(
+          %TKY = <FS_AP03>-%TKY
+          %MSG = NEW_MESSAGE(
+                   ID       = 'ZMSG_DRS_SP26_SAP01'
+                   NUMBER   = '061'
+                   SEVERITY = IF_ABAP_BEHV_MESSAGE=>SEVERITY-ERROR )
+          %ELEMENT-VendorFrom = IF_ABAP_BEHV=>MK-ON
+          %ELEMENT-VendorTo = IF_ABAP_BEHV=>MK-ON
+        ) TO REPORTED-PARAMAP03.
       ENDIF.
     ENDLOOP.
   ENDMETHOD.
@@ -1436,15 +1580,8 @@ CLASS LHC_SUBSCRIPTION IMPLEMENTATION.
 
           IF LT_GL01 IS INITIAL.
             LV_MSG_NO = '055'. " '&1 Report has not been prepared'
-          ELSE.
-            DATA(LS_GL01) = LT_GL01[ 1 ].
-            IF LS_GL01-CompanyCode IS INITIAL
-*            OR LS_GL01-FiscalYear IS INITIAL
-*           OR    LS_GL01-FiscalPeriodFr IS INITIAL OR LS_GL01-FiscalPeriodTo IS INITIAL OR
-*               LS_GL01-GlAccountFr IS INITIAL OR LS_GL01-GlAccountTo IS INITIAL
-.
-              LV_MSG_NO = '056'. " '&1 parameters are incomplete'
-            ENDIF.
+
+
           ENDIF.
 
         WHEN 'AR-01'.
@@ -1453,11 +1590,7 @@ CLASS LHC_SUBSCRIPTION IMPLEMENTATION.
 
           IF LT_AR01 IS INITIAL.
             LV_MSG_NO = '055'.
-          ELSE.
-            DATA(LS_AR01) = LT_AR01[ 1 ].
-            IF LS_AR01-CompanyCode IS INITIAL OR LS_AR01-KeyDate IS INITIAL.
-              LV_MSG_NO = '056'.
-            ENDIF.
+
           ENDIF.
 
         WHEN 'AR-02'.
@@ -1466,11 +1599,8 @@ CLASS LHC_SUBSCRIPTION IMPLEMENTATION.
 
           IF LT_AR02 IS INITIAL.
             LV_MSG_NO = '055'.
-          ELSE.
-            DATA(LS_AR02) = LT_AR02[ 1 ].
-            IF LS_AR02-CompanyCode IS INITIAL OR LS_AR02-FiscalYear IS INITIAL.
-              LV_MSG_NO = '056'.
-            ENDIF.
+
+
           ENDIF.
 
         WHEN 'AR-03'.
@@ -1479,25 +1609,20 @@ CLASS LHC_SUBSCRIPTION IMPLEMENTATION.
 
           IF LT_AR03 IS INITIAL.
             LV_MSG_NO = '055'.
-          ELSE.
-            DATA(LS_AR03) = LT_AR03[ 1 ].
-            IF LS_AR03-CompanyCode IS INITIAL OR LS_AR03-KeyDate IS INITIAL.
-              LV_MSG_NO = '056'.
-            ENDIF.
+
           ENDIF.
 
         WHEN 'AP-01'.
+
           READ ENTITIES OF ZIR_DRS_SUBSCR IN LOCAL MODE
             ENTITY Subscription BY \_ParamAP01 ALL FIELDS WITH CORRESPONDING #( KEYS ) RESULT DATA(LT_AP01).
 
           IF LT_AP01 IS INITIAL.
             LV_MSG_NO = '055'.
-          ELSE.
-            DATA(LS_AP01) = LT_AP01[ 1 ].
-            IF LS_AP01-CompanyCode IS INITIAL OR LS_AP01-KeyDate IS INITIAL.
-              LV_MSG_NO = '056'.
-            ENDIF.
+
           ENDIF.
+
+          CLEAR LT_AP01.
 
         WHEN 'AP-02'.
           READ ENTITIES OF ZIR_DRS_SUBSCR IN LOCAL MODE
@@ -1505,11 +1630,7 @@ CLASS LHC_SUBSCRIPTION IMPLEMENTATION.
 
           IF LT_AP02 IS INITIAL.
             LV_MSG_NO = '055'.
-          ELSE.
-            DATA(LS_AP02) = LT_AP02[ 1 ].
-            IF LS_AP02-CompanyCode IS INITIAL OR LS_AP02-FiscalYear IS INITIAL.
-              LV_MSG_NO = '056'.
-            ENDIF.
+
           ENDIF.
 
         WHEN 'AP-03'.
@@ -1518,11 +1639,7 @@ CLASS LHC_SUBSCRIPTION IMPLEMENTATION.
 
           IF LT_AP03 IS INITIAL.
             LV_MSG_NO = '055'.
-          ELSE.
-            DATA(LS_AP03) = LT_AP03[ 1 ].
-            IF LS_AP03-CompanyCode IS INITIAL OR LS_AP03-KeyDate IS INITIAL.
-              LV_MSG_NO = '056'.
-            ENDIF.
+
           ENDIF.
 
       ENDCASE.

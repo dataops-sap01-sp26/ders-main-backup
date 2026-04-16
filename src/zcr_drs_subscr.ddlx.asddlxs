@@ -93,24 +93,24 @@ annotate entity ZCR_DRS_SUBSCR with
       position: 30,
       hidden: #(HideParamAP03)
     },
-    {
-      id: 'CustomerListSection',
-      purpose: #STANDARD,
-      type: #LINEITEM_REFERENCE,
-      targetElement: '_Customers',
-      label: 'Customer List',
-      position: 35,
-      hidden: #(HideCustomerList)
-    },
-    {
-      id: 'VendorListSection',
-      purpose: #STANDARD,
-      type: #LINEITEM_REFERENCE,
-      targetElement: '_Vendors',
-      label: 'Vendor List',
-      position: 35,
-      hidden: #(HideVendorList)
-    },
+//    {
+//      id: 'CustomerListSection',
+//      purpose: #STANDARD,
+//      type: #LINEITEM_REFERENCE,
+//      targetElement: '_Customers',
+//      label: 'Customer List',
+//      position: 35,
+//      hidden: #(HideCustomerList)
+//    },
+//    {
+//      id: 'VendorListSection',
+//      purpose: #STANDARD,
+//      type: #LINEITEM_REFERENCE,
+//      targetElement: '_Vendors',
+//      label: 'Vendor List',
+//      position: 35,
+//      hidden: #(HideVendorList)
+//    },
     {
       id: 'AdminData',
       purpose: #STANDARD,
@@ -218,11 +218,11 @@ annotate entity ZCR_DRS_SUBSCR with
   @UI.hidden: true
   HideParamAP03;
   
-//  @UI.hidden: true
-//  HideCustomerList;
-//  
-//  @UI.hidden: true
-//  HideVendorList;
+  @UI.hidden: true
+  HideCustomerList;
+  
+  @UI.hidden: true
+  HideVendorList;
   
   @UI.fieldGroup: [ { qualifier: 'AdminData', position: 10 } ]
   @EndUserText.label: 'Created By'

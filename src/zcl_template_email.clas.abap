@@ -222,6 +222,7 @@ CLASS zcl_template_email IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD render_error_email.
+
     DATA: lv_html             TYPE string,
           lv_start_d          TYPE d,
           lv_start_t          TYPE t,
@@ -230,7 +231,7 @@ CLASS zcl_template_email IMPLEMENTATION.
     DATA: ls_subscr TYPE zdrs_subscr.
 
     " ==========================================
-    " GET JOB & SUBSCRIPTION
+    " 1. LẤY THÔNG TIN JOB & SUBSCRIPTION
     " ==========================================
     SELECT SINGLE *
       FROM zdrs_job_config
@@ -238,7 +239,7 @@ CLASS zcl_template_email IMPLEMENTATION.
       INTO @DATA(ls_job).
 
     IF sy-subrc <> 0.
-
+      " Trả về HTML cơ bản nếu không tìm thấy Job (đề phòng dump)
       rv_html = |<html><body><h3>Error processing job</h3><p>{ iv_error_msg }</p></body></html>|.
       RETURN.
     ENDIF.
@@ -264,10 +265,11 @@ CLASS zcl_template_email IMPLEMENTATION.
     ENDCASE.
 
     " ==========================================
-    " 3. XÂY DỰNG HTML NỘI DUNG EMAIL LỖI
+    " 3. XÂY DỰNG HTML NỘI DUNG EMAIL LỖI (ENGLISH)
     " ==========================================
-    " -- HEAD & STYLES (Đổi Header sang màu đỏ #dc3545) --
-    lv_html = |<!DOCTYPE html><html><head><style>| &&
+    " -- HEAD & STYLES --
+    " Lưu ý: Các ngoặc nhọn trong CSS phải được escape bằng dấu \
+    lv_html = |<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Error Email</title><style>| &&
               |body \{ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; margin: 0; padding: 20px; color: #333; \} | &&
               |.container \{ max-width: 650px; background: #ffffff; margin: 0 auto; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.05); \} | &&
               |.header \{ background-color: #dc3545; color: white; padding: 25px 30px; \} | &&
@@ -292,19 +294,12 @@ CLASS zcl_template_email IMPLEMENTATION.
               |<div class="status-badge">&#10006; Export Failed</div>| &&
               |</div><div class="content">|.
 
-*    " -- BOX LỖI CHÍNH --
-*    lv_html = lv_html && |<div class="error-box"><strong>Hệ thống gặp sự cố trong quá trình xử lý:</strong><br><br>|.
-
-    IF iv_error_msg IS NOT INITIAL.
-      lv_html = lv_html && |{ iv_error_msg }<br><br>|.
-    ENDIF.
-
-    " Ghi nhận thêm log từ bảng job nếu có
-    IF ls_job-message IS NOT INITIAL.
-      lv_html = lv_html && |<i>System Log: { ls_job-message }</i>|.
-    ENDIF.
-
-    lv_html = lv_html && |</div>|.
+    " -- BOX LỖI CHÍNH --
+    lv_html = lv_html &&
+              |<div class="error-box">| &&
+              |<strong>Error Message:</strong><br>| &&
+              |{ iv_error_msg }| &&
+              |</div>|.
 
     " -- BẢNG CHI TIẾT --
     lv_html = lv_html && |<table>| &&
@@ -313,9 +308,9 @@ CLASS zcl_template_email IMPLEMENTATION.
               |<tr><td class="td-label">Output Format</td><td class="td-value">{ ls_subscr-output_format }</td></tr>| &&
               |</table>|.
 
-*    lv_html = lv_html && |<p style="font-size:14px; color:#555;">Báo cáo không được tạo thành công. Vui lòng kiểm tra lại thiết lập Job hoặc liên hệ với bộ phận IT để được hỗ trợ.</p>|.
+    lv_html = lv_html && |<p style="font-size:14px; color:#555;">The report could not be generated successfully. Please check your Job settings or contact the IT department for support.</p>|.
 
-    lv_html = lv_html && |</div>|. " Đóng Content
+    lv_html = lv_html && |</div>|. " Đóng thẻ Content
 
     " -- FOOTER --
     lv_html = lv_html &&
@@ -325,6 +320,7 @@ CLASS zcl_template_email IMPLEMENTATION.
               |</div></div></body></html>|.
 
     rv_html = lv_html.
+
   ENDMETHOD.
 
 ENDCLASS.

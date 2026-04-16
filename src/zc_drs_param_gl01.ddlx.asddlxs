@@ -65,22 +65,30 @@ annotate entity ZC_DRS_PARAM_GL01 with
   }
   @EndUserText.label: 'Fiscal Period To'
   FiscalPeriodTo;
-
-  @UI: {
+  
+   @UI: {
     lineItem:       [ { position: 60, importance: #HIGH } ],
     identification: [ { position: 60 } ],
     fieldGroup:     [ { qualifier: 'SubscriptionParams', position: 60 } ]
   }
-  @EndUserText.label: 'Fiscal Year Fr'
-  FiscalYearFr;
-  
-  @UI: {
-    lineItem:       [ { position: 70, importance: #HIGH } ],
-    identification: [ { position: 80 } ],
-    fieldGroup:     [ { qualifier: 'SubscriptionParams', position: 80 } ]
-  }
-  @EndUserText.label: 'Fiscal Year To'
-  FiscalYearTo;
+  @EndUserText.label: 'Fiscal Year '
+  FiscalYear;
+
+//  @UI: {
+//    lineItem:       [ { position: 60, importance: #HIGH } ],
+//    identification: [ { position: 60 } ],
+//    fieldGroup:     [ { qualifier: 'SubscriptionParams', position: 60 } ]
+//  }
+//  @EndUserText.label: 'Fiscal Year Fr'
+//  FiscalYearFr;
+//  
+//  @UI: {
+//    lineItem:       [ { position: 70, importance: #HIGH } ],
+//    identification: [ { position: 80 } ],
+//    fieldGroup:     [ { qualifier: 'SubscriptionParams', position: 80 } ]
+//  }
+//  @EndUserText.label: 'Fiscal Year To'
+//  FiscalYearTo;
 
   //  @UI: {
   //    lineItem:       [ { position: 50, importance: #MEDIUM } ],

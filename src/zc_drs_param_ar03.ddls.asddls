@@ -11,34 +11,36 @@ define view entity ZC_DRS_PARAM_AR03 as projection on ZI_DRS_PARAM_AR03
     key SubscrUuid,
     key SubscrId,
     
-    @Consumption.valueHelpDefinition: [{ entity: { name: 'I_CompanyCodeStdVH', element: 'CompanyCode' } }]
-    CompanyCode,
-    
-    @Consumption.valueHelpDefinition: [
-                { entity: {
-                  name: 'I_Customer_VH',
-                  element: 'Customer'
-                },
-                additionalBinding: [{
-                    localElement: 'CompanyCode',
-                    element: 'CompanyCode',
-                    usage: #FILTER
-                }]
-            }]
-    CustomerFrom,
+    @Consumption.valueHelpDefinition: [{
+        entity: { name: 'I_CompanyCode', element: 'CompanyCode' }
+      }]
+      CompanyCode,
 
-    @Consumption.valueHelpDefinition: [
-                { entity: {
-                  name: 'I_Customer_VH',
-                  element: 'Customer'
-                },
-                additionalBinding: [{
-                    localElement: 'CompanyCode',
-                    element: 'CompanyCode',
-                    usage: #FILTER
-                }]
-            }]
-    CustomerTo,
+      @Consumption.valueHelpDefinition: [
+                 { entity: {
+                   name: 'I_CustomerCompany',
+                   element: 'Customer'
+                 },
+                 additionalBinding: [{
+                     localElement: 'CompanyCode',
+                     element: 'CompanyCode',
+                     usage: #FILTER
+                 }]
+             }]
+      CustomerFrom,
+
+      @Consumption.valueHelpDefinition: [
+                  { entity: {
+                    name: 'I_CustomerCompany',
+                    element: 'Customer'
+                  },
+                  additionalBinding: [{
+                      localElement: 'CompanyCode',
+                      element: 'CompanyCode',
+                      usage: #FILTER
+                  }]
+              }]
+      CustomerTo,
     
     KeyDate,
     MaxRows,

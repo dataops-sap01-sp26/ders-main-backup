@@ -138,21 +138,21 @@ authorization dependent by _Subscription
   SubscrUuid,
   SubscrId;
 
-  field ( mandatory )
-  CompanyCode
+//  field ( mandatory )
+//  CompanyCode
   //    GlAccountFr,
   //    GlAccountTo
-  ;
+//  ;
 
   // Parent association (required for composition)
   association _Subscription { with draft; }
 
   //Validation
-  validation validateFromTo on save
+  validation validateParam on save
   {
     create;
     update;
-    field GlAccountFr, GlAccountTo, FiscalPeriodFr, FiscalPeriodTo, FiscalYearFr, FiscalYearTo;
+    field CompanyCode, GlAccountFr, GlAccountTo, FiscalPeriodFr, FiscalPeriodTo, FiscalYearFr, FiscalYearTo;
   }
 
   // ─────────────────────────────────────────────────────────────────────────────
@@ -163,6 +163,7 @@ authorization dependent by _Subscription
     SubscrUuid = subscr_uuid;
     SubscrId = subscr_id;
     CompanyCode = company_code;
+    FiscalYear = fiscal_year;
     FiscalYearFr = fiscal_year_from;
     FiscalYearTo = fiscal_year_to;
     FiscalPeriodFr = fiscal_period_from;
@@ -194,19 +195,19 @@ authorization dependent by _Subscription
   SubscrUuid,
   SubscrId;
 
-  field ( mandatory )
-  CompanyCode,
-  keyDate;
+//  field ( mandatory )
+//  CompanyCode,
+//  keyDate;
 
   // Parent association (required for composition)
   association _Subscription { with draft; }
 
   //Validation
-  validation validateFromTo on save
+  validation validateParam on save
   {
     create;
     update;
-    field CustomerFrom, CustomerTo;
+    field CompanyCode , KeyDate, CustomerFrom, CustomerTo;
   }
 
   // ─────────────────────────────────────────────────────────────────────────────
@@ -242,19 +243,19 @@ authorization dependent by _Subscription
   SubscrUuid,
   SubscrId;
 
-  field ( mandatory )
-  CompanyCode,
-  FiscalYear;
+//  field ( mandatory )
+//  CompanyCode,
+//  FiscalYear;
 
   // Parent association (required for composition)
   association _Subscription { with draft; }
 
   //Validation
-  validation validateFromTo on save
+  validation validateParam on save
   {
     create;
     update;
-    field CustomerFrom, CustomerTo;
+    field CompanyCode , FiscalYear, CustomerFrom, CustomerTo;
   }
 
   // ─────────────────────────────────────────────────────────────────────────────
@@ -293,19 +294,19 @@ authorization dependent by _Subscription
   SubscrUuid,
   SubscrId;
 
-  field ( mandatory )
-  CompanyCode,
-  keyDate;
+//  field ( mandatory )
+//  CompanyCode,
+//  keyDate;
 
   // Parent association (required for composition)
   association _Subscription { with draft; }
 
   //Validation
-  validation validateFromTo on save
+  validation validateParam on save
   {
     create;
     update;
-    field CustomerFrom, CustomerTo;
+    field CompanyCode , KeyDate, CustomerFrom, CustomerTo;
   }
 
   // ─────────────────────────────────────────────────────────────────────────────
@@ -341,19 +342,19 @@ authorization dependent by _Subscription
   SubscrUuid,
   SubscrId;
 
-  field ( mandatory )
-  CompanyCode,
-  keyDate;
+//  field ( mandatory )
+//  CompanyCode,
+//  keyDate;
 
   // Parent association (required for composition)
   association _Subscription { with draft; }
 
   //Validation
-  validation validateFromTo on save
+  validation validateParam on save
   {
     create;
     update;
-    field VendorFrom, VendorTo;
+    field CompanyCode, KeyDate, VendorFrom, VendorTo;
   }
 
 
@@ -390,19 +391,19 @@ authorization dependent by _Subscription
   SubscrUuid,
   SubscrId;
 
-  field ( mandatory )
-  CompanyCode,
-  FiscalYear;
+//  field ( mandatory )
+//  CompanyCode,
+//  FiscalYear;
 
   // Parent association (required for composition)
   association _Subscription { with draft; }
 
   //Validation
-  validation validateFromTo on save
+  validation validateParam on save
   {
     create;
     update;
-    field VendorFrom, VendorTo;
+    field CompanyCode, FiscalYear, VendorFrom, VendorTo;
   }
 
 
@@ -439,19 +440,19 @@ authorization dependent by _Subscription
   SubscrUuid,
   SubscrId;
 
-  field ( mandatory )
-  CompanyCode,
-  keyDate;
+//  field ( mandatory )
+//  CompanyCode,
+//  keyDate;
 
   // Parent association (required for composition)
   association _Subscription { with draft; }
 
   //Validation
-  validation validateFromTo on save
+  validation validateParam on save
   {
     create;
     update;
-    field VendorFrom, VendorTo;
+    field CompanyCode, KeyDate, VendorFrom, VendorTo;
   }
 
 

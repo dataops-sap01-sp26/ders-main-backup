@@ -14,14 +14,14 @@ define view entity ZC_DRS_PARAM_GL01 as projection on ZI_DRS_PARAM_GL01
     @Consumption.valueHelpDefinition: [{ entity: { name: 'I_CompanyCodeStdVH', element: 'CompanyCode' } }]
     CompanyCode,
     
+    @Consumption.valueHelpDefinition: [{ entity: { name: 'I_FiscalYear', element: 'FiscalYear' } }]
+    FiscalYear,
+    
 //    @Consumption.valueHelpDefinition: [{ entity: { name: 'I_FiscalYear', element: 'FiscalYear' } }]
-//    FiscalYear,
-    
-    @Consumption.valueHelpDefinition: [{ entity: { name: 'I_FiscalYear', element: 'FiscalYear' } }]
-    FiscalYearFr,
-    
-    @Consumption.valueHelpDefinition: [{ entity: { name: 'I_FiscalYear', element: 'FiscalYear' } }]
-    FiscalYearTo,
+//    FiscalYearFr,
+//    
+//    @Consumption.valueHelpDefinition: [{ entity: { name: 'I_FiscalYear', element: 'FiscalYear' } }]
+//    FiscalYearTo,
     
     FiscalPeriodFr,
 

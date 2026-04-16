@@ -292,10 +292,10 @@ CLASS ZCL_XLSX_FORMATTER_AR03 IMPLEMENTATION.
       '<c r="B7" t="inlineStr" s="3"><is><t>Customer ID</t></is></c>'       &&
       '<c r="C7" t="inlineStr" s="3"><is><t>Customer Name</t></is></c>'     &&
       '<c r="D7" t="inlineStr" s="3"><is><t>Not Due</t></is></c>'           &&
-      '<c r="E7" t="inlineStr" s="3"><is><t>Aging 1</t></is></c>'           &&
-      '<c r="F7" t="inlineStr" s="3"><is><t>Aging 2</t></is></c>'           &&
-      '<c r="G7" t="inlineStr" s="3"><is><t>Aging 3</t></is></c>'           &&
-      '<c r="H7" t="inlineStr" s="3"><is><t>Aging 4</t></is></c>'           &&
+      '<c r="E7" t="inlineStr" s="3"><is><t>0 - 30 Days</t></is></c>'       &&
+      '<c r="F7" t="inlineStr" s="3"><is><t>31 - 60 Days</t></is></c>'      &&
+      '<c r="G7" t="inlineStr" s="3"><is><t>61 - 90 Days</t></is></c>'      &&
+      '<c r="H7" t="inlineStr" s="3"><is><t>&gt; 90 Days</t></is></c>'      &&
       '<c r="I7" t="inlineStr" s="3"><is><t>Total Amount</t></is></c>'      &&
       '<c r="J7" t="inlineStr" s="3"><is><t>Currency</t></is></c>'          &&
       '</row>'.
@@ -309,12 +309,12 @@ CLASS ZCL_XLSX_FORMATTER_AR03 IMPLEMENTATION.
     DATA(LT_MAP) = VALUE TT_COL_MAP(
       ( FIELD = 'CUSTOMER'        IS_NUM = ABAP_FALSE )
       ( FIELD = 'CUSTOMERNAME'    IS_NUM = ABAP_FALSE )
-      ( FIELD = 'NOT_DUE'         IS_NUM = ABAP_TRUE  )
-      ( FIELD = 'AGING1'          IS_NUM = ABAP_TRUE  )
-      ( FIELD = 'AGING2'          IS_NUM = ABAP_TRUE  )
-      ( FIELD = 'AGING3'          IS_NUM = ABAP_TRUE  )
-      ( FIELD = 'AGING4'          IS_NUM = ABAP_TRUE  )
-      ( FIELD = 'TOTAL_AMOUNT'    IS_NUM = ABAP_TRUE  )
+      ( FIELD = 'BUCKET_NOTDUE'   IS_NUM = ABAP_TRUE  )
+      ( FIELD = 'BUCKET_0_30'     IS_NUM = ABAP_TRUE  )
+      ( FIELD = 'BUCKET_31_60'    IS_NUM = ABAP_TRUE  )
+      ( FIELD = 'BUCKET_61_90'    IS_NUM = ABAP_TRUE  )
+      ( FIELD = 'BUCKET_OVER_90'  IS_NUM = ABAP_TRUE  )
+      ( FIELD = 'TOTALAMOUNT'     IS_NUM = ABAP_TRUE  )
       ( FIELD = 'LOCALCURRENCY'   IS_NUM = ABAP_FALSE )
     ).
 

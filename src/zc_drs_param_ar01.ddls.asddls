@@ -6,43 +6,46 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 // CHILD PROJECTION: AR01 Parameters - Composition child of Subscription
 // ═══════════════════════════════════════════════════════════════════════════════
-define view entity ZC_DRS_PARAM_AR01 as projection on ZI_DRS_PARAM_AR01
+define view entity ZC_DRS_PARAM_AR01
+  as projection on ZI_DRS_PARAM_AR01
 {
-    key SubscrUuid,
-    key SubscrId,
-    
-    @Consumption.valueHelpDefinition: [{ entity: { name: 'I_CompanyCodeStdVH', element: 'CompanyCode' } }]
-    CompanyCode,
-    
-    @Consumption.valueHelpDefinition: [
-                { entity: {
-                  name: 'I_Customer_VH',
-                  element: 'Customer'
-                },
-                additionalBinding: [{
-                    localElement: 'CompanyCode',
-                    element: 'CompanyCode',
-                    usage: #FILTER
-                }]
-            }]
-    CustomerFrom,
+  key SubscrUuid,
+  key SubscrId,
 
-    @Consumption.valueHelpDefinition: [
-                { entity: {
-                  name: 'I_Customer_VH',
-                  element: 'Customer'
-                },
-                additionalBinding: [{
-                    localElement: 'CompanyCode',
-                    element: 'CompanyCode',
-                    usage: #FILTER
-                }]
-            }]
-    CustomerTo,
-    
-    KeyDate,
-    MaxRows,
-    
-    /* Associations */
-    _Subscription : redirected to parent ZCR_DRS_SUBSCR
+      @Consumption.valueHelpDefinition: [{
+        entity: { name: 'I_CompanyCode', element: 'CompanyCode' }
+      }]
+      CompanyCode,
+
+      @Consumption.valueHelpDefinition: [
+                 { entity: {
+                   name: 'I_CustomerCompany',
+                   element: 'Customer'
+                 },
+                 additionalBinding: [{
+                     localElement: 'CompanyCode',
+                     element: 'CompanyCode',
+                     usage: #FILTER
+                 }]
+             }]
+      CustomerFrom,
+
+      @Consumption.valueHelpDefinition: [
+                  { entity: {
+                    name: 'I_CustomerCompany',
+                    element: 'Customer'
+                  },
+                  additionalBinding: [{
+                      localElement: 'CompanyCode',
+                      element: 'CompanyCode',
+                      usage: #FILTER
+                  }]
+              }]
+      CustomerTo,
+
+      KeyDate,
+      MaxRows,
+
+      /* Associations */
+      _Subscription : redirected to parent ZCR_DRS_SUBSCR
 }

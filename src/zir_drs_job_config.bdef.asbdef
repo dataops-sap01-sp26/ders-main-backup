@@ -4,7 +4,7 @@ with draft;
 
 define behavior for ZIR_DRS_JOB_CONFIG alias DrsJobConfig
 persistent table zdrs_job_config
-draft table zdrs_job_configd
+draft table zdrs_d_jobconfig
 etag master LocalLastChangedAt
 lock master total etag LastChangedAt
 authorization master ( global )
@@ -122,7 +122,7 @@ authorization master ( global )
 
 define behavior for ZI_DRS_FILE alias DrsFile
 persistent table zdrs_file
-draft table zdrs_file_d
+draft table zdrs_d_file
 etag master CreatedAt
 lock dependent by _JobConfig
 authorization dependent by _JobConfig
@@ -164,7 +164,7 @@ authorization dependent by _JobConfig
 
 define behavior for zi_drs_job_history alias DrsJobHistory
 persistent table zdrs_job_history
-draft table zdrs_job_histryd
+draft table zdrs_d_jobhistry
 lock dependent by _JobConfig
 authorization dependent by _JobConfig
 {

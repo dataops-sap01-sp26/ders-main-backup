@@ -266,17 +266,17 @@ CLASS ZCL_XLSX_FORMATTER_AR02 IMPLEMENTATION.
       |<c r="A2" t="inlineStr" s="2"><is><t>Company code: { LS_SPEC_PARAM-COMPANY_CODE }</t></is></c>| &&
       '</row>'.
 
-    ASSIGN COMPONENT 'KEY_DATE' OF STRUCTURE LS_SPEC_PARAM TO FIELD-SYMBOL(<LV_KEY_DATE>).
-    DATA LV_KEY_DATE_STR TYPE STRING.
+    ASSIGN COMPONENT 'FISCAL_YEAR' OF STRUCTURE LS_SPEC_PARAM TO FIELD-SYMBOL(<LV_FISCAL_YEAR>).
+    DATA LV_FISCAL_YEAR_STR TYPE STRING.
     IF SY-SUBRC = 0.
-      LV_KEY_DATE_STR = CONDENSE( |{ <LV_KEY_DATE> }| ).
+      LV_FISCAL_YEAR_STR = CONDENSE( |{ <LV_FISCAL_YEAR> }| ).
     ELSE.
-      LV_KEY_DATE_STR = 'N/A'.
+      LV_FISCAL_YEAR_STR = 'N/A'.
     ENDIF.
 
     LV_ROWS = LV_ROWS &&
       '<row r="3" ht="18" customHeight="1">' &&
-      |<c r="A3" t="inlineStr" s="2"><is><t>Key Date: { LV_KEY_DATE_STR }</t></is></c>| &&
+      |<c r="A3" t="inlineStr" s="2"><is><t>Fiscal Year: { LV_FISCAL_YEAR_STR }</t></is></c>| &&
       '</row>'.
 
     LV_ROWS = LV_ROWS &&

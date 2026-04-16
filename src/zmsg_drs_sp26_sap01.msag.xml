@@ -246,7 +246,25 @@
      <SPRSL>E</SPRSL>
      <ARBGB>ZMSG_DRS_SP26_SAP01</ARBGB>
      <MSGNR>039</MSGNR>
-     <TEXT>Report parameters not found for report ID &amp;1</TEXT>
+     <TEXT>Report parameters not found for Report ID &amp;1</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZMSG_DRS_SP26_SAP01</ARBGB>
+     <MSGNR>040</MSGNR>
+     <TEXT>Not found data for Report ID &amp;1</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZMSG_DRS_SP26_SAP01</ARBGB>
+     <MSGNR>041</MSGNR>
+     <TEXT>Formatter not maintained in registry</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZMSG_DRS_SP26_SAP01</ARBGB>
+     <MSGNR>042</MSGNR>
+     <TEXT>Failed to dynamically instantiate default formatter class</TEXT>
     </T100>
     <T100>
      <SPRSL>E</SPRSL>

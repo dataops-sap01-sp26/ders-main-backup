@@ -23,6 +23,9 @@ define view entity ZI_DRS_FILE
 
       @Semantics.systemDateTime.createdAt: true
       created_at        as CreatedAt,
+      
+      cast( substring( cast( created_at as abap.char(23) ), 1, 8 )
+      as abap.dats )                                              as JobDate,
 
       // Association
       _JobConfig,

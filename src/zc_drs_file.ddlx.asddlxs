@@ -36,7 +36,8 @@ annotate entity ZC_DRS_FILE with
 
   @UI: {
     lineItem: [ { position: 20, importance: #HIGH } ],
-    fieldGroup: [ { qualifier: 'FileDetails', position: 20 } ]
+    fieldGroup: [ { qualifier: 'FileDetails', position: 20 } ],
+    selectionField: [ { position: 40 } ]
   }
   @EndUserText.label: 'File Name'
   FileName;
@@ -63,16 +64,24 @@ annotate entity ZC_DRS_FILE with
 
   @UI: {
     lineItem: [ { position: 50, importance: #MEDIUM } ],
-    fieldGroup: [ { qualifier: 'AdminData', position: 10 } ]
+    fieldGroup: [ { qualifier: 'AdminData', position: 10 } ],
+    selectionField: [ { position: 20 } ]
   }
   @EndUserText.label: 'Created By'
   CreatedBy;
 
   @UI: {
     lineItem: [ { position: 60, importance: #MEDIUM } ],
-    fieldGroup: [ { qualifier: 'AdminData', position: 20 } ]
+    fieldGroup: [ { qualifier: 'AdminData', position: 20 } ],
+    selectionField: [ { position: 30 } ]
   }
   @EndUserText.label: 'Created At'
   CreatedAt;
+
+  @UI: {
+    selectionField: [ { position: 10 } ]
+  }
+  @EndUserText.label: 'Job Date'
+  JobDate;
 
 }

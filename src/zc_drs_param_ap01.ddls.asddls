@@ -12,39 +12,35 @@ define view entity ZC_DRS_PARAM_AP01
   key SubscrUuid,
   key SubscrId,
 
-      @Consumption.valueHelpDefinition: [{ entity: { name: 'I_CompanyCodeStdVH', element: 'CompanyCode' } }]
+      @Consumption.valueHelpDefinition: [{
+        entity: { name: 'I_CompanyCode', element: 'CompanyCode' }
+      }]
       CompanyCode,
 
-      @Consumption.valueHelpDefinition: [
-          { entity: { 
-            name: 'I_Supplier_VH', 
-            element: 'Supplier' 
-          },
-          additionalBinding: [{
-              localElement: 'CompanyCode',        
-              element: 'CompanyCode',             
-              usage: #FILTER                      
-          }]
+      @Consumption.valueHelpDefinition: [{
+      entity: { name: 'I_SupplierCompany', element: 'Supplier' },
+      additionalBinding: [{
+        localElement: 'CompanyCode',
+        element: 'CompanyCode',      
+        usage: #FILTER_AND_RESULT
+      }]
       }]
       VendorFrom,
 
-      @Consumption.valueHelpDefinition: [
-          { entity: { 
-            name: 'I_Supplier_VH', 
-            element: 'Supplier' 
-          },
-          additionalBinding: [{
-              localElement: 'CompanyCode',        
-              element: 'CompanyCode',             
-              usage: #FILTER                      
-          }]
+      @Consumption.valueHelpDefinition: [{
+      entity: { name: 'I_SupplierCompany', element: 'Supplier' },
+      additionalBinding: [{
+        localElement: 'CompanyCode', 
+        element: 'CompanyCode',      
+        usage: #FILTER_AND_RESULT
+      }]
       }]
       VendorTo,
 
 
       KeyDate,
-      
-      
+
+
       MaxRows,
 
       /* Associations */

@@ -14,6 +14,7 @@ define view entity ZC_DRS_FILE
           FileSizeDisplay,
           CreatedBy,
           CreatedAt,
+          JobDate,
 
           /* Associations */
           _JobConfig  : redirected to parent ZCR_DRS_JOB_CONFIG,

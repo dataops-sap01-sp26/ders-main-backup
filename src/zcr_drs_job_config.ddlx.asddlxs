@@ -131,6 +131,9 @@ annotate entity ZCR_DRS_JOB_CONFIG with
     useForValidation: true
   }]
   RunType;
+  
+  @UI.hidden: true
+  SubscrUuid;
 
   @UI: {
   lineItem: [ { position: 30, importance: #HIGH } ],
@@ -139,7 +142,7 @@ annotate entity ZCR_DRS_JOB_CONFIG with
   }
   @EndUserText.label: 'Subcription ID'
   @Consumption.valueHelpDefinition: [{
-    entity: { name: 'ZCR_DRS_SUBSCR', element: 'SubscrId' },
+    entity: { name: 'ZI_VH_DRS_SUBSCR', element: 'SubscrId' },
     useForValidation: true,
     additionalBinding: [{
     localElement: 'SubscrUuid',
@@ -306,7 +309,7 @@ annotate entity ZCR_DRS_JOB_CONFIG with
     fieldGroup: [ { qualifier: 'JobStatus', position: 30, criticality: 'JobStatusCriticality' } ],
     selectionField: [ { position: 50 } ]
   }
-   @EndUserText.label: 'Job Status'
+  @EndUserText.label: 'Job Status'
   JobStatus;
 
   @UI.hidden: true
