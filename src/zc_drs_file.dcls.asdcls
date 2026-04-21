@@ -1,0 +1,10 @@
+@EndUserText.label: 'Access Control for File Projection'
+@MappingRole: true
+define role ZC_DRS_FILE {
+  grant
+    select
+      on
+        ZC_DRS_FILE
+          where
+            inheriting conditions from entity ZI_DRS_FILE;
+}

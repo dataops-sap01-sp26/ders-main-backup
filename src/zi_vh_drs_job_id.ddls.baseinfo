@@ -3,7 +3,7 @@
 {
 "FROM":
 [
-"ZI_DRS_GL01"
+"ZDRS_JOB_CONFIG"
 ],
 "ASSOCIATED":
 [],

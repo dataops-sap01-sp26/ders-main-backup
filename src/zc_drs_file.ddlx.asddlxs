@@ -5,7 +5,16 @@
     typeNamePlural: 'Report Files',
     title: { type: #STANDARD, value: 'FileName' },
     description: { value: 'MimeType' }
-  }
+  },
+  presentationVariant: [{
+    sortOrder: [{
+      by: 'CreatedAt',
+      direction: #DESC
+    }],
+    visualizations: [{
+      type: #AS_LINEITEM
+    }]
+  }]
 }
 annotate entity ZC_DRS_FILE with
 {
@@ -81,7 +90,7 @@ annotate entity ZC_DRS_FILE with
   @UI: {
     selectionField: [ { position: 10 } ]
   }
-  @EndUserText.label: 'Job Date'
-  JobDate;
+  @EndUserText.label: 'File Creation Date'
+  FileCreationDate;
 
 }

@@ -1,4 +1,4 @@
-@AccessControl.authorizationCheck: #NOT_REQUIRED
+@AccessControl.authorizationCheck: #CHECK
 @EndUserText.label: 'File Projection'
 @Metadata.ignorePropagatedAnnotations: false
 @Metadata.allowExtensions: true
@@ -14,9 +14,8 @@ define view entity ZC_DRS_FILE
           FileSizeDisplay,
           CreatedBy,
           CreatedAt,
-          JobDate,
+          FileCreationDate,
 
           /* Associations */
-          _JobConfig  : redirected to parent ZCR_DRS_JOB_CONFIG,
-          _JobHistory : redirected to ZC_DRS_JOB_HISTORY
+          _JobConfig  : redirected to parent ZCR_DRS_JOB_CONFIG
 }

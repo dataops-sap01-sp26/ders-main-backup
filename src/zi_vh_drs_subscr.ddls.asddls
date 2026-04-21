@@ -14,8 +14,6 @@ define view entity ZI_VH_DRS_SUBSCR
       @UI.hidden: true
   key subscr_uuid   as SubscrUuid,
 
-      @Search.defaultSearchElement: true
-      @Search.fuzzinessThreshold: 0.8
       @EndUserText.label: 'Subscription ID'
       @UI.lineItem: [{ position: 10 }]
   key subscr_id     as SubscrId,

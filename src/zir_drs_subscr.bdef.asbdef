@@ -1,4 +1,4 @@
-managed implementation in class zbp_r_subscr unique;
+managed implementation in class zbp_drs_subscr unique;
 strict ( 2 );
 with draft;
 

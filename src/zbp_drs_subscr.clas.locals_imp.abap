@@ -546,21 +546,38 @@ ENDCLASS.
 CLASS LHC_SUBSCRIPTION IMPLEMENTATION.
 
   METHOD GET_GLOBAL_AUTHORIZATIONS.
-    " ═══════════════════════════════════════════════════════════════════════════
-    " GLOBAL AUTHORIZATION: Check if user can CREATE/UPDATE/DELETE subscriptions
-    " LOGIC: User must have at least one report in ZDRS_REP authorization
-    " NOTE: DCL handles row-level filtering (which subscriptions user can see)
-    "       Global auth only checks if user has ANY report access at all
-    " ═══════════════════════════════════════════════════════════════════════════
+  " ═══════════════════════════════════════════════════════════════════════════
+  " GLOBAL AUTHORIZATION: Check if user has at least ONE report in ZDRS_REP
+  " NOTE: This is a coarse-grained check. Fine-grained row-level security is
+  "       enforced by DCL (ZIR_DRS_SUBSCR) and GET_INSTANCE_AUTHORIZATIONS.
+  " ═══════════════════════════════════════════════════════════════════════════
+  IF requested_authorizations-%create EQ if_abap_behv=>mk-on.
+    AUTHORITY-CHECK OBJECT 'ZDRS_REP'
+      ID 'ZREP_ID' FIELD '*'
+      ID 'ACTVT'   FIELD '01'.       " 01 = Create
+    result-%create = COND #( WHEN sy-subrc = 0
+                             THEN if_abap_behv=>auth-allowed
+                             ELSE if_abap_behv=>auth-unauthorized ).
+  ENDIF.
 
-    " Allow all CRUD operations at global level
-    " Row-level security is enforced by DCL (ZIR_DRS_SUBSCR access control)
-    " Instance-level security is enforced by get_instance_authorizations
-    RESULT = VALUE #( %CREATE = IF_ABAP_BEHV=>AUTH-ALLOWED
-                      %UPDATE = IF_ABAP_BEHV=>AUTH-ALLOWED
-                      %DELETE = IF_ABAP_BEHV=>AUTH-ALLOWED ).
+  IF requested_authorizations-%update EQ if_abap_behv=>mk-on.
+    AUTHORITY-CHECK OBJECT 'ZDRS_REP'
+      ID 'ZREP_ID' FIELD '*'
+      ID 'ACTVT'   FIELD '02'.       " 02 = Change
+    result-%update = COND #( WHEN sy-subrc = 0
+                             THEN if_abap_behv=>auth-allowed
+                             ELSE if_abap_behv=>auth-unauthorized ).
+  ENDIF.
+
+  IF requested_authorizations-%delete EQ if_abap_behv=>mk-on.
+    AUTHORITY-CHECK OBJECT 'ZDRS_REP'
+      ID 'ZREP_ID' FIELD '*'
+      ID 'ACTVT'   FIELD '06'.       " 06 = Delete
+    result-%delete = COND #( WHEN sy-subrc = 0
+                             THEN if_abap_behv=>auth-allowed
+                             ELSE if_abap_behv=>auth-unauthorized ).
+  ENDIF.
   ENDMETHOD.
-
 
   METHOD GET_INSTANCE_AUTHORIZATIONS.
     " ═══════════════════════════════════════════════════════════════════════════

@@ -240,7 +240,7 @@
      <SPRSL>E</SPRSL>
      <ARBGB>ZMSG_DRS_SP26_SAP01</ARBGB>
      <MSGNR>038</MSGNR>
-     <TEXT>File formatter class is missing or inactive for report &amp;1</TEXT>
+     <TEXT>File formatter class is missing or inactive for Report ID &amp;1</TEXT>
     </T100>
     <T100>
      <SPRSL>E</SPRSL>

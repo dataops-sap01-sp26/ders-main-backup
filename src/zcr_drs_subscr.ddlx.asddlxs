@@ -129,11 +129,7 @@ annotate entity ZCR_DRS_SUBSCR with
     fieldGroup:     [ { qualifier: 'GeneralInfo', position: 10 } ],
     selectionField: [ { position: 10 } ],
     identification: [
-      { position: 10 },
-      { type: #FOR_ACTION, dataAction: 'createReportParams', label: 'Create Report Parameters', position: 20 },
-      { type: #FOR_ACTION, dataAction: 'pauseSubscription', label: 'Pause', position: 30 },
-      { type: #FOR_ACTION, dataAction: 'resumeSubscription', label: 'Resume', position: 40 },
-      { type: #FOR_ACTION, dataAction: 'copySubscription', label: 'Copy', position: 50 }
+      { position: 10 }
     ]
   }
   @EndUserText.label: 'Subscription ID'

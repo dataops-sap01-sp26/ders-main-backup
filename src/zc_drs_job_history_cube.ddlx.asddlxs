@@ -10,10 +10,10 @@
     qualifier: 'ChartDefault',
     title: 'Job Executions by Date & Status',
     chartType: #COLUMN_STACKED,
-    dimensions: ['JobDate', 'JobStatus'],
+    dimensions: ['ExecutionDate', 'JobStatus'],
     measures: ['JobCountTotal'],
     dimensionAttributes: [
-      { dimension: 'JobDate',   role: #CATEGORY },
+      { dimension: 'ExecutionDate',   role: #CATEGORY },
       { dimension: 'JobStatus', role: #SERIES }
     ],
     measureAttributes: [{
@@ -30,7 +30,7 @@
   }, 
   {
     sortOrder: [{
-      by: 'JobId',
+      by: 'EndTimestamp',
       direction: #DESC
     }],
     visualizations: [{
@@ -85,14 +85,14 @@ annotate entity ZI_DRS_JOB_HISTORY_CUBE with
   FileUuid;
 
   @UI: {
-  lineItem: [ { position: 90, importance: #MEDIUM, type: #WITH_URL, url: 'FileDownloadUrl' } ],
+  lineItem: [ { position: 100, importance: #MEDIUM, type: #WITH_URL, url: 'FileDownloadUrl' } ],
     fieldGroup: [ { qualifier: 'ReportFileDetails', position: 10, type: #WITH_URL, url: 'FileDownloadUrl' } ]
   }
   @EndUserText.label: 'File Name'
   FileName;
 
   @UI: {
-    lineItem: [ { position: 250, importance: #LOW } ]
+    lineItem: [ { position: 260, importance: #LOW } ]
   }
   @EndUserText.label: 'File Download Url'
   FileDownloadUrl;
@@ -116,55 +116,58 @@ annotate entity ZI_DRS_JOB_HISTORY_CUBE with
   FileCreatedAt;
 
   @UI: {
-    lineItem: [ { position: 20, importance: #HIGH } ],
+    lineItem: [ { position: 30, importance: #HIGH } ],
     fieldGroup: [ { qualifier: 'GeneralInfo', position: 10 } ],
     selectionField: [ { position: 40 } ]
   }
+  @Consumption.valueHelpDefinition: [{ entity: { name: 'ZIR_DRS_CATALOG', element: 'ReportId' } }]
   @EndUserText.label: 'Report ID'
   ReportId;
 
   @UI: {
-    lineItem: [ { position: 30, importance: #HIGH } ],
+    lineItem: [ { position: 40, importance: #HIGH } ],
     fieldGroup: [ { qualifier: 'GeneralInfo', position: 50 } ]
   }
   @EndUserText.label: 'Job Name'
   JobName;
 
   @UI: {
-    lineItem: [ { position: 40, importance: #HIGH } ],
+    lineItem: [ { position: 50, importance: #HIGH } ],
     fieldGroup: [ { qualifier: 'GeneralInfo', position: 55 } ]
   }
   @EndUserText.label: 'Job Text'
   JobText;
 
   @UI: {
-    lineItem: [ { position: 110, importance: #LOW } ],
+    lineItem: [ { position: 120, importance: #LOW } ],
     fieldGroup: [ { qualifier: 'GeneralInfo', position: 60 } ]
   }
   @EndUserText.label: 'Job Count'
   JobCount;
 
   @UI: {
-    lineItem: [ { position: 120, importance: #LOW } ],
+    lineItem: [ { position: 20, importance: #HIGH } ],
     fieldGroup: [ { qualifier: 'GeneralInfo', position: 30 } ],
     selectionField: [ { position: 50 } ]
   }
   @EndUserText.label: 'Job ID'
+  @Consumption.valueHelpDefinition: [{ entity: { name: 'ZI_VH_DRS_JOB_ID', element: 'JobId' } }]
   JobId;
 
   @UI: {
-    lineItem: [ { position: 130, importance: #LOW } ],
+    lineItem: [ { position: 140, importance: #LOW } ],
     fieldGroup: [ { qualifier: 'GeneralInfo', position: 40 } ]
   }
   @EndUserText.label: 'Run Type'
   RunType;
 
   @UI: {
-    lineItem: [ { position: 140, importance: #LOW } ],
+    lineItem: [ { position: 150, importance: #LOW } ],
     fieldGroup: [ { qualifier: 'GeneralInfo', position: 20 } ],
     selectionField: [ { position: 30 } ]
   }
   @EndUserText.label: 'Subscription ID'
+  @Consumption.valueHelpDefinition: [{ entity: { name: 'ZI_VH_DRS_SUBSCR', element: 'SubscrId' } }]
   SubscrId;
 
   @UI.hidden: true
@@ -174,60 +177,61 @@ annotate entity ZI_DRS_JOB_HISTORY_CUBE with
   JobTemplateName;
 
   @UI: {
-    lineItem: [ { position: 80, importance: #HIGH, criticality: 'JobStatusCriticality' } ],
+    lineItem: [ { position: 90, importance: #HIGH, criticality: 'JobStatusCriticality' } ],
     fieldGroup: [ { qualifier: 'ExecutionDetails', position: 70, criticality: 'JobStatusCriticality' } ],
     selectionField: [ { position: 60 } ]
   }
   @EndUserText.label: 'Job Status'
+  @Consumption.valueHelpDefinition: [{ entity: { name: 'ZI_VH_DRS_JOB_STATUS', element: 'JobStatus' } }]
   JobStatus;
 
   @UI.hidden: true
   JobStatusCriticality;
 
   @UI: {
-    lineItem: [ { position: 50, importance: #HIGH } ],
+    lineItem: [ { position: 60, importance: #HIGH } ],
     fieldGroup: [ { qualifier: 'ExecutionDetails', position: 30 } ]
   }
   @EndUserText.label: 'Start Timestamp'
   StartTimestamp;
 
   @UI: {
-    lineItem: [ { position: 60, importance: #HIGH } ],
+    lineItem: [ { position: 70, importance: #HIGH } ],
     fieldGroup: [ { qualifier: 'ExecutionDetails', position: 50 } ]
   }
   @EndUserText.label: 'End Timestamp'
   EndTimestamp;
 
   @UI: {
-    lineItem: [ { position: 70, importance: #MEDIUM } ],
+    lineItem: [ { position: 80, importance: #MEDIUM } ],
     fieldGroup: [ { qualifier: 'ExecutionDetails', position: 20 } ]
   }
   @EndUserText.label: 'Duration (ms)'
   DurationMs;
 
   @UI: {
-    lineItem: [ { position: 150, importance: #LOW } ],
+    lineItem: [ { position: 160, importance: #LOW } ],
     fieldGroup: [ { qualifier: 'ExecutionDetails', position: 10 } ]
   }
   @EndUserText.label: 'Output Format'
   OutputFormat;
 
   @UI: {
-    lineItem: [ { position: 100, importance: #MEDIUM } ],
+    lineItem: [ { position: 110, importance: #MEDIUM } ],
     fieldGroup: [ { qualifier: 'ExecutionDetails', position: 40 } ]
   }
   @EndUserText.label: 'Message'
   Message;
 
   @UI: {
-    lineItem: [ { position: 160, importance: #LOW } ],
+    lineItem: [ { position: 170, importance: #LOW } ],
     fieldGroup: [ { qualifier: 'ExecutionDetails', position: 60 } ]
   }
   @EndUserText.label: 'Retry Count'
   RetryCount;
 
   @UI: {
-    lineItem: [ { position: 200, importance: #LOW } ],
+    lineItem: [ { position: 210, importance: #LOW } ],
     fieldGroup: [ { qualifier: 'AdminData', position: 10 } ],
     selectionField: [ { position: 20 } ]
   }
@@ -235,28 +239,28 @@ annotate entity ZI_DRS_JOB_HISTORY_CUBE with
   CreatedBy;
 
   @UI: {
-    lineItem: [ { position: 210, importance: #LOW } ],
+    lineItem: [ { position: 220, importance: #LOW } ],
     fieldGroup: [ { qualifier: 'AdminData', position: 20 } ]
   }
   @EndUserText.label: 'Created At'
   CreatedAt;
 
   @UI: {
-    lineItem: [ { position: 220, importance: #LOW } ],
+    lineItem: [ { position: 230, importance: #LOW } ],
     fieldGroup: [ { qualifier: 'AdminData', position: 30 } ]
   }
   @EndUserText.label: 'Last Changed By'
   LastChangedBy;
 
   @UI: {
-    lineItem: [ { position: 230, importance: #LOW } ],
+    lineItem: [ { position: 240, importance: #LOW } ],
     fieldGroup: [ { qualifier: 'AdminData', position: 40 } ]
   }
   @EndUserText.label: 'Last Changed At'
   LastChangedAt;
 
   @UI: {
-    lineItem: [ { position: 240, importance: #LOW } ],
+    lineItem: [ { position: 250, importance: #LOW } ],
     fieldGroup: [ { qualifier: 'AdminData', position: 50 } ]
   }
   @EndUserText.label: 'Local Last Changed At'
@@ -266,11 +270,11 @@ annotate entity ZI_DRS_JOB_HISTORY_CUBE with
     lineItem:       [ { position: 10, importance: #HIGH } ],
   selectionField: [ { position: 10 } ]
   }
-  @EndUserText.label: 'Job Date'
-  JobDate;
+  @EndUserText.label: 'Execution Date'
+  ExecutionDate;
 
   @UI: {
-  lineItem:       [ { position: 100, importance: #MEDIUM } ]
+  lineItem: [ { position: 110, importance: #MEDIUM } ]
   }
   @EndUserText.label: 'Job Count Total'
   JobCountTotal;

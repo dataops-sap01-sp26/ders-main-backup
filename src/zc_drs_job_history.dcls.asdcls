@@ -1,0 +1,10 @@
+@EndUserText.label: 'Access Control for Job History Projection'
+@MappingRole: true
+define role ZC_DRS_JOB_HISTORY {
+//  grant
+//    select
+//      on
+//        ZC_DRS_JOB_HISTORY
+//          where
+//            inheriting conditions from entity ZI_DRS_JOB_HISTORY;
+}

@@ -8,7 +8,7 @@ define role ZIR_DRS_SUBSCR {
           where
             ( ReportId ) =
               aspect pfcg_auth ( ZDRS_REP, ZREP_ID, ACTVT = '03' )
-            and ( CreatedBy = aspect user )
+            //and ( CreatedBy = aspect user )
             and ( Bukrs ) =
               aspect pfcg_auth ( F_BKPF_BUK, BUKRS, ACTVT = '03' );
 }

@@ -58,16 +58,66 @@ ENDCLASS.
 CLASS lhc_DrsJobConfig IMPLEMENTATION.
 
   METHOD GET_GLOBAL_AUTHORIZATIONS.
-    " Grant all authorizations for demo purposes
-    RESULT = VALUE #(
-      %CREATE = IF_ABAP_BEHV=>AUTH-ALLOWED
-      %UPDATE = IF_ABAP_BEHV=>AUTH-ALLOWED
-      %DELETE = IF_ABAP_BEHV=>AUTH-ALLOWED
-      %ACTION-scheduleJob = IF_ABAP_BEHV=>AUTH-ALLOWED
-      %ACTION-cancelJob = IF_ABAP_BEHV=>AUTH-ALLOWED
-      %ACTION-refreshStatus = IF_ABAP_BEHV=>AUTH-ALLOWED ).
-  ENDMETHOD.
+  " ═══════════════════════════════════════════════════════════════════════════
+  " AUTHORIZATION: Check if user can manage job configurations
+  " LOGIC: Check ZDRS_REP object with wildcard report ID per operation type
+  " Uses activity 16 (Execute) for schedule/cancel actions
+  " ═══════════════════════════════════════════════════════════════════════════
+  IF requested_authorizations-%create EQ if_abap_behv=>mk-on.
+    AUTHORITY-CHECK OBJECT 'ZDRS_REP'
+      ID 'ZREP_ID' FIELD '*'
+      ID 'ACTVT'   FIELD '01'.       " 01 = Create
+    result-%create = COND #( WHEN sy-subrc = 0
+                             THEN if_abap_behv=>auth-allowed
+                             ELSE if_abap_behv=>auth-unauthorized ).
+  ENDIF.
 
+  IF requested_authorizations-%update EQ if_abap_behv=>mk-on.
+    AUTHORITY-CHECK OBJECT 'ZDRS_REP'
+      ID 'ZREP_ID' FIELD '*'
+      ID 'ACTVT'   FIELD '02'.       " 02 = Change
+    result-%update = COND #( WHEN sy-subrc = 0
+                             THEN if_abap_behv=>auth-allowed
+                             ELSE if_abap_behv=>auth-unauthorized ).
+  ENDIF.
+
+  IF requested_authorizations-%delete EQ if_abap_behv=>mk-on.
+    AUTHORITY-CHECK OBJECT 'ZDRS_REP'
+      ID 'ZREP_ID' FIELD '*'
+      ID 'ACTVT'   FIELD '06'.       " 06 = Delete
+    result-%delete = COND #( WHEN sy-subrc = 0
+                             THEN if_abap_behv=>auth-allowed
+                             ELSE if_abap_behv=>auth-unauthorized ).
+  ENDIF.
+
+  IF requested_authorizations-%action-scheduleJob EQ if_abap_behv=>mk-on.
+    AUTHORITY-CHECK OBJECT 'ZDRS_REP'
+      ID 'ZREP_ID' FIELD '*'
+      ID 'ACTVT'   FIELD '16'.       " 16 = Execute
+    result-%action-scheduleJob = COND #( WHEN sy-subrc = 0
+                                         THEN if_abap_behv=>auth-allowed
+                                         ELSE if_abap_behv=>auth-unauthorized ).
+  ENDIF.
+
+  IF requested_authorizations-%action-cancelJob EQ if_abap_behv=>mk-on.
+    AUTHORITY-CHECK OBJECT 'ZDRS_REP'
+      ID 'ZREP_ID' FIELD '*'
+      ID 'ACTVT'   FIELD '16'.       " 16 = Execute (cancel = reverse execute)
+    result-%action-cancelJob = COND #( WHEN sy-subrc = 0
+                                       THEN if_abap_behv=>auth-allowed
+                                       ELSE if_abap_behv=>auth-unauthorized ).
+  ENDIF.
+
+  IF requested_authorizations-%action-refreshStatus EQ if_abap_behv=>mk-on.
+    " refreshStatus is a read-only action — allow for anyone with display
+    AUTHORITY-CHECK OBJECT 'ZDRS_REP'
+      ID 'ZREP_ID' FIELD '*'
+      ID 'ACTVT'   FIELD '03'.       " 03 = Display
+    result-%action-refreshStatus = COND #( WHEN sy-subrc = 0
+                                           THEN if_abap_behv=>auth-allowed
+                                           ELSE if_abap_behv=>auth-unauthorized ).
+  ENDIF.
+ENDMETHOD.
 
   METHOD GET_INSTANCE_FEATURES.
     " Read current state of entities
@@ -845,7 +895,7 @@ CLASS lhc_DrsJobConfig IMPLEMENTATION.
               " Build scheduling recurrence info
               LS_SCHEDULING_INFO-PERIODIC_GRANULARITY = LS_JOB-PeriodicGranularity.
               LS_SCHEDULING_INFO-PERIODIC_VALUE       = LS_JOB-PeriodicValue.
-              LS_SCHEDULING_INFO-TIMEZONE             = LS_JOB-Tmzone.
+              LS_SCHEDULING_INFO-TIMEZONE             = 'UTC'.
               LS_SCHEDULING_INFO-TEST_MODE            = ABAP_FALSE.
               " Exception calendar: restrict job from running on non-working days
               IF LS_JOB-ExceptionCalendarId IS NOT INITIAL.

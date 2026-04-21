@@ -30,7 +30,7 @@ define view entity ZI_DRS_JOB_HISTORY_CUBE
       LocalLastChangedAt,
       JobStatusCriticality,
       JobStatus,
-      JobDate,
+      ExecutionDate,
       @Aggregation.default: #SUM
       JobCountTotal,
       JobId,

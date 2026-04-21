@@ -3,13 +3,10 @@
 {
 "FROM":
 [
-"ACDOCA",
-"SKAT"
+"ZDRS_JOBSTAT_VT"
 ],
 "ASSOCIATED":
-[
-"SKAT"
-],
+[],
 "BASE":
 [],
 "ANNO_REF":

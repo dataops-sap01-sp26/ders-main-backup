@@ -8,7 +8,7 @@
   },
   presentationVariant: [{
     sortOrder: [{
-      by: 'JobId',
+      by: 'CreatedAt',
       direction: #DESC
     }],
     visualizations: [{
@@ -91,13 +91,14 @@ annotate entity ZCR_DRS_JOB_CONFIG with
   @UI: {
   selectionField: [ { position: 10 } ]
   }
-  @EndUserText.label: 'Job Date'
-  JobDate;
+  @EndUserText.label: 'Scheduled Start Date'
+  ScheduledStartDate;
 
   @UI: {
     lineItem: [ { position: 5, importance: #HIGH } ],
     selectionField: [ { position: 40 } ]
   }
+  @Consumption.valueHelpDefinition: [{ entity: { name: 'ZI_VH_DRS_JOB_ID', element: 'JobId' } }]
   @EndUserText.label: 'Job ID'
   JobId;
 
@@ -309,6 +310,7 @@ annotate entity ZCR_DRS_JOB_CONFIG with
     fieldGroup: [ { qualifier: 'JobStatus', position: 30, criticality: 'JobStatusCriticality' } ],
     selectionField: [ { position: 50 } ]
   }
+  @Consumption.valueHelpDefinition: [{ entity: { name: 'ZI_VH_DRS_JOB_STATUS', element: 'JobStatus' } }]
   @EndUserText.label: 'Job Status'
   JobStatus;
 

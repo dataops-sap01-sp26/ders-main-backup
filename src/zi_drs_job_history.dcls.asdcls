@@ -1,0 +1,15 @@
+@EndUserText.label: 'Access Control for Job History'
+@MappingRole: true
+define role ZI_DRS_JOB_HISTORY {
+//  grant
+//    select
+//      on
+//        ZI_DRS_JOB_HISTORY
+//          where
+//            ( ReportId ) =
+//              aspect pfcg_auth ( ZDRS_REP, ZREP_ID, ACTVT = '03' )
+ //           and _JobConfig._Subscription.CreatedBy =
+ //             aspect user
+//            and ( _JobConfig._Subscription.Bukrs ) =
+//              aspect pfcg_auth ( F_BKPF_BUK, BUKRS, ACTVT = '03' );
+}

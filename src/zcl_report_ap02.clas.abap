@@ -173,7 +173,7 @@ CLASS ZCL_REPORT_AP02 IMPLEMENTATION.
     "   (b) the registered class name has not been activated yet.
     " Both are configuration errors — raise so the caller can react.
     IF RO_FORMATTER IS NOT BOUND.
-      " Message: File formatter class is missing or inactive for report &1
+      " Message: File formatter class is missing or inactive for Report ID &1
       RAISE EXCEPTION TYPE CX_APJ_RT
         MESSAGE ID 'ZMSG_DRS_SP26_SAP01'
         TYPE 'E'

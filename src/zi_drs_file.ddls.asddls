@@ -1,5 +1,5 @@
 @AbapCatalog.viewEnhancementCategory: [#NONE]
-@AccessControl.authorizationCheck: #NOT_REQUIRED
+@AccessControl.authorizationCheck: #CHECK
 @EndUserText.label: 'File Interface Entity'
 define view entity ZI_DRS_FILE
   as select from zdrs_file as File
@@ -24,8 +24,7 @@ define view entity ZI_DRS_FILE
       @Semantics.systemDateTime.createdAt: true
       created_at        as CreatedAt,
       
-      cast( substring( cast( created_at as abap.char(23) ), 1, 8 )
-      as abap.dats )                                              as JobDate,
+      cast( substring( cast( created_at as abap.char(23) ), 1, 8 ) as abap.dats ) as FileCreationDate,
 
       // Association
       _JobConfig,

@@ -7,5 +7,9 @@ define role ZIR_DRS_JOB_CONFIG {
         ZIR_DRS_JOB_CONFIG
           where
             ( _Subscription.ReportId ) =
-              aspect pfcg_auth ( ZDRS_REP, ZREP_ID, ACTVT = '03' );
+              aspect pfcg_auth ( ZDRS_REP, ZREP_ID, ACTVT = '03' )
+//            and _Subscription.CreatedBy =
+//              aspect user
+            and ( _Subscription.Bukrs ) =
+              aspect pfcg_auth ( F_BKPF_BUK, BUKRS, ACTVT = '03' );
 }
