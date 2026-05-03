@@ -28,5 +28,8 @@ define view entity ZI_VH_DRS_JOB_ID
       @Search.fuzzinessThreshold: 0.8
       @EndUserText.label: 'Description'
       @UI.lineItem: [{ position: 30 }]
-      job_text as JobText
+      job_text as JobText,
+      
+      @UI.hidden: true
+      created_by  as CreatedBy
 }

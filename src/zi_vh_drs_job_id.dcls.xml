@@ -3,9 +3,9 @@
  <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
   <asx:values>
    <DCLS>
-    <DCLNAME>ZC_DRS_JOB_HISTORY</DCLNAME>
+    <DCLNAME>ZI_VH_DRS_JOB_ID</DCLNAME>
     <DCLLANGUAGE>E</DCLLANGUAGE>
-    <DDTEXT>ZC_DRS_JOB_HISTORY</DDTEXT>
+    <DDTEXT>Access Control for Job ID Value Help</DDTEXT>
    </DCLS>
   </asx:values>
  </asx:abap>

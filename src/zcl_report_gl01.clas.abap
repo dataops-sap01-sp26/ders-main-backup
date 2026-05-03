@@ -144,7 +144,7 @@ CLASS ZCL_REPORT_GL01 IMPLEMENTATION.
              Period,
              DebitAmount,
              CreditAmount,
-             BalanceAmount,
+*             BalanceAmount,
              LocalCurrency
       WHERE COMPANYCODE  = @LS_SPEC_PARAM-COMPANY_CODE
         AND GLACCOUNT    IN @LT_GL_RANGE

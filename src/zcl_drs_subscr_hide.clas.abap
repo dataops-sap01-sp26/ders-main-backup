@@ -15,8 +15,7 @@ CLASS zcl_drs_subscr_hide IMPLEMENTATION.
     LOOP AT it_requested_calc_elements ASSIGNING FIELD-SYMBOL(<elem>).
       CASE <elem>.
         WHEN 'HIDEPARAMGL01' OR 'HIDEPARAMAR01' OR 'HIDEPARAMAR02' OR 'HIDEPARAMAR03'
-         OR  'HIDEPARAMAP01' OR 'HIDEPARAMAP02' OR 'HIDEPARAMAP03'
-         OR  'HIDECUSTOMERLIST' OR 'HIDEVENDORLIST'.
+         OR  'HIDEPARAMAP01' OR 'HIDEPARAMAP02' OR 'HIDEPARAMAP03'.
           INSERT |REPORTID| INTO TABLE et_requested_orig_elements.
       ENDCASE.
     ENDLOOP.
@@ -71,20 +70,6 @@ CLASS zcl_drs_subscr_hide IMPLEMENTATION.
       " Show AR Report Parameters section only when ReportId = 'AP-03'
       <row>-HideParamAP03 = COND abap_boolean(
         WHEN <row>-ReportId = 'AP-03'
-        THEN abap_false    " Show
-        ELSE abap_true     " Hide
-      ).
-
-      " Show Customer List section only when 'AR' (AR-01, AR-02...)
-      <row>-HideCustomerList = COND abap_boolean(
-        WHEN <row>-ReportId CP 'AR*'
-        THEN abap_false    " Show
-        ELSE abap_true     " Hide
-      ).
-
-      " Show Vendor List section only when 'AP' (AP-01, AP-02...)
-      <row>-HideVendorList = COND abap_boolean(
-        WHEN <row>-ReportId CP 'AP*'
         THEN abap_false    " Show
         ELSE abap_true     " Hide
       ).

@@ -3,7 +3,7 @@
  <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
   <asx:values>
    <DD04V>
-    <ROLLNAME>ZDRS_DE_REP_ID</ROLLNAME>
+    <ROLLNAME>ZDTE_REP_ID</ROLLNAME>
     <DDLANGUAGE>E</DDLANGUAGE>
     <DOMNAME>CHAR0020</DOMNAME>
     <HEADLEN>55</HEADLEN>
@@ -11,6 +11,10 @@
     <SCRLEN2>20</SCRLEN2>
     <SCRLEN3>40</SCRLEN3>
     <DDTEXT>ZDRS Report Identifier</DDTEXT>
+    <REPTEXT>Report ID</REPTEXT>
+    <SCRTEXT_S>Report ID</SCRTEXT_S>
+    <SCRTEXT_M>Report ID</SCRTEXT_M>
+    <SCRTEXT_L>Report ID</SCRTEXT_L>
     <DTELMASTER>E</DTELMASTER>
     <REFKIND>D</REFKIND>
    </DD04V>

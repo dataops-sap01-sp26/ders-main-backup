@@ -122,9 +122,9 @@ CLASS ZCL_REPORT_AR02 IMPLEMENTATION.
              PostingDate,
              Debit,
              Credit,
-             OpeningBalance,
-             ClosingBalance,
-             PeriodActivity,
+*             OpeningBalance,
+*             ClosingBalance,
+*             PeriodActivity,
              LocalCurrency
       WHERE COMPANYCODE = @LS_SPEC_PARAM-COMPANY_CODE
         AND CUSTOMER    IN @LT_CUSTOMER_RANGE

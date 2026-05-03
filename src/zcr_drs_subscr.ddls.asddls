@@ -63,14 +63,6 @@ define root view entity ZCR_DRS_SUBSCR
           @ObjectModel.virtualElementCalculatedBy: 'ABAP:ZCL_DRS_SUBSCR_HIDE'
   virtual HideParamAP03    : abap_boolean,
 
-          @ObjectModel.virtualElement: true
-          @ObjectModel.virtualElementCalculatedBy: 'ABAP:ZCL_DRS_SUBSCR_HIDE'
-  virtual HideCustomerList : abap_boolean,
-
-          @ObjectModel.virtualElement: true
-          @ObjectModel.virtualElementCalculatedBy: 'ABAP:ZCL_DRS_SUBSCR_HIDE'
-  virtual HideVendorList   : abap_boolean,
-
 
 
           /* Associations */
@@ -82,7 +74,5 @@ define root view entity ZCR_DRS_SUBSCR
           _ParamAP01 : redirected to composition child ZC_DRS_PARAM_AP01,
           _ParamAP02 : redirected to composition child ZC_DRS_PARAM_AP02,
           _ParamAP03 : redirected to composition child ZC_DRS_PARAM_AP03,
-          _Customers : redirected to composition child ZC_DRS_CUSTOMERS,
-          _Vendors   : redirected to composition child ZC_DRS_VENDORS,
           _JobConfig : redirected to ZCR_DRS_JOB_CONFIG
 }

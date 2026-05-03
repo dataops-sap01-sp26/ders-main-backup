@@ -317,12 +317,6 @@
     <T100>
      <SPRSL>E</SPRSL>
      <ARBGB>ZMSG_DRS_SP26_SAP01</ARBGB>
-     <MSGNR>059</MSGNR>
-     <TEXT>Fiscal Period From must be less than or equal to Fiscal Period To</TEXT>
-    </T100>
-    <T100>
-     <SPRSL>E</SPRSL>
-     <ARBGB>ZMSG_DRS_SP26_SAP01</ARBGB>
      <MSGNR>060</MSGNR>
      <TEXT>Customer From must be less than or equal to Customer To</TEXT>
     </T100>
@@ -331,6 +325,12 @@
      <ARBGB>ZMSG_DRS_SP26_SAP01</ARBGB>
      <MSGNR>061</MSGNR>
      <TEXT>Vendor From must be less than or equal to Vendor To</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZMSG_DRS_SP26_SAP01</ARBGB>
+     <MSGNR>062</MSGNR>
+     <TEXT>&amp;1 contains invalid email address: &amp;2</TEXT>
     </T100>
    </T100>
   </asx:values>

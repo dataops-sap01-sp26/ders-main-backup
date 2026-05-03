@@ -1,23 +1,21 @@
-@EndUserText.label: 'Access Control for File Access'
+@EndUserText.label: 'Access Control for Job History Cube'
 @MappingRole: true
-define role ZI_DRS_FILE {
+define role ZI_DRS_JOB_HISTORY_CUBE {
   grant
     select
       on
-        ZI_DRS_FILE
+        ZI_DRS_JOB_HISTORY_CUBE
           where
             // Check 1: Report authorization (existing ZDRS_REP object)
-            ( _JobConfig._Subscription.ReportId ) =
+            ( ReportId ) =
               aspect pfcg_auth ( ZDRS_REP, ZREP_ID, ACTVT = '03' )
-            and ( _JobConfig._Subscription.Bukrs ) =
-              aspect pfcg_auth ( F_BKPF_BUK, BUKRS, ACTVT = '03' )
             // Check 2: Privacy control (new ZDRS_PRIV object)
             and (
               // Admin sees all
               ( '*' ) = aspect pfcg_auth ( ZDRS_PRIV, ZDRS_SCOPE, ACTVT = '03' )
               // Monitor role (GL_STAFF, HEAD_ACCT) sees all
               or ( 'M' ) = aspect pfcg_auth ( ZDRS_PRIV, ZDRS_SCOPE, ACTVT = '03' )
-              // Private role sees own only (via nested association)
-              or _JobConfig._Subscription.CreatedBy = aspect user
+              // Private role sees own only (direct field)
+              or CreatedBy = aspect user
             );
 }

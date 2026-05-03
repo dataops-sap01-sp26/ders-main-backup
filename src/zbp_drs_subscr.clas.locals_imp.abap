@@ -46,15 +46,14 @@ CLASS LHC_SUBSCRIPTION DEFINITION INHERITING FROM CL_ABAP_BEHAVIOR_HANDLER.
     METHODS createReportParams FOR MODIFY
       IMPORTING KEYS FOR ACTION Subscription~createReportParams RESULT RESULT.
 
-
-    METHODS CleanupOnReportChange FOR DETERMINE ON MODIFY
-      IMPORTING KEYS FOR Subscription~CleanupOnReportChange.
-
     METHODS validateDescription FOR VALIDATE ON SAVE
       IMPORTING KEYS FOR Subscription~validateDescription.
 
     METHODS validateReport FOR VALIDATE ON SAVE
       IMPORTING KEYS FOR Subscription~validateReport.
+
+    METHODS validateEmail FOR VALIDATE ON SAVE
+      IMPORTING KEYS FOR Subscription~validateEmail.
 
 ENDCLASS.
 *&---------------------------------------------------------------------*
@@ -99,7 +98,6 @@ CLASS LHC_PARAMGL01 IMPLEMENTATION.
 
           %ELEMENT-CompanyCode    = COND #( WHEN <FS_GL01>-CompanyCode    IS INITIAL THEN IF_ABAP_BEHV=>MK-ON ELSE IF_ABAP_BEHV=>MK-OFF )
           %ELEMENT-FiscalYear     = COND #( WHEN <FS_GL01>-FiscalYear     IS INITIAL THEN IF_ABAP_BEHV=>MK-ON ELSE IF_ABAP_BEHV=>MK-OFF )
-*          %ELEMENT-FiscalYearTo   = COND #( WHEN <FS_GL01>-FiscalYearTo   IS INITIAL THEN IF_ABAP_BEHV=>MK-ON ELSE IF_ABAP_BEHV=>MK-OFF )
           %ELEMENT-FiscalPeriodFr = COND #( WHEN <FS_GL01>-FiscalPeriodFr IS INITIAL THEN IF_ABAP_BEHV=>MK-ON ELSE IF_ABAP_BEHV=>MK-OFF )
           %ELEMENT-FiscalPeriodTo = COND #( WHEN <FS_GL01>-FiscalPeriodTo IS INITIAL THEN IF_ABAP_BEHV=>MK-ON ELSE IF_ABAP_BEHV=>MK-OFF )
           %ELEMENT-GlAccountFr    = COND #( WHEN <FS_GL01>-GlAccountFr    IS INITIAL THEN IF_ABAP_BEHV=>MK-ON ELSE IF_ABAP_BEHV=>MK-OFF )
@@ -140,19 +138,6 @@ CLASS LHC_PARAMGL01 IMPLEMENTATION.
         ) TO REPORTED-PARAMGL01.
       ENDIF.
 
-*      " Checked Fiscal Year
-*      IF <FS_GL01>-FiscalYearFr > <FS_GL01>-FiscalYearTo.
-*        APPEND VALUE #( %TKY = <FS_GL01>-%TKY ) TO FAILED-PARAMGL01.
-*        APPEND VALUE #(
-*          %TKY = <FS_GL01>-%TKY
-*          %MSG = NEW_MESSAGE(
-*                   ID       = 'ZMSG_DRS_SP26_SAP01'
-*                   NUMBER   = '059'
-*                   SEVERITY = IF_ABAP_BEHV_MESSAGE=>SEVERITY-ERROR )
-*          %ELEMENT-FiscalYearFr = IF_ABAP_BEHV=>MK-ON
-*          %ELEMENT-FiscalYearTo = IF_ABAP_BEHV=>MK-ON
-*        ) TO REPORTED-PARAMGL01.
-*      ENDIF.
 
     ENDLOOP.
   ENDMETHOD.
@@ -551,9 +536,13 @@ CLASS LHC_SUBSCRIPTION IMPLEMENTATION.
   " NOTE: This is a coarse-grained check. Fine-grained row-level security is
   "       enforced by DCL (ZIR_DRS_SUBSCR) and GET_INSTANCE_AUTHORIZATIONS.
   " ═══════════════════════════════════════════════════════════════════════════
+  DATA lv_has_auth TYPE abap_bool.
+
   IF requested_authorizations-%create EQ if_abap_behv=>mk-on.
+    " Check if user has at least one ZDRS_REP authorization entry
+    " Using DUMMY allows specific report IDs (AR-01, AP-01, etc.) to pass
     AUTHORITY-CHECK OBJECT 'ZDRS_REP'
-      ID 'ZREP_ID' FIELD '*'
+      ID 'ZREP_ID' DUMMY
       ID 'ACTVT'   FIELD '01'.       " 01 = Create
     result-%create = COND #( WHEN sy-subrc = 0
                              THEN if_abap_behv=>auth-allowed
@@ -562,7 +551,7 @@ CLASS LHC_SUBSCRIPTION IMPLEMENTATION.
 
   IF requested_authorizations-%update EQ if_abap_behv=>mk-on.
     AUTHORITY-CHECK OBJECT 'ZDRS_REP'
-      ID 'ZREP_ID' FIELD '*'
+      ID 'ZREP_ID' DUMMY
       ID 'ACTVT'   FIELD '02'.       " 02 = Change
     result-%update = COND #( WHEN sy-subrc = 0
                              THEN if_abap_behv=>auth-allowed
@@ -571,7 +560,7 @@ CLASS LHC_SUBSCRIPTION IMPLEMENTATION.
 
   IF requested_authorizations-%delete EQ if_abap_behv=>mk-on.
     AUTHORITY-CHECK OBJECT 'ZDRS_REP'
-      ID 'ZREP_ID' FIELD '*'
+      ID 'ZREP_ID' DUMMY
       ID 'ACTVT'   FIELD '06'.       " 06 = Delete
     result-%delete = COND #( WHEN sy-subrc = 0
                              THEN if_abap_behv=>auth-allowed
@@ -759,7 +748,6 @@ CLASS LHC_SUBSCRIPTION IMPLEMENTATION.
 
     LV_NEW_SUBSCR_ID = LV_CURRENT_MAX + 1.
 
-    " MUST return mapped for ALL entities (including draft)
     LOOP AT ENTITIES ASSIGNING FIELD-SYMBOL(<ENTITY>).
       " Generate UUID if not provided
       IF <ENTITY>-SubscrUuid IS INITIAL.
@@ -776,7 +764,6 @@ CLASS LHC_SUBSCRIPTION IMPLEMENTATION.
         LV_ID = <ENTITY>-SubscrId.
       ENDIF.
 
-      " Assign to mapped response - include %is_draft for draft-enabled BO
       APPEND VALUE #( %CID       = <ENTITY>-%CID
                       %IS_DRAFT  = <ENTITY>-%IS_DRAFT
                       SubscrUuid = LV_UUID
@@ -1112,12 +1099,9 @@ CLASS LHC_SUBSCRIPTION IMPLEMENTATION.
 
 
   METHOD createReportParams.
-    " ═══════════════════════════════════════════════════════════════════════════
-    " CREATE REPORT PARAMETERS: Generic action based on ReportId
+    " createReportParams: Generic action based on ReportId
     " Uses composition - creates ParamGL01 via _ParamGL01 association
     " GL-01 → _ParamGL01, GL-02 → _ParamGL02 (future), etc.
-    " ═══════════════════════════════════════════════════════════════════════════
-
     " Read subscription data to get ReportId and Bukrs (for default CompanyCode)
     READ ENTITIES OF ZIR_DRS_SUBSCR IN LOCAL MODE
       ENTITY Subscription
@@ -1158,9 +1142,7 @@ CLASS LHC_SUBSCRIPTION IMPLEMENTATION.
       RESULT DATA(LT_EXISTING_AR03).
 
     DATA LT_CREATE_AR03 TYPE TABLE FOR CREATE ZIR_DRS_SUBSCR\_ParamAR03.
-    "=======================================================================
 
-    "===================AP Report Parameter==================================
     " Read existing AP01 params via composition
     READ ENTITIES OF ZIR_DRS_SUBSCR IN LOCAL MODE
       ENTITY Subscription BY \_ParamAP01
@@ -1184,7 +1166,6 @@ CLASS LHC_SUBSCRIPTION IMPLEMENTATION.
       RESULT DATA(LT_EXISTING_AP03).
 
     DATA LT_CREATE_AP03 TYPE TABLE FOR CREATE ZIR_DRS_SUBSCR\_ParamAP03.
-    "=======================================================================
 
     LOOP AT LT_SUBSCR ASSIGNING FIELD-SYMBOL(<SUBSCR>).
       CASE <SUBSCR>-ReportId.
@@ -1213,7 +1194,6 @@ CLASS LHC_SUBSCRIPTION IMPLEMENTATION.
             ) TO LT_CREATE_GL01.
           ENDIF.
 
-          "===================AR Report Parameter==================================
         WHEN 'AR-01'.
           READ TABLE LT_EXISTING_AR01 WITH KEY SubscrUuid = <SUBSCR>-SubscrUuid TRANSPORTING NO FIELDS.
           IF SY-SUBRC = 0.
@@ -1280,7 +1260,6 @@ CLASS LHC_SUBSCRIPTION IMPLEMENTATION.
             ) TO LT_CREATE_AR03.
           ENDIF.
 
-          "===================AP Report Parameter==================================
         WHEN 'AP-01'.
           READ TABLE LT_EXISTING_AP01 WITH KEY SubscrUuid = <SUBSCR>-SubscrUuid TRANSPORTING NO FIELDS.
           IF SY-SUBRC = 0.
@@ -1347,9 +1326,6 @@ CLASS LHC_SUBSCRIPTION IMPLEMENTATION.
             ) TO LT_CREATE_AP03.
           ENDIF.
 
-* WHEN 'GL-02'.
-* " TODO: Implement GL-02 parameter creation via _ParamGL02
-
         WHEN OTHERS.
           APPEND VALUE #(
             %TKY = CORRESPONDING #( <SUBSCR> )
@@ -1361,10 +1337,6 @@ CLASS LHC_SUBSCRIPTION IMPLEMENTATION.
           ) TO REPORTED-SUBSCRIPTION.
       ENDCASE.
     ENDLOOP.
-
-    "========================================================================
-    " CREATION & SUCCESS MESSAGES
-    "========================================================================
 
     " Create GL01 params via composition
     IF LT_CREATE_GL01 IS NOT INITIAL.
@@ -1661,7 +1633,6 @@ CLASS LHC_SUBSCRIPTION IMPLEMENTATION.
 
       ENDCASE.
 
-      " 3. Ghi lỗi bằng Message Class
       IF LV_MSG_NO IS NOT INITIAL.
         APPEND VALUE #( %TKY = LS_SUB-%TKY ) TO FAILED-Subscription.
         APPEND VALUE #( %TKY = LS_SUB-%TKY
@@ -1677,57 +1648,69 @@ CLASS LHC_SUBSCRIPTION IMPLEMENTATION.
     ENDLOOP.
   ENDMETHOD.
 
-  METHOD CleanupOnReportChange.
+  METHOD validateEmail.
+    DATA:
+      lt_emails TYPE string_table,
+      lv_mail   TYPE string.
 
-    DATA: LT_DEL_CUSTOMERS TYPE TABLE FOR DELETE ZIR_DRS_SUBSCR\\Customers,
-          LT_DEL_VENDORS   TYPE TABLE FOR DELETE ZIR_DRS_SUBSCR\\Vendors.
+    CONSTANTS:
+      lc_email_regex TYPE string
+        VALUE `^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$`.
 
-    " Read current Report
     READ ENTITIES OF ZIR_DRS_SUBSCR IN LOCAL MODE
       ENTITY Subscription
-        FIELDS ( ReportId ) WITH CORRESPONDING #( KEYS )
-      RESULT DATA(LT_SUBSCRIPTIONS).
+        FIELDS ( EmailTo EmailCc )
+        WITH CORRESPONDING #( KEYS )
+      RESULT DATA(lt_subscr).
 
-
-    LOOP AT LT_SUBSCRIPTIONS INTO DATA(LS_SUB).
-
-      "Convert to Report AP -> Remove all Customer
-      IF LS_SUB-ReportId CP 'AP*'.
-
-        "Get all Customer from Customer list
-        READ ENTITIES OF ZIR_DRS_SUBSCR IN LOCAL MODE
-          ENTITY Subscription BY \_Customers
-            ALL FIELDS WITH VALUE #( ( %TKY = LS_SUB-%TKY ) )
-          RESULT DATA(LT_CUSTOMERS).
-
-        LT_DEL_CUSTOMERS = CORRESPONDING #( BASE ( LT_DEL_CUSTOMERS ) LT_CUSTOMERS ).
-
-        "Convert to Report AR -> Remove all Vendor
-      ELSEIF LS_SUB-ReportId CP 'AR*'.
-
-        "Get all Vendor from Vendor list
-        READ ENTITIES OF ZIR_DRS_SUBSCR IN LOCAL MODE
-          ENTITY Subscription BY \_Vendors
-            ALL FIELDS WITH VALUE #( ( %TKY = LS_SUB-%TKY ) )
-          RESULT DATA(LT_VENDORS).
-
-        LT_DEL_VENDORS = CORRESPONDING #( BASE ( LT_DEL_VENDORS ) LT_VENDORS ).
-
+    LOOP AT lt_subscr ASSIGNING FIELD-SYMBOL(<fs_subscr>).
+      IF <fs_subscr>-EmailTo IS NOT INITIAL.
+        SPLIT <fs_subscr>-EmailTo AT ',' INTO TABLE lt_emails.
+        LOOP AT lt_emails ASSIGNING FIELD-SYMBOL(<lv_addr>).
+          lv_mail = condense( val = <lv_addr> ).
+          FIND REGEX lc_email_regex IN lv_mail.
+          IF sy-subrc <> 0.
+            APPEND VALUE #( %tky = <fs_subscr>-%tky ) TO failed-Subscription.
+            APPEND VALUE #(
+              %tky = <fs_subscr>-%tky
+              %msg = NEW_MESSAGE(
+                ID       = GC_MSG_CLASS
+                NUMBER   = '062'
+                SEVERITY = if_abap_behv_message=>severity-error
+                V1       = 'Email To'
+                V2       = lv_mail )
+              %element-EmailTo = if_abap_behv=>mk-on )
+            TO reported-Subscription.
+            EXIT. " report once per field per entity
+          ENDIF.
+        ENDLOOP.
       ENDIF.
+
+      IF <fs_subscr>-EmailCc IS NOT INITIAL.
+        SPLIT <fs_subscr>-EmailCc AT ',' INTO TABLE lt_emails.
+        LOOP AT lt_emails ASSIGNING FIELD-SYMBOL(<lv_cc>).
+          lv_mail = condense( val = <lv_cc> ).
+          FIND REGEX lc_email_regex IN lv_mail.
+          IF sy-subrc <> 0.
+            APPEND VALUE #( %tky = <fs_subscr>-%tky ) TO failed-Subscription.
+            APPEND VALUE #(
+              %tky = <fs_subscr>-%tky
+              %msg = NEW_MESSAGE(
+                ID       = GC_MSG_CLASS
+                NUMBER   = '062'
+                SEVERITY = if_abap_behv_message=>severity-error
+                V1       = 'Email CC'
+                V2       = lv_mail )
+              %element-EmailCc = if_abap_behv=>mk-on )
+            TO reported-Subscription.
+            EXIT. " report once per field per entity
+          ENDIF.
+        ENDLOOP.
+      ENDIF.
+
     ENDLOOP.
-
-    IF LT_DEL_CUSTOMERS IS NOT INITIAL.
-      MODIFY ENTITIES OF ZIR_DRS_SUBSCR IN LOCAL MODE
-        ENTITY Customers
-          DELETE FROM LT_DEL_CUSTOMERS.
-    ENDIF.
-
-    IF LT_DEL_VENDORS IS NOT INITIAL.
-      MODIFY ENTITIES OF ZIR_DRS_SUBSCR IN LOCAL MODE
-        ENTITY Vendors
-          DELETE FROM LT_DEL_VENDORS.
-    ENDIF.
-
   ENDMETHOD.
+
+
 
 ENDCLASS.

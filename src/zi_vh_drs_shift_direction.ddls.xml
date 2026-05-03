@@ -5,7 +5,7 @@
    <DDLS>
     <DDLNAME>ZI_VH_DRS_SHIFT_DIRECTION</DDLNAME>
     <DDLANGUAGE>E</DDLANGUAGE>
-    <DDTEXT>Shift Direction Value Help</DDTEXT>
+    <DDTEXT>Start Restriction Value Help Projection</DDTEXT>
     <SOURCE_TYPE>W</SOURCE_TYPE>
    </DDLS>
   </asx:values>

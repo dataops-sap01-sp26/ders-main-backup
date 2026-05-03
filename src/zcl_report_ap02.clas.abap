@@ -118,9 +118,9 @@ CLASS ZCL_REPORT_AP02 IMPLEMENTATION.
              PostingDate,
              Debit,
              Credit,
-             OpeningBalance,
-             ClosingBalance,
-             PeriodActivity,
+*             OpeningBalance,
+*             ClosingBalance,
+*             PeriodActivity,
              LocalCurrency
       WHERE COMPANYCODE = @LS_SPEC_PARAM-COMPANY_CODE
         AND SUPPLIER    IN @LT_VENDOR_RANGE

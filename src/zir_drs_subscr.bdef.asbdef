@@ -52,8 +52,6 @@ early numbering
   association _ParamAP01 { create; with draft; }
   association _ParamAP02 { create; with draft; }
   association _ParamAP03 { create; with draft; }
-  association _Customers { create; with draft; }
-  association _Vendors { create; with draft; }
 
   // ─────────────────────────────────────────────────────────────────────────────
   // DRAFT ACTIONS
@@ -66,6 +64,7 @@ early numbering
   {
     validation validateDescription;
     validation validateReport;
+    validation validateEmail;
   }
 
   // ─────────────────────────────────────────────────────────────────────────────
@@ -87,6 +86,7 @@ early numbering
   //   Validations
   validation validateDescription on save { create; update; field SubscrName; }
   validation validateReport on save { create; update; field ReportId; }
+  validation validateEmail on save { create; update; field EmailTo, EmailCc; }
 
 
   // ─────────────────────────────────────────────────────────────────────────────
@@ -94,8 +94,6 @@ early numbering
   // ─────────────────────────────────────────────────────────────────────────────
   determination setDefaultValue on modify { create; }
 
-  // NOTE: cascadeDeleteParams removed - composition handles cascade delete automatically
-  determination CleanupOnReportChange on modify { field ReportId; create; }
 
   // ─────────────────────────────────────────────────────────────────────────────
   // MAPPINGS
@@ -138,12 +136,6 @@ authorization dependent by _Subscription
   SubscrUuid,
   SubscrId;
 
-//  field ( mandatory )
-//  CompanyCode
-  //    GlAccountFr,
-  //    GlAccountTo
-//  ;
-
   // Parent association (required for composition)
   association _Subscription { with draft; }
 
@@ -152,7 +144,7 @@ authorization dependent by _Subscription
   {
     create;
     update;
-    field CompanyCode, GlAccountFr, GlAccountTo, FiscalPeriodFr, FiscalPeriodTo, FiscalYearFr, FiscalYearTo;
+    field CompanyCode, GlAccountFr, GlAccountTo, FiscalPeriodFr, FiscalPeriodTo, FiscalYear;
   }
 
   // ─────────────────────────────────────────────────────────────────────────────
@@ -164,8 +156,6 @@ authorization dependent by _Subscription
     SubscrId = subscr_id;
     CompanyCode = company_code;
     FiscalYear = fiscal_year;
-    FiscalYearFr = fiscal_year_from;
-    FiscalYearTo = fiscal_year_to;
     FiscalPeriodFr = fiscal_period_from;
     FiscalPeriodTo = fiscal_period_to;
     Currency = currency;
@@ -194,10 +184,6 @@ authorization dependent by _Subscription
   field ( readonly )
   SubscrUuid,
   SubscrId;
-
-//  field ( mandatory )
-//  CompanyCode,
-//  keyDate;
 
   // Parent association (required for composition)
   association _Subscription { with draft; }
@@ -243,10 +229,6 @@ authorization dependent by _Subscription
   SubscrUuid,
   SubscrId;
 
-//  field ( mandatory )
-//  CompanyCode,
-//  FiscalYear;
-
   // Parent association (required for composition)
   association _Subscription { with draft; }
 
@@ -269,9 +251,6 @@ authorization dependent by _Subscription
     CustomerFrom = customer_from;
     CustomerTo = customer_to;
     FiscalYear = fiscal_year;
-    //    FiscalPeriod = fiscal_period;
-    //    PostingDate = posting_date;
-    //    Currency = currency;
     MaxRows = max_rows;
   }
 }
@@ -294,9 +273,6 @@ authorization dependent by _Subscription
   SubscrUuid,
   SubscrId;
 
-//  field ( mandatory )
-//  CompanyCode,
-//  keyDate;
 
   // Parent association (required for composition)
   association _Subscription { with draft; }
@@ -341,10 +317,6 @@ authorization dependent by _Subscription
   field ( readonly )
   SubscrUuid,
   SubscrId;
-
-//  field ( mandatory )
-//  CompanyCode,
-//  keyDate;
 
   // Parent association (required for composition)
   association _Subscription { with draft; }
@@ -391,10 +363,6 @@ authorization dependent by _Subscription
   SubscrUuid,
   SubscrId;
 
-//  field ( mandatory )
-//  CompanyCode,
-//  FiscalYear;
-
   // Parent association (required for composition)
   association _Subscription { with draft; }
 
@@ -440,10 +408,6 @@ authorization dependent by _Subscription
   SubscrUuid,
   SubscrId;
 
-//  field ( mandatory )
-//  CompanyCode,
-//  keyDate;
-
   // Parent association (required for composition)
   association _Subscription { with draft; }
 
@@ -468,76 +432,5 @@ authorization dependent by _Subscription
     VendorTo = vendor_to;
     keyDate = key_date;
     MaxRows = max_rows;
-  }
-}
-// ═══════════════════════════════════════════════════════════════════════════════
-// CHILD ENTITY: Customer List (Composition child of Subscription)
-// ═══════════════════════════════════════════════════════════════════════════════
-define behavior for ZI_DRS_CUSTOMERS alias CUSTOMERS
-persistent table zdrs_customers
-draft table zdrs_d_customers
-lock dependent by _Subscription
-authorization dependent by _Subscription
-{
-  // Standard operations
-  update;
-  delete;
-
-  // Key fields - set from parent context, readonly
-  field ( readonly )
-  SubscrUuid,
-  SubscrId,
-  CreatedBy,
-  CreatedAt;
-
-  // Parent association (required for composition)
-  association _Subscription { with draft; }
-
-
-
-
-  // ─────────────────────────────────────────────────────────────────────────────
-  // MAPPINGS
-  // ─────────────────────────────────────────────────────────────────────────────
-  mapping for zdrs_customers
-  {
-    SubscrUuid = subscr_uuid;
-    SubscrId = subscr_id;
-    Customer = customer;
-  }
-}
-// ═══════════════════════════════════════════════════════════════════════════════
-// CHILD ENTITY: Vendor List (Composition child of Subscription)
-// ═══════════════════════════════════════════════════════════════════════════════
-define behavior for ZI_DRS_VENDORS alias VENDORS
-persistent table zdrs_vendors
-draft table zdrs_d_vendors
-lock dependent by _Subscription
-authorization dependent by _Subscription
-{
-  // Standard operations
-  update;
-  delete;
-
-  // Key fields - set from parent context, readonly
-  field ( readonly )
-  SubscrUuid,
-  SubscrId,
-  CreatedBy,
-  CreatedAt;
-
-  // Parent association (required for composition)
-  association _Subscription { with draft; }
-
-
-  // ─────────────────────────────────────────────────────────────────────────────
-  // MAPPINGS
-  // ─────────────────────────────────────────────────────────────────────────────
-  mapping for zdrs_vendors
-  {
-    SubscrUuid = subscr_uuid;
-    SubscrId = subscr_id;
-    Vendor = vendor;
-
   }
 }

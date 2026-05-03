@@ -35,8 +35,8 @@ define root view entity ZCR_RPT_GL01
       @Semantics.amount.currencyCode: 'LocalCurrency'
       CreditAmount,
 
-      @Semantics.amount.currencyCode: 'LocalCurrency'
-      BalanceAmount,
+//      @Semantics.amount.currencyCode: 'LocalCurrency'
+//      BalanceAmount,
 
       @UI.hidden: true
       LocalCurrency,

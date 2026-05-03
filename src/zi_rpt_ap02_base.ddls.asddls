@@ -48,7 +48,7 @@ define view entity ZI_RPT_AP02_BASE
         as Amount,
 
     /* ===================== OPENING BALANCE ===================== */
-
+/* 
     @Aggregation.default: #SUM
     cast(
         case
@@ -58,7 +58,7 @@ define view entity ZI_RPT_AP02_BASE
         end
         as abap.dec(23,2)
     ) as OpeningBalance,
-
+*/
 /* ===================== DEBIT ===================== */
 
 @Aggregation.default: #SUM
@@ -81,10 +81,10 @@ cast(
         else cast( 0 as abap.dec(23,2) )
     end
     as abap.dec(23,2)
-) as Credit,
+) as Credit
 
 /* ===================== CLOSING ===================== */
-
+/* 
 @Aggregation.default: #SUM
 cast(
     case
@@ -96,9 +96,9 @@ cast(
     end
     as abap.dec(23,2)
 ) as ClosingBalance,
-
+*/
 /* ===================== PERIOD ACTIVITY ===================== */
-
+/* 
 @Aggregation.default: #SUM
 cast(
     case
@@ -108,7 +108,7 @@ cast(
     end
     as abap.dec(23,2)
 ) as PeriodActivity
-
+*/
 }
 where
       Ledger = '0L'

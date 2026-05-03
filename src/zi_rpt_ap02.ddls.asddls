@@ -32,21 +32,21 @@ define view entity ZI_RPT_AP02
       Address,
       LocalCurrency,
 
-      @Semantics.amount.currencyCode: 'LocalCurrency'
+/*      @Semantics.amount.currencyCode: 'LocalCurrency'
       sum( OpeningBalance ) as OpeningBalance,
-
+*/
       @Semantics.amount.currencyCode: 'LocalCurrency'
       sum( Debit )          as Debit,
 
       @Semantics.amount.currencyCode: 'LocalCurrency'
       sum( Credit )         as Credit,
-
+/* 
       @Semantics.amount.currencyCode: 'LocalCurrency'
       sum( PeriodActivity ) as PeriodActivity,
 
       @Semantics.amount.currencyCode: 'LocalCurrency'
       sum( ClosingBalance ) as ClosingBalance,
-
+*/
       _Items
 }
 group by

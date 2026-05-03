@@ -1,8 +1,8 @@
 @Metadata.layer: #CORE
 
 @UI.headerInfo: {
-   typeName: 'Vendor Balance',
-   typeNamePlural: 'Vendor Balances',
+   typeName: 'AP Aging Report',
+   typeNamePlural: 'AP Aging Reports',
    title: { value: 'CompanyCode' },
    description: { value: 'Supplier' }
 }

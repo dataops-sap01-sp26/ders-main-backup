@@ -6,10 +6,16 @@ define role ZIR_DRS_JOB_CONFIG {
       on
         ZIR_DRS_JOB_CONFIG
           where
+            // Check 1: Report authorization (existing ZDRS_REP object)
             ( _Subscription.ReportId ) =
               aspect pfcg_auth ( ZDRS_REP, ZREP_ID, ACTVT = '03' )
-//            and _Subscription.CreatedBy =
-//              aspect user
             and ( _Subscription.Bukrs ) =
-              aspect pfcg_auth ( F_BKPF_BUK, BUKRS, ACTVT = '03' );
+              aspect pfcg_auth ( F_BKPF_BUK, BUKRS, ACTVT = '03' )
+            // Check 2: Privacy control (new ZDRS_PRIV object)
+            and (
+              // If user has ZDRS_SCOPE = '*' → See all records
+              ( '*' ) = aspect pfcg_auth ( ZDRS_PRIV, ZDRS_SCOPE, ACTVT = '03' )
+              // Otherwise, see only own records (via association)
+              or _Subscription.CreatedBy = aspect user
+            );
 }

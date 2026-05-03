@@ -1,8 +1,8 @@
 @Metadata.layer: #CORE
 
 @UI.headerInfo: { 
-    typeName: 'Account Balance', 
-    typeNamePlural: 'Account Balances', 
+    typeName: 'GL Account Balance', 
+    typeNamePlural: 'GL Account Balances', 
     title: { type: #STANDARD, value: 'GLAccount' },
     description: { type: #STANDARD, value: 'GLAccountName' } 
 }
@@ -74,5 +74,5 @@ annotate view ZCR_RPT_GL01 with
   @UI.lineItem: [{ position: 80 }]
   @UI.identification: [{ position: 80 }]
   @EndUserText.label: 'Balance Amount'
-  BalanceAmount;
+  balanceamount;
 }

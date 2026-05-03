@@ -51,7 +51,7 @@ define view entity ZI_RPT_AR02_BASE
     /* ===================== OPENING BALANCE ===================== */
 
     
-    @Aggregation.default: #SUM
+/*    @Aggregation.default: #SUM
     cast(
         case
             when PostingDate < $session.system_date
@@ -60,6 +60,8 @@ define view entity ZI_RPT_AR02_BASE
         end
         as abap.dec(23,2)
     ) as OpeningBalance,
+
+*/
     /* ===================== DEBIT ===================== */
 
 
@@ -84,9 +86,9 @@ cast(
         else cast( 0 as abap.dec(23,2) )
     end
     as abap.dec(23,2)
-) as Credit,
+) as Credit
 /* ===================== CLOSING ===================== */
-
+/*
 @Aggregation.default: #SUM
 cast(
     case
@@ -98,10 +100,11 @@ cast(
     end
     as abap.dec(23,2)
 ) as ClosingBalance,
-
+ 
+ */
     /* ===================== PERIOD ACTIVITY ===================== */
 
-
+/*
     @Aggregation.default: #SUM
     cast(
         case
@@ -111,7 +114,7 @@ cast(
         end
         as abap.dec(23,2)
     ) as PeriodActivity
-
+*/
 }
 where
       Ledger = '0L'

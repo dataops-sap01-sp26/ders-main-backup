@@ -58,66 +58,66 @@ ENDCLASS.
 CLASS lhc_DrsJobConfig IMPLEMENTATION.
 
   METHOD GET_GLOBAL_AUTHORIZATIONS.
-  " ═══════════════════════════════════════════════════════════════════════════
-  " AUTHORIZATION: Check if user can manage job configurations
-  " LOGIC: Check ZDRS_REP object with wildcard report ID per operation type
-  " Uses activity 16 (Execute) for schedule/cancel actions
-  " ═══════════════════════════════════════════════════════════════════════════
-  IF requested_authorizations-%create EQ if_abap_behv=>mk-on.
-    AUTHORITY-CHECK OBJECT 'ZDRS_REP'
-      ID 'ZREP_ID' FIELD '*'
-      ID 'ACTVT'   FIELD '01'.       " 01 = Create
-    result-%create = COND #( WHEN sy-subrc = 0
-                             THEN if_abap_behv=>auth-allowed
-                             ELSE if_abap_behv=>auth-unauthorized ).
-  ENDIF.
+    " ═══════════════════════════════════════════════════════════════════════════
+    " AUTHORIZATION: Check if user can manage job configurations
+    " LOGIC: Check ZDRS_REP object with wildcard report ID per operation type
+    " Uses activity 16 (Execute) for schedule/cancel actions
+    " ═══════════════════════════════════════════════════════════════════════════
+    IF REQUESTED_AUTHORIZATIONS-%CREATE EQ IF_ABAP_BEHV=>MK-ON.
+      AUTHORITY-CHECK OBJECT 'ZDRS_REP'
+        ID 'ZREP_ID' DUMMY
+        ID 'ACTVT'   FIELD '01'.       " 01 = Create
+      RESULT-%CREATE = COND #( WHEN SY-SUBRC = 0
+                               THEN IF_ABAP_BEHV=>AUTH-ALLOWED
+                               ELSE IF_ABAP_BEHV=>AUTH-UNAUTHORIZED ).
+    ENDIF.
 
-  IF requested_authorizations-%update EQ if_abap_behv=>mk-on.
-    AUTHORITY-CHECK OBJECT 'ZDRS_REP'
-      ID 'ZREP_ID' FIELD '*'
-      ID 'ACTVT'   FIELD '02'.       " 02 = Change
-    result-%update = COND #( WHEN sy-subrc = 0
-                             THEN if_abap_behv=>auth-allowed
-                             ELSE if_abap_behv=>auth-unauthorized ).
-  ENDIF.
+    IF REQUESTED_AUTHORIZATIONS-%UPDATE EQ IF_ABAP_BEHV=>MK-ON.
+      AUTHORITY-CHECK OBJECT 'ZDRS_REP'
+        ID 'ZREP_ID' DUMMY
+        ID 'ACTVT'   FIELD '02'.       " 02 = Change
+      RESULT-%UPDATE = COND #( WHEN SY-SUBRC = 0
+                               THEN IF_ABAP_BEHV=>AUTH-ALLOWED
+                               ELSE IF_ABAP_BEHV=>AUTH-UNAUTHORIZED ).
+    ENDIF.
 
-  IF requested_authorizations-%delete EQ if_abap_behv=>mk-on.
-    AUTHORITY-CHECK OBJECT 'ZDRS_REP'
-      ID 'ZREP_ID' FIELD '*'
-      ID 'ACTVT'   FIELD '06'.       " 06 = Delete
-    result-%delete = COND #( WHEN sy-subrc = 0
-                             THEN if_abap_behv=>auth-allowed
-                             ELSE if_abap_behv=>auth-unauthorized ).
-  ENDIF.
+    IF REQUESTED_AUTHORIZATIONS-%DELETE EQ IF_ABAP_BEHV=>MK-ON.
+      AUTHORITY-CHECK OBJECT 'ZDRS_REP'
+        ID 'ZREP_ID' DUMMY
+        ID 'ACTVT'   FIELD '06'.       " 06 = Delete
+      RESULT-%DELETE = COND #( WHEN SY-SUBRC = 0
+                               THEN IF_ABAP_BEHV=>AUTH-ALLOWED
+                               ELSE IF_ABAP_BEHV=>AUTH-UNAUTHORIZED ).
+    ENDIF.
 
-  IF requested_authorizations-%action-scheduleJob EQ if_abap_behv=>mk-on.
-    AUTHORITY-CHECK OBJECT 'ZDRS_REP'
-      ID 'ZREP_ID' FIELD '*'
-      ID 'ACTVT'   FIELD '16'.       " 16 = Execute
-    result-%action-scheduleJob = COND #( WHEN sy-subrc = 0
-                                         THEN if_abap_behv=>auth-allowed
-                                         ELSE if_abap_behv=>auth-unauthorized ).
-  ENDIF.
+    IF REQUESTED_AUTHORIZATIONS-%ACTION-scheduleJob EQ IF_ABAP_BEHV=>MK-ON.
+      AUTHORITY-CHECK OBJECT 'ZDRS_REP'
+        ID 'ZREP_ID' DUMMY
+        ID 'ACTVT'   FIELD '16'.       " 16 = Execute
+      RESULT-%ACTION-scheduleJob = COND #( WHEN SY-SUBRC = 0
+                                           THEN IF_ABAP_BEHV=>AUTH-ALLOWED
+                                           ELSE IF_ABAP_BEHV=>AUTH-UNAUTHORIZED ).
+    ENDIF.
 
-  IF requested_authorizations-%action-cancelJob EQ if_abap_behv=>mk-on.
-    AUTHORITY-CHECK OBJECT 'ZDRS_REP'
-      ID 'ZREP_ID' FIELD '*'
-      ID 'ACTVT'   FIELD '16'.       " 16 = Execute (cancel = reverse execute)
-    result-%action-cancelJob = COND #( WHEN sy-subrc = 0
-                                       THEN if_abap_behv=>auth-allowed
-                                       ELSE if_abap_behv=>auth-unauthorized ).
-  ENDIF.
+    IF REQUESTED_AUTHORIZATIONS-%ACTION-cancelJob EQ IF_ABAP_BEHV=>MK-ON.
+      AUTHORITY-CHECK OBJECT 'ZDRS_REP'
+        ID 'ZREP_ID' DUMMY
+        ID 'ACTVT'   FIELD '16'.       " 16 = Execute (cancel = reverse execute)
+      RESULT-%ACTION-cancelJob = COND #( WHEN SY-SUBRC = 0
+                                         THEN IF_ABAP_BEHV=>AUTH-ALLOWED
+                                         ELSE IF_ABAP_BEHV=>AUTH-UNAUTHORIZED ).
+    ENDIF.
 
-  IF requested_authorizations-%action-refreshStatus EQ if_abap_behv=>mk-on.
-    " refreshStatus is a read-only action — allow for anyone with display
-    AUTHORITY-CHECK OBJECT 'ZDRS_REP'
-      ID 'ZREP_ID' FIELD '*'
-      ID 'ACTVT'   FIELD '03'.       " 03 = Display
-    result-%action-refreshStatus = COND #( WHEN sy-subrc = 0
-                                           THEN if_abap_behv=>auth-allowed
-                                           ELSE if_abap_behv=>auth-unauthorized ).
-  ENDIF.
-ENDMETHOD.
+    IF REQUESTED_AUTHORIZATIONS-%ACTION-refreshStatus EQ IF_ABAP_BEHV=>MK-ON.
+      " refreshStatus is a read-only action — allow for anyone with display
+      AUTHORITY-CHECK OBJECT 'ZDRS_REP'
+        ID 'ZREP_ID' DUMMY
+        ID 'ACTVT'   FIELD '03'.       " 03 = Display
+      RESULT-%ACTION-refreshStatus = COND #( WHEN SY-SUBRC = 0
+                                             THEN IF_ABAP_BEHV=>AUTH-ALLOWED
+                                             ELSE IF_ABAP_BEHV=>AUTH-UNAUTHORIZED ).
+    ENDIF.
+  ENDMETHOD.
 
   METHOD GET_INSTANCE_FEATURES.
     " Read current state of entities
@@ -138,15 +138,15 @@ ENDMETHOD.
         " All actions disabled when record is still a DRAFT (not yet saved/activated).
         " User must press 'Create' first to activate the record before scheduling.
         %ACTION-scheduleJob = COND #(
-          " record is draft → always disable
+          " record is draft -> always disable
           WHEN LS_JOB-%IS_DRAFT = '01'
           THEN IF_ABAP_BEHV=>FC-O-DISABLED
-          " active + not yet scheduled → enable
+          " active + not yet scheduled -> enable
           WHEN LS_JOB-JobName IS INITIAL
           THEN IF_ABAP_BEHV=>FC-O-ENABLED
           ELSE IF_ABAP_BEHV=>FC-O-DISABLED )
         " Enable cancelJob only for cancellable statuses (whitelist):
-        "   S = Scheduled, Y = Ready, P = Released
+        "   S = Scheduled, (Y = Ready, P = Released not appear in app)
         " All terminal/final statuses are disabled:
         "   F = Finished, A = Failed, X = Unknown,
         "   C = Cancelled, D = Deleted, K = Skipped, U = User Error
@@ -211,7 +211,7 @@ ENDMETHOD.
             LV_MAX_DRAFT  TYPE ZDRS_JOB_CONFIGD-JOBID.
 
       SELECT SINGLE MAX( JOB_ID ) FROM ZDRS_JOB_CONFIG  INTO @LV_MAX_ACTIVE.
-      SELECT SINGLE MAX( JOBID ) FROM ZDRS_JOB_CONFIGD INTO @LV_MAX_DRAFT.
+      SELECT SINGLE MAX( JOBID ) FROM ZDRS_D_JOBCONFIG INTO @LV_MAX_DRAFT.
 
       IF LV_MAX_ACTIVE > LV_MAX_DRAFT.
         LV_NEXT_ID = LV_MAX_ACTIVE.
@@ -581,8 +581,9 @@ ENDMETHOD.
               " Use user's timezone to get the LOCAL date (not UTC date)
               " Timestamp is stored as real UTC — converting with 'UTC' gives wrong
               " date when local time crosses midnight boundary (e.g. 5 AM UTC+7 = previous day in UTC)
-              DATA(LV_W_TZ) = COND TIMEZONE(
-                WHEN LS_JOB-Tmzone IS NOT INITIAL THEN LS_JOB-Tmzone ELSE 'UTC' ).
+              DATA(LV_W_TZ) = COND TIMEZONE( WHEN LS_JOB-Tmzone IS NOT INITIAL
+                                             THEN LS_JOB-Tmzone
+                                             ELSE 'UTC' ).
               CONVERT TIME STAMP LS_JOB-StartTimestamp TIME ZONE LV_W_TZ
                 INTO DATE LV_W_START_DATE TIME LV_W_START_TIME.
 
@@ -594,24 +595,52 @@ ENDMETHOD.
 
               DATA(LV_W_DOW_OK) = ABAP_FALSE.
               CASE LV_W_DOW.
-                WHEN 0. IF LS_JOB-OnMonday    = ABAP_TRUE. LV_W_DOW_OK = ABAP_TRUE. ENDIF.
-                WHEN 1. IF LS_JOB-OnTuesday   = ABAP_TRUE. LV_W_DOW_OK = ABAP_TRUE. ENDIF.
-                WHEN 2. IF LS_JOB-OnWednesday = ABAP_TRUE. LV_W_DOW_OK = ABAP_TRUE. ENDIF.
-                WHEN 3. IF LS_JOB-OnThursday  = ABAP_TRUE. LV_W_DOW_OK = ABAP_TRUE. ENDIF.
-                WHEN 4. IF LS_JOB-OnFriday    = ABAP_TRUE. LV_W_DOW_OK = ABAP_TRUE. ENDIF.
-                WHEN 5. IF LS_JOB-OnSaturday  = ABAP_TRUE. LV_W_DOW_OK = ABAP_TRUE. ENDIF.
-                WHEN 6. IF LS_JOB-OnSunday    = ABAP_TRUE. LV_W_DOW_OK = ABAP_TRUE. ENDIF.
+                WHEN 0.
+                  IF LS_JOB-OnMonday = ABAP_TRUE.
+                    LV_W_DOW_OK = ABAP_TRUE.
+                  ENDIF.
+                WHEN 1.
+                  IF LS_JOB-OnTuesday = ABAP_TRUE.
+                    LV_W_DOW_OK = ABAP_TRUE.
+                  ENDIF.
+                WHEN 2.
+                  IF LS_JOB-OnWednesday = ABAP_TRUE.
+                    LV_W_DOW_OK = ABAP_TRUE.
+                  ENDIF.
+                WHEN 3.
+                  IF LS_JOB-OnThursday = ABAP_TRUE.
+                    LV_W_DOW_OK = ABAP_TRUE.
+                  ENDIF.
+                WHEN 4.
+                  IF LS_JOB-OnFriday = ABAP_TRUE.
+                    LV_W_DOW_OK = ABAP_TRUE.
+                  ENDIF.
+                WHEN 5.
+                  IF LS_JOB-OnSaturday = ABAP_TRUE.
+                    LV_W_DOW_OK = ABAP_TRUE.
+                  ENDIF.
+                WHEN 6.
+                  IF LS_JOB-OnSunday = ABAP_TRUE.
+                    LV_W_DOW_OK = ABAP_TRUE.
+                  ENDIF.
               ENDCASE.
 
               IF LV_W_DOW_OK = ABAP_FALSE.
                 DATA(LV_W_DAY_NAME) = SWITCH STRING( LV_W_DOW
-                  WHEN 0 THEN 'Monday'
-                  WHEN 1 THEN 'Tuesday'
-                  WHEN 2 THEN 'Wednesday'
-                  WHEN 3 THEN 'Thursday'
-                  WHEN 4 THEN 'Friday'
-                  WHEN 5 THEN 'Saturday'
-                  WHEN 6 THEN 'Sunday' ).
+                  WHEN 0
+                  THEN 'Monday'
+                  WHEN 1
+                  THEN 'Tuesday'
+                  WHEN 2
+                  THEN 'Wednesday'
+                  WHEN 3
+                  THEN 'Thursday'
+                  WHEN 4
+                  THEN 'Friday'
+                  WHEN 5
+                  THEN 'Saturday'
+                  WHEN 6
+                  THEN 'Sunday' ).
                 APPEND VALUE #( %TKY = LS_JOB-%TKY ) TO FAILED-DRSJOBCONFIG.
                 APPEND VALUE #( %TKY = LS_JOB-%TKY
                   %MSG = NEW_MESSAGE(
@@ -725,40 +754,53 @@ ENDMETHOD.
               AND LS_JOB-PeriodicValue > 0.
               " Validate that time range covers at least one full periodic interval.
               " e.g. Start=5:00, End=5:30 with granularity=Day is meaningless.
-              " MO/WM/W: skip fixed-interval range check.
-              " MO/WM — APJ decides the actual run date based on MONTH_INFO.
-              " W — multi-weekday runs (e.g. Mon+Wed+Fri) have variable intervals;
-              " fixed 604800s check rejects valid short ranges. scheduleJob Delegates
-              " the stop condition natively to SAP APJ using the DATE payload instead.
-              IF LS_JOB-PeriodicGranularity <> 'MO'
-              AND LS_JOB-PeriodicGranularity <> 'WM'
-              AND LS_JOB-PeriodicGranularity <> 'W'.
-                DATA LV_VAL_DIFF     TYPE I.
-                DATA LV_VAL_INTERVAL TYPE I.
-                CLEAR LV_VAL_DIFF.
-                CLEAR LV_VAL_INTERVAL.
-                LV_VAL_DIFF = CL_ABAP_TSTMP=>SUBTRACT(
-                  TSTMP1 = LS_JOB-EndTimestamp
-                  TSTMP2 = LS_JOB-StartTimestamp ).
+              " W/WM/MO: Require a minimum gap of 7 hours (25200s) between Start and End
+              " to prevent SAP APJ 'Job could not be scheduled' exceptions (often caused
+              " by timezone offset constraints like UTC+7).
+              DATA LV_VAL_DIFF     TYPE I.
+              DATA LV_VAL_INTERVAL TYPE I.
+              DATA LV_MSG_V1       TYPE SYMSGV.
+              DATA LV_MSG_V2       TYPE SYMSGV.
+              CLEAR LV_VAL_DIFF.
+              CLEAR LV_VAL_INTERVAL.
+              CLEAR LV_MSG_V1.
+              CLEAR LV_MSG_V2.
 
-                CASE LS_JOB-PeriodicGranularity.
-                  WHEN 'MI'. LV_VAL_INTERVAL = LS_JOB-PeriodicValue * 60.
-                  WHEN 'H'.  LV_VAL_INTERVAL = LS_JOB-PeriodicValue * 3600.
-                  WHEN 'D'.  LV_VAL_INTERVAL = LS_JOB-PeriodicValue * 86400.
-                ENDCASE.
+              LV_VAL_DIFF = CL_ABAP_TSTMP=>SUBTRACT(
+                TSTMP1 = LS_JOB-EndTimestamp
+                TSTMP2 = LS_JOB-StartTimestamp ).
 
-                IF LV_VAL_INTERVAL > 0 AND LV_VAL_DIFF < LV_VAL_INTERVAL.
-                  APPEND VALUE #( %TKY = LS_JOB-%TKY ) TO FAILED-DRSJOBCONFIG.
-                  APPEND VALUE #( %TKY = LS_JOB-%TKY
-                    %MSG = NEW_MESSAGE(
-                      ID       = GC_MSG_CLASS
-                      NUMBER   = '022'
-                      SEVERITY = IF_ABAP_BEHV_MESSAGE=>SEVERITY-ERROR
-                      V1       = LS_JOB-PeriodicValue
-                      V2       = LS_JOB-PeriodicGranularity )
-                    %ELEMENT-EndTimestamp = IF_ABAP_BEHV=>MK-ON )
-                  TO REPORTED-DRSJOBCONFIG.
-                ENDIF.
+              CASE LS_JOB-PeriodicGranularity.
+                WHEN 'MI'.
+                  LV_VAL_INTERVAL = LS_JOB-PeriodicValue * 60.
+                  LV_MSG_V1 = LS_JOB-PeriodicValue.
+                  LV_MSG_V2 = LS_JOB-PeriodicGranularity.
+                WHEN 'H'.
+                  LV_VAL_INTERVAL = LS_JOB-PeriodicValue * 3600.
+                  LV_MSG_V1 = LS_JOB-PeriodicValue.
+                  LV_MSG_V2 = LS_JOB-PeriodicGranularity.
+                WHEN 'D'.
+                  LV_VAL_INTERVAL = LS_JOB-PeriodicValue * 86400.
+                  LV_MSG_V1 = LS_JOB-PeriodicValue.
+                  LV_MSG_V2 = LS_JOB-PeriodicGranularity.
+                WHEN 'W' OR 'WM' OR 'MO'.
+                  " Minimum 7 hours (7 * 3600 = 25200) gap for Weekly/Monthly recurrences
+                  LV_VAL_INTERVAL = 25200.
+                  LV_MSG_V1 = '7'.
+                  LV_MSG_V2 = 'H'.
+              ENDCASE.
+
+              IF LV_VAL_INTERVAL > 0 AND LV_VAL_DIFF < LV_VAL_INTERVAL.
+                APPEND VALUE #( %TKY = LS_JOB-%TKY ) TO FAILED-DRSJOBCONFIG.
+                APPEND VALUE #( %TKY = LS_JOB-%TKY
+                  %MSG = NEW_MESSAGE(
+                    ID       = GC_MSG_CLASS
+                    NUMBER   = '022'
+                    SEVERITY = IF_ABAP_BEHV_MESSAGE=>SEVERITY-ERROR
+                    V1       = LV_MSG_V1
+                    V2       = LV_MSG_V2 )
+                  %ELEMENT-EndTimestamp = IF_ABAP_BEHV=>MK-ON )
+                TO REPORTED-DRSJOBCONFIG.
               ENDIF.
             ENDIF.
           ENDIF.
@@ -784,16 +826,17 @@ ENDMETHOD.
           %MSG = NEW_MESSAGE(
             ID       = GC_MSG_CLASS
             NUMBER   = '023'
-            SEVERITY = IF_ABAP_BEHV_MESSAGE=>SEVERITY-ERROR ) )
+            SEVERITY = IF_ABAP_BEHV_MESSAGE=>SEVERITY-ERROR )
+            %ACTION-scheduleJob = IF_ABAP_BEHV=>MK-ON )
         TO REPORTED-DRSJOBCONFIG.
         CONTINUE.
       ENDIF.
 
       TRY.
           " Resolve user timezone — fallback to UTC if not set
-          DATA(LV_JOB_TZ) = COND TIMEZONE(
-            WHEN LS_JOB-Tmzone IS NOT INITIAL
-            THEN LS_JOB-Tmzone ELSE 'UTC' ).
+          DATA(LV_JOB_TZ) = COND TIMEZONE( WHEN LS_JOB-Tmzone IS NOT INITIAL
+                                           THEN LS_JOB-Tmzone
+                                           ELSE 'UTC' ).
 
           " Build common job parameters (passed to execute() to identify the record)
           " JOB_UUID = primary lookup (unique binary key)
@@ -895,7 +938,7 @@ ENDMETHOD.
               " Build scheduling recurrence info
               LS_SCHEDULING_INFO-PERIODIC_GRANULARITY = LS_JOB-PeriodicGranularity.
               LS_SCHEDULING_INFO-PERIODIC_VALUE       = LS_JOB-PeriodicValue.
-              LS_SCHEDULING_INFO-TIMEZONE             = 'UTC'.
+              LS_SCHEDULING_INFO-TIMEZONE             = LS_JOB-Tmzone.
               LS_SCHEDULING_INFO-TEST_MODE            = ABAP_FALSE.
               " Exception calendar: restrict job from running on non-working days
               IF LS_JOB-ExceptionCalendarId IS NOT INITIAL.
@@ -975,8 +1018,10 @@ ENDMETHOD.
                   TSTMP2 = LV_P_START_UTC ).
 
                 CASE LS_JOB-PeriodicGranularity.
-                  WHEN 'MI'. LV_INTERVAL_SECS = LS_JOB-PeriodicValue * 60.
-                  WHEN 'H'.  LV_INTERVAL_SECS = LS_JOB-PeriodicValue * 3600.
+                  WHEN 'MI'.
+                    LV_INTERVAL_SECS = LS_JOB-PeriodicValue * 60.
+                  WHEN 'H'.
+                    LV_INTERVAL_SECS = LS_JOB-PeriodicValue * 3600.
                 ENDCASE.
 
                 IF LS_JOB-PeriodicGranularity = 'MI' OR LS_JOB-PeriodicGranularity = 'H'.
@@ -1018,141 +1063,6 @@ ENDMETHOD.
                   StartImmediately = ABAP_FALSE
                   IsPeriodic       = ABAP_TRUE ) )
                 REPORTED LT_UPDATE_REPORTED.
-
-              " === MANUAL DATE SHIFT WORKAROUND ===
-              " CL_APJ_RT_API does not expose IV_ADJUST_START_INFO.
-              " Server validates weekday (W) or weekday+week_number (WM)
-              " in the SCHEDULING timezone — so we must check and shift
-              " in LV_JOB_TZ (not UTC!) to match the server's logic.
-              IF LS_JOB-PeriodicGranularity = 'W'.
-                " ── W (Weekly): shift forward until UTC date in scheduling TZ matches a selected weekday ──
-                DATA LV_SHIFT_DOW TYPE I.
-                DATA LV_SHIFT_DATE TYPE D.
-                DATA LV_SHIFT_TIME TYPE T.
-                CLEAR LV_SHIFT_DOW.
-                CLEAR LV_SHIFT_DATE.
-                CLEAR LV_SHIFT_TIME.
-                CONVERT TIME STAMP LS_START_INFO-TIMESTAMP TIME ZONE LV_JOB_TZ
-                  INTO DATE LV_SHIFT_DATE TIME LV_SHIFT_TIME.
-
-                DO 7 TIMES.
-                  DATA(LV_TEST_DOW) = CL_APJ_FW_UTILITIES=>COMPUTE_DAY( IV_DATE = LV_SHIFT_DATE ).
-                  DATA(LV_MATCH)    = ABAP_FALSE.
-                  CASE LV_TEST_DOW.
-                    WHEN 1.
-                      IF LS_JOB-OnMonday    = ABAP_TRUE.
-                        LV_MATCH = ABAP_TRUE.
-                      ENDIF.
-                    WHEN 2.
-                      IF LS_JOB-OnTuesday   = ABAP_TRUE.
-                        LV_MATCH = ABAP_TRUE.
-                      ENDIF.
-                    WHEN 3.
-                      IF LS_JOB-OnWednesday = ABAP_TRUE.
-                        LV_MATCH = ABAP_TRUE.
-                      ENDIF.
-                    WHEN 4.
-                      IF LS_JOB-OnThursday  = ABAP_TRUE.
-                        LV_MATCH = ABAP_TRUE.
-                      ENDIF.
-                    WHEN 5.
-                      IF LS_JOB-OnFriday    = ABAP_TRUE.
-                        LV_MATCH = ABAP_TRUE.
-                      ENDIF.
-                    WHEN 6.
-                      IF LS_JOB-OnSaturday  = ABAP_TRUE.
-                        LV_MATCH = ABAP_TRUE.
-                      ENDIF.
-                    WHEN 7.
-                      IF LS_JOB-OnSunday    = ABAP_TRUE.
-                        LV_MATCH = ABAP_TRUE.
-                      ENDIF.
-                  ENDCASE.
-                  IF LV_MATCH = ABAP_TRUE.
-                    CONVERT DATE LV_SHIFT_DATE TIME LV_SHIFT_TIME
-                      INTO TIME STAMP LS_START_INFO-TIMESTAMP TIME ZONE LV_JOB_TZ.
-                    EXIT.
-                  ENDIF.
-                  LV_SHIFT_DATE = LV_SHIFT_DATE + 1.
-                ENDDO.
-
-              ELSEIF LS_JOB-PeriodicGranularity = 'WM'.
-                " ── WM (Week-Month): find the matching weekday in the target week of month ──
-                " Mirrors server logic in __check_and_adjust_week_month:
-                "   1. Start from day 1 of the month (in scheduling TZ)
-                "   2. Find first matching weekday within first 7 days
-                "   3. Jump to target week: date + 7 * (week_number - 1)
-                "   4. If past → try next month
-                DATA LV_WM_SHIFT_DATE TYPE D.
-                DATA LV_WM_SHIFT_TIME TYPE T.
-                DATA LV_WM_FOUND      TYPE ABAP_BOOL.
-                CLEAR LV_WM_SHIFT_DATE.
-                CLEAR LV_WM_SHIFT_TIME.
-                LV_WM_FOUND = ABAP_FALSE.
-                CONVERT TIME STAMP LS_START_INFO-TIMESTAMP TIME ZONE LV_JOB_TZ
-                  INTO DATE LV_WM_SHIFT_DATE TIME LV_WM_SHIFT_TIME.
-
-                DATA LV_WM_ORIG_DATE TYPE D.
-                LV_WM_ORIG_DATE = LV_WM_SHIFT_DATE.
-
-                " Try current month, then next month
-                DO 2 TIMES.
-                  DATA LV_WM_FIRST TYPE D.
-                  LV_WM_FIRST = LV_WM_SHIFT_DATE.
-                  LV_WM_FIRST+6(2) = '01'.      " go to 1st of month
-
-                  IF SY-INDEX = 2.
-                    " Shift to next month
-                    DATA(LV_WM_MON) = CONV I( LV_WM_FIRST+4(2) ) + 1.
-                    DATA(LV_WM_YR)  = CONV I( LV_WM_FIRST+0(4) ).
-                    IF LV_WM_MON > 12.
-                      LV_WM_MON = 1.
-                      LV_WM_YR  = LV_WM_YR + 1.
-                    ENDIF.
-                    LV_WM_FIRST+0(4) = CONV #( LV_WM_YR ).
-                    LV_WM_FIRST+4(2) = CONV #( LV_WM_MON ).
-                  ENDIF.
-
-                  " Find first matching weekday from day 1
-                  DO 7 TIMES.
-                    DATA(LV_WM_TRY_DATE) = CONV D( LV_WM_FIRST + SY-INDEX - 1 ).
-                    DATA(LV_WM_DOW)      = CL_APJ_FW_UTILITIES=>COMPUTE_DAY( IV_DATE = LV_WM_TRY_DATE ).
-                    DATA(LV_WM_DAY_OK)   = ABAP_FALSE.
-                    CASE LV_WM_DOW.
-                      WHEN 1. IF LS_JOB-OnMonday    = ABAP_TRUE. LV_WM_DAY_OK = ABAP_TRUE. ENDIF.
-                      WHEN 2. IF LS_JOB-OnTuesday   = ABAP_TRUE. LV_WM_DAY_OK = ABAP_TRUE. ENDIF.
-                      WHEN 3. IF LS_JOB-OnWednesday = ABAP_TRUE. LV_WM_DAY_OK = ABAP_TRUE. ENDIF.
-                      WHEN 4. IF LS_JOB-OnThursday  = ABAP_TRUE. LV_WM_DAY_OK = ABAP_TRUE. ENDIF.
-                      WHEN 5. IF LS_JOB-OnFriday    = ABAP_TRUE. LV_WM_DAY_OK = ABAP_TRUE. ENDIF.
-                      WHEN 6. IF LS_JOB-OnSaturday  = ABAP_TRUE. LV_WM_DAY_OK = ABAP_TRUE. ENDIF.
-                      WHEN 7. IF LS_JOB-OnSunday    = ABAP_TRUE. LV_WM_DAY_OK = ABAP_TRUE. ENDIF.
-                    ENDCASE.
-
-                    IF LV_WM_DAY_OK = ABAP_TRUE.
-                      " Jump to target week: week_number 5 = last week (always +28)
-                      DATA LV_WM_TARGET TYPE D.
-                      IF LS_JOB-MonthWeekNumber = 5.
-                        LV_WM_TARGET = LV_WM_TRY_DATE + 28.
-                      ELSE.
-                        LV_WM_TARGET = LV_WM_TRY_DATE
-                          + 7 * ( NMIN( VAL1 = 4 VAL2 = CONV I( LS_JOB-MonthWeekNumber ) ) - 1 ).
-                      ENDIF.
-
-                      " Only accept if date is not in the past
-                      IF LV_WM_TARGET >= LV_WM_ORIG_DATE.
-                        CONVERT DATE LV_WM_TARGET TIME LV_WM_SHIFT_TIME
-                          INTO TIME STAMP LS_START_INFO-TIMESTAMP TIME ZONE LV_JOB_TZ.
-                        LV_WM_FOUND = ABAP_TRUE.
-                        EXIT.  " exit inner DO 7
-                      ENDIF.
-                    ENDIF.
-                  ENDDO.
-
-                  IF LV_WM_FOUND = ABAP_TRUE.
-                    EXIT.  " exit outer DO 2
-                  ENDIF.
-                ENDDO.
-              ENDIF.
 
               CL_APJ_RT_API=>SCHEDULE_JOB(
                 EXPORTING
@@ -1206,8 +1116,10 @@ ENDMETHOD.
           DATA(LV_BAPI_MSG) = LX_APJ->GET_BAPIRET2( ).
           DATA(LV_LONGTEXT) = LX_APJ->GET_LONGTEXT( ).
           DATA(LV_ERR_TEXT) = COND STRING(
-            WHEN LV_BAPI_MSG-MESSAGE IS NOT INITIAL THEN LV_BAPI_MSG-MESSAGE
-            WHEN LV_LONGTEXT          IS NOT INITIAL THEN LV_LONGTEXT
+            WHEN LV_BAPI_MSG-MESSAGE IS NOT INITIAL
+            THEN LV_BAPI_MSG-MESSAGE
+            WHEN LV_LONGTEXT IS NOT INITIAL
+            THEN LV_LONGTEXT
             ELSE LX_APJ->GET_TEXT( ) ).
           APPEND VALUE #( %TKY = LS_JOB-%TKY ) TO FAILED-DRSJOBCONFIG.
           APPEND VALUE #( %TKY = LS_JOB-%TKY
@@ -1254,7 +1166,8 @@ ENDMETHOD.
           %MSG = NEW_MESSAGE(
             ID       = GC_MSG_CLASS
             NUMBER   = '025'
-            SEVERITY = IF_ABAP_BEHV_MESSAGE=>SEVERITY-ERROR ) )
+            SEVERITY = IF_ABAP_BEHV_MESSAGE=>SEVERITY-ERROR )
+          %ACTION-cancelJob = IF_ABAP_BEHV=>MK-ON )
         TO REPORTED-DRSJOBCONFIG.
         CONTINUE.
       ENDIF.
@@ -1284,14 +1197,14 @@ ENDMETHOD.
               LV_CANCEL_MSG = |Job cancelled successfully|.
             CATCH CX_APJ_RT INTO DATA(LX_CANCEL_STATUS).
               DATA(LV_SK) = LX_CANCEL_STATUS->IF_T100_MESSAGE~T100KEY.
-              IF LV_SK-msgid = CX_APJ_RT=>CX_JOB_DOESNT_EXIST-msgid
-                 AND LV_SK-msgno = CX_APJ_RT=>CX_JOB_DOESNT_EXIST-msgno.
+              IF LV_SK-MSGID = CX_APJ_RT=>CX_JOB_DOESNT_EXIST-MSGID
+                 AND LV_SK-MSGNO = CX_APJ_RT=>CX_JOB_DOESNT_EXIST-MSGNO.
                 " Job deleted from APJ_V_JOB_STATUS after cancel (e.g. not yet started / periodic chain) — no row to read.
                 LV_CANCEL_STATUS      = GC_JOB_STATUS_CANCELLED.
                 LV_CANCEL_STATUS_TEXT = 'Cancelled'.
                 LV_CANCEL_MSG         = |Job cancelled successfully|.
-              ELSEIF LV_SK-msgid = CX_APJ_RT=>CX_NO_AUTH_TO_READ_DETAILS-msgid
-                 AND LV_SK-msgno = CX_APJ_RT=>CX_NO_AUTH_TO_READ_DETAILS-msgno.
+              ELSEIF LV_SK-MSGID = CX_APJ_RT=>CX_NO_AUTH_TO_READ_DETAILS-MSGID
+                 AND LV_SK-MSGNO = CX_APJ_RT=>CX_NO_AUTH_TO_READ_DETAILS-MSGNO.
                 " Cancel succeeded; current user cannot read status (GET_JOB_STATUS ownership rule).
                 LV_CANCEL_STATUS      = GC_JOB_STATUS_CANCELLED.
                 LV_CANCEL_STATUS_TEXT = 'Cancelled'.

@@ -25,9 +25,6 @@ association [0..*] to ZIR_DRS_JOB_CONFIG as _JobConfig on  $projection.SubscrUui
    composition [0..1] of ZI_DRS_PARAM_AP03 as _ParamAP03
 // composition [0..1] of ZI_DRS_PARAM_CA01 as _ParamCA01  -- Future: Cash Position
 
-
-   composition [0..*] of ZI_DRS_CUSTOMERS as _Customers
-   composition [0..*] of ZI_DRS_VENDORS   as _Vendors
 {
     key subscr_uuid as SubscrUuid,
     key subscr_id as SubscrId,
@@ -81,7 +78,5 @@ association [0..*] to ZIR_DRS_JOB_CONFIG as _JobConfig on  $projection.SubscrUui
     _ParamAP01,
     _ParamAP02,
     _ParamAP03,
-    _Customers,
-    _Vendors,
      _JobConfig
 }

@@ -1,0 +1,11 @@
+@EndUserText.label: 'Access Control for Job ID Value Help'
+@MappingRole: true
+define role ZI_VH_DRS_JOB_ID {
+  grant
+    select
+      on
+        ZI_VH_DRS_JOB_ID
+          where
+            // Filter by created user - users only see their own job IDs
+            CreatedBy = aspect user;
+}

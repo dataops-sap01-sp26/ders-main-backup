@@ -1,8 +1,8 @@
 @Metadata.layer: #CORE
 
 @UI.headerInfo: {
-   typeName: 'Customer Balance',
-   typeNamePlural: 'Customer Balances',
+   typeName: 'AR Aging Report',
+   typeNamePlural: 'AR Aging Reports',
    title: { value: 'CompanyCode' },
    description: { value: 'Customer' }
 }

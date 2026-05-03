@@ -35,11 +35,11 @@ define root view entity ZIR_RPT_GL01_BASE
               then cast( J.AmountInCompanyCodeCurrency as abap.dec(23,2) ) 
               else 0 end ) as CreditAmount,
 
-    @Semantics.amount.currencyCode: 'LocalCurrency'
-    @Aggregation.default: #SUM
-    sum( case when J.DebitCreditCode = 'S' then cast( J.AmountInCompanyCodeCurrency as abap.dec(23,2) )
-              when J.DebitCreditCode = 'H' then -cast( J.AmountInCompanyCodeCurrency as abap.dec(23,2) )
-              else 0 end ) as BalanceAmount,
+//    @Semantics.amount.currencyCode: 'LocalCurrency'
+//    @Aggregation.default: #SUM
+//    sum( case when J.DebitCreditCode = 'S' then cast( J.AmountInCompanyCodeCurrency as abap.dec(23,2) )
+//              when J.DebitCreditCode = 'H' then -cast( J.AmountInCompanyCodeCurrency as abap.dec(23,2) )
+//              else 0 end ) as BalanceAmount,
               
     _Items          
 }

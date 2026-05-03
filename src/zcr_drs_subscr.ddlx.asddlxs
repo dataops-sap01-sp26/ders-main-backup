@@ -5,7 +5,16 @@
     typeNamePlural: 'Subscriptions',
     title: { type: #STANDARD, value: 'SubscrName' },
     description: { value: 'SubscrId' }
-  }
+  },
+    presentationVariant: [{
+    sortOrder: [{
+      by: 'CreatedAt',
+      direction: #DESC
+    }],
+    visualizations: [{
+      type: #AS_LINEITEM
+    }]
+  }]
 }
 annotate entity ZCR_DRS_SUBSCR with
 {
@@ -26,10 +35,6 @@ annotate entity ZCR_DRS_SUBSCR with
       label: 'Output & Delivery',
       position: 20
     },
-    // GL Report Parameters - composition child [0..1]
-    // Uses IDENTIFICATION_REFERENCE (form) instead of LINEITEM_REFERENCE (table)
-    // because OData V4 containment navigation does NOT support $skip/$top
-    // Hidden dynamically: only shown when ReportId = 'GL-01'
     {
       id: 'ParamGL01Section',
       purpose: #STANDARD,
@@ -93,24 +98,6 @@ annotate entity ZCR_DRS_SUBSCR with
       position: 30,
       hidden: #(HideParamAP03)
     },
-//    {
-//      id: 'CustomerListSection',
-//      purpose: #STANDARD,
-//      type: #LINEITEM_REFERENCE,
-//      targetElement: '_Customers',
-//      label: 'Customer List',
-//      position: 35,
-//      hidden: #(HideCustomerList)
-//    },
-//    {
-//      id: 'VendorListSection',
-//      purpose: #STANDARD,
-//      type: #LINEITEM_REFERENCE,
-//      targetElement: '_Vendors',
-//      label: 'Vendor List',
-//      position: 35,
-//      hidden: #(HideVendorList)
-//    },
     {
       id: 'AdminData',
       purpose: #STANDARD,
@@ -133,6 +120,7 @@ annotate entity ZCR_DRS_SUBSCR with
     ]
   }
   @EndUserText.label: 'Subscription ID'
+  @Consumption.valueHelpDefinition: [{ entity: { name: 'ZI_VH_DRS_SUBSCR', element: 'SubscrId' } }]
   SubscrId;
 
   @UI: {
@@ -150,14 +138,7 @@ annotate entity ZCR_DRS_SUBSCR with
   }
   @EndUserText.label: 'Report ID'
   ReportId;
-
-//  @UI: {
-//    lineItem:       [ { position: 40, importance: #MEDIUM } ],
-//    fieldGroup:     [ { qualifier: 'GeneralInfo', position: 40 } ]
-//  }
-//  @EndUserText.label: 'Company Code'
-//  Bukrs;
-
+  
   @UI: {
     lineItem:       [ { position: 50, importance: #MEDIUM } ],
     fieldGroup:     [ { qualifier: 'DeliverySettings', position: 10 } ]
@@ -214,11 +195,6 @@ annotate entity ZCR_DRS_SUBSCR with
   @UI.hidden: true
   HideParamAP03;
   
-  @UI.hidden: true
-  HideCustomerList;
-  
-  @UI.hidden: true
-  HideVendorList;
   
   @UI.fieldGroup: [ { qualifier: 'AdminData', position: 10 } ]
   @EndUserText.label: 'Created By'
