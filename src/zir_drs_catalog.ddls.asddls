@@ -1,63 +1,33 @@
-// ═══════════════════════════════════════════════════════════════════════════════
-// ROOT INTERFACE ENTITY: Report Catalog
-// PURPOSE: Master list of available reports (US-E1-001, US-E1-007)
-// NAMING: ZIR_ = Z + I(Interface) + R(Root) per FPT Naming Convention
-// ═══════════════════════════════════════════════════════════════════════════════
+// Root interface entity exposing the Report Catalog master list
+// (one row per report registered for the DRS Fiori application).
 @AccessControl.authorizationCheck: #CHECK
 @EndUserText.label: 'Report Catalog - Root Entity'
-@Metadata.ignorePropagatedAnnotations: false
 @Metadata.allowExtensions: true
 
 define root view entity ZIR_DRS_CATALOG
   as select from zdrs_catalog as Catalog
 
-  -- Association to Value Tables
   association [0..1] to zdrs_vt_module as _Module on $projection.ModuleId = _Module.module_id
 
 {
-      // ═══════════════════════════════════════════════════════════════════════════
-      // PRIMARY KEY
-      // ═══════════════════════════════════════════════════════════════════════════
-      key report_id               as ReportId,
+  key report_id                                 as ReportId,
+      module_id                                 as ModuleId,
+      report_name                               as ReportName,
+      description                               as Description,
+      long_text                                 as LongText,
+      cds_view_name                             as CdsViewName,
+      report_class                              as ReportClass,
+      is_active                                 as IsActive,
+      sort_order                                as SortOrder,
 
-      // ═══════════════════════════════════════════════════════════════════════════
-      // CLASSIFICATION
-      // ═══════════════════════════════════════════════════════════════════════════
-      module_id                   as ModuleId,
-
-      // ═══════════════════════════════════════════════════════════════════════════
-      // REPORT METADATA
-      // ═══════════════════════════════════════════════════════════════════════════
-      report_name                 as ReportName,
-      description                 as Description,
-      long_text                   as LongText,
-
-      // ═══════════════════════════════════════════════════════════════════════════
-      // TECHNICAL CONFIGURATION
-      // ═══════════════════════════════════════════════════════════════════════════
-      cds_view_name               as CdsViewName,
-      report_class                as ReportClass,
-
-      // ═══════════════════════════════════════════════════════════════════════════
-      // STATUS
-      // ═══════════════════════════════════════════════════════════════════════════
-      is_active                   as IsActive,
-      sort_order                  as SortOrder,
-      
-      // Virtual field for UI criticality (3=Green/Active, 1=Red/Inactive)
+      // Criticality value for IsActive: 3 = positive (active), 1 = negative (inactive).
       case is_active when 'X' then 3 else 1 end as StatusCriticality,
 
-      // ═══════════════════════════════════════════════════════════════════════════
-      // ADMINISTRATIVE FIELDS (Managed by RAP)
-      // ═══════════════════════════════════════════════════════════════════════════
-      created_by                  as CreatedBy,
-      created_at                  as CreatedAt,
-      last_changed_by             as LastChangedBy,
-      last_changed_at             as LastChangedAt,
-      local_last_changed_at       as LocalLastChangedAt,
+      created_by                                as CreatedBy,
+      created_at                                as CreatedAt,
+      last_changed_by                           as LastChangedBy,
+      last_changed_at                           as LastChangedAt,
+      local_last_changed_at                     as LocalLastChangedAt,
 
-      // ═══════════════════════════════════════════════════════════════════════════
-      // ASSOCIATIONS
-      // ═══════════════════════════════════════════════════════════════════════════
       _Module
 }

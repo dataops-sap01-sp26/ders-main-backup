@@ -138,7 +138,7 @@ annotate entity ZCR_DRS_SUBSCR with
   }
   @EndUserText.label: 'Report ID'
   ReportId;
-  
+
   @UI: {
     lineItem:       [ { position: 50, importance: #MEDIUM } ],
     fieldGroup:     [ { qualifier: 'DeliverySettings', position: 10 } ]
@@ -160,42 +160,28 @@ annotate entity ZCR_DRS_SUBSCR with
   @EndUserText.label: 'Email CC'
   EmailCc;
 
-  @UI: {
-    lineItem:       [ { position: 80, importance: #HIGH, criticality: 'StatusCriticality' } ],
-    fieldGroup:     [ { qualifier: 'GeneralInfo', position: 50, criticality: 'StatusCriticality' } ],
-    selectionField: [ { position: 30 } ]
-  }
-  @EndUserText.label: 'Status'
-  Status;
-
-  @UI.hidden: true
-  StatusText;
-
-  @UI.hidden: true
-  StatusCriticality;
-
   @UI.hidden: true
   HideParamGL01;
-  
+
   @UI.hidden: true
   HideParamAR01;
-  
+
   @UI.hidden: true
   HideParamAR02;
-  
+
   @UI.hidden: true
   HideParamAR03;
-  
+
   @UI.hidden: true
   HideParamAP01;
-  
+
   @UI.hidden: true
   HideParamAP02;
-  
+
   @UI.hidden: true
   HideParamAP03;
-  
-  
+
+
   @UI.fieldGroup: [ { qualifier: 'AdminData', position: 10 } ]
   @EndUserText.label: 'Created By'
   CreatedBy;

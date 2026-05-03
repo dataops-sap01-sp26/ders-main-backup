@@ -1,0 +1,51 @@
+@Metadata.layer: #CORE
+@UI: {
+  headerInfo: {
+    typeName: 'Report',
+    typeNamePlural: 'Reports',
+    title:       { type: #STANDARD, value: 'ReportName' },
+    description: { type: #STANDARD, value: 'Description' }
+  },
+  presentationVariant: [{
+    sortOrder: [
+      { by: 'SortOrder', direction: #ASC },
+      { by: 'ModuleId',  direction: #ASC }
+    ],
+    visualizations: [{ type: #AS_LINEITEM }]
+  }]
+}
+annotate entity ZCR_DRS_CATALOG with
+{
+  @UI.lineItem:       [{ position: 10, importance: #HIGH }]
+  @UI.selectionField: [{ position: 10 }]
+  @Search.defaultSearchElement: true
+  ReportId;
+
+  @UI.lineItem:       [{ position: 20, importance: #HIGH }]
+  @UI.selectionField: [{ position: 20 }]
+  ModuleId;
+
+  @UI.lineItem: [{ position: 30, importance: #HIGH }]
+  @Search.defaultSearchElement: true
+  ReportName;
+
+  @UI.lineItem: [{ position: 40, importance: #MEDIUM }]
+  @Search.defaultSearchElement: true
+  Description;
+
+  @UI.multiLineText: true
+  LongText;
+
+  @UI.lineItem: [{ position: 60, importance: #HIGH, criticality: 'StatusCriticality' }]
+  @UI.selectionField: [{ position: 30 }]
+  IsActive;
+
+  @UI.hidden: true
+  SortOrder;
+
+  @UI.hidden: true
+  StatusCriticality;
+
+  @UI.hidden: true
+  LocalLastChangedAt;
+}
