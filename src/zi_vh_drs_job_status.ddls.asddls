@@ -12,7 +12,7 @@ define view entity ZI_VH_DRS_JOB_STATUS
   as select from zdrs_jobstat_vt
 {
       @UI.lineItem: [{ position: 10 }]
-      key value           as JobStatus,
+  key value           as JobStatus,
 
       @UI.lineItem: [{ position: 20 }]
       job_status_text as JobStatusText

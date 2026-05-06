@@ -10,7 +10,7 @@ annotate view ZI_RPT_AP03_I with
   -------------------------------------------------------
   -- LINE ITEMS: Sử dụng type: #STANDARD để chặn Click
   -------------------------------------------------------
-  
+
   @UI.lineItem: [{ position: 5, type: #STANDARD }]
   @EndUserText.label: 'Accounting Document'
   AccountingDocument;

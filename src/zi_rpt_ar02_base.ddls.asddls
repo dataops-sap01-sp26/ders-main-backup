@@ -5,119 +5,115 @@
 define view entity ZI_RPT_AR02_BASE
   as select from I_JournalEntryItem
 
-  association [0..1] to I_Customer as _Customer
-      on $projection.Customer = _Customer.Customer
+  association [0..1] to I_Customer as _Customer on $projection.Customer = _Customer.Customer
 
 {
 
-    /* ===================== KEY ===================== */
+      /* ===================== KEY ===================== */
 
-    key CompanyCode,
-    key FiscalYear,
+  key CompanyCode,
+  key FiscalYear,
 
-    @UI.lineItem: [{
-        position: 5,
-        type: #FOR_INTENT_BASED_NAVIGATION,
-        semanticObject: 'JournalEntry',
-        semanticObjectAction: 'display'
-    }]
-    key AccountingDocument,
-    key AccountingDocumentItem,
-    key Ledger,
+      @UI.lineItem: [{
+          position: 5,
+          type: #FOR_INTENT_BASED_NAVIGATION,
+          semanticObject: 'JournalEntry',
+          semanticObjectAction: 'display'
+      }]
+  key AccountingDocument,
+  key AccountingDocumentItem,
+  key Ledger,
 
-    /* ===================== CUSTOMER ===================== */
+      /* ===================== CUSTOMER ===================== */
 
-    Customer,
+      Customer,
 
-    _Customer.CustomerName,
+      _Customer.CustomerName,
 
-    _Customer.CityName as Address,
+      _Customer.CityName                                    as Address,
 
-    Customer as CustomerAccount,
+      Customer                                              as CustomerAccount,
 
-    /* ===================== DATE ===================== */
+      /* ===================== DATE ===================== */
 
-    PostingDate,
+      PostingDate,
 
-    CompanyCodeCurrency as LocalCurrency,
+      CompanyCodeCurrency                                   as LocalCurrency,
 
-    /* ===================== AMOUNT ===================== */
-
-
-    @Aggregation.default: #SUM
-    cast( AmountInCompanyCodeCurrency as abap.dec(23,2) )
-        as Amount,
-
-    /* ===================== OPENING BALANCE ===================== */
-
-    
-/*    @Aggregation.default: #SUM
-    cast(
-        case
-            when PostingDate < $session.system_date
-            then cast( AmountInCompanyCodeCurrency as abap.dec(23,2) )
-            else cast( 0 as abap.dec(23,2) )
-        end
-        as abap.dec(23,2)
-    ) as OpeningBalance,
-
-*/
-    /* ===================== DEBIT ===================== */
+      /* ===================== AMOUNT ===================== */
 
 
-@Aggregation.default: #SUM
-cast(
-    case
-        when DebitCreditCode = 'S'
-        then cast( AmountInCompanyCodeCurrency as abap.dec(23,2) )
-        else cast( 0 as abap.dec(23,2) )
-    end
-    as abap.dec(23,2)
-) as Debit,
+      @Aggregation.default: #SUM
+      cast( AmountInCompanyCodeCurrency as abap.dec(23,2) ) as Amount,
 
-/* ===================== CREDIT ===================== */
+      /* ===================== OPENING BALANCE ===================== */
 
 
-@Aggregation.default: #SUM
-cast(
-    case
-        when DebitCreditCode = 'H'
-        then cast( AmountInCompanyCodeCurrency as abap.dec(23,2) )
-        else cast( 0 as abap.dec(23,2) )
-    end
-    as abap.dec(23,2)
-) as Credit
-/* ===================== CLOSING ===================== */
-/*
-@Aggregation.default: #SUM
-cast(
-    case
-        when DebitCreditCode = 'S'
-        then cast( AmountInCompanyCodeCurrency as abap.dec(23,2) )
-        when DebitCreditCode = 'H'
-        then - cast( AmountInCompanyCodeCurrency as abap.dec(23,2) )
-        else cast( 0 as abap.dec(23,2) )
-    end
-    as abap.dec(23,2)
-) as ClosingBalance,
- 
- */
-    /* ===================== PERIOD ACTIVITY ===================== */
+      /*    @Aggregation.default: #SUM
+          cast(
+              case
+                  when PostingDate < $session.system_date
+                  then cast( AmountInCompanyCodeCurrency as abap.dec(23,2) )
+                  else cast( 0 as abap.dec(23,2) )
+              end
+              as abap.dec(23,2)
+          ) as OpeningBalance,
 
-/*
-    @Aggregation.default: #SUM
-    cast(
-        case
-            when PostingDate = $session.system_date
-            then cast( AmountInCompanyCodeCurrency as abap.dec(23,2) )
-            else cast( 0 as abap.dec(23,2) )
-        end
-        as abap.dec(23,2)
-    ) as PeriodActivity
-*/
+      */
+      /* ===================== DEBIT ===================== */
+
+
+      @Aggregation.default: #SUM
+      cast(
+          case
+              when DebitCreditCode = 'S'
+              then cast( AmountInCompanyCodeCurrency as abap.dec(23,2) )
+              else cast( 0 as abap.dec(23,2) )
+          end
+          as abap.dec(23,2)
+      )                                                     as Debit,
+
+      /* ===================== CREDIT ===================== */
+
+
+      @Aggregation.default: #SUM
+      cast(
+          case
+              when DebitCreditCode = 'H'
+              then cast( AmountInCompanyCodeCurrency as abap.dec(23,2) )
+              else cast( 0 as abap.dec(23,2) )
+          end
+          as abap.dec(23,2)
+      )                                                     as Credit
+      /* ===================== CLOSING ===================== */
+      /*
+      @Aggregation.default: #SUM
+      cast(
+          case
+              when DebitCreditCode = 'S'
+              then cast( AmountInCompanyCodeCurrency as abap.dec(23,2) )
+              when DebitCreditCode = 'H'
+              then - cast( AmountInCompanyCodeCurrency as abap.dec(23,2) )
+              else cast( 0 as abap.dec(23,2) )
+          end
+          as abap.dec(23,2)
+      ) as ClosingBalance,
+
+       */
+      /* ===================== PERIOD ACTIVITY ===================== */
+
+      /*
+          @Aggregation.default: #SUM
+          cast(
+              case
+                  when PostingDate = $session.system_date
+                  then cast( AmountInCompanyCodeCurrency as abap.dec(23,2) )
+                  else cast( 0 as abap.dec(23,2) )
+              end
+              as abap.dec(23,2)
+          ) as PeriodActivity
+      */
 }
 where
-      Ledger = '0L'
+      Ledger               = '0L'
   and FinancialAccountType = 'D'
-  
-  

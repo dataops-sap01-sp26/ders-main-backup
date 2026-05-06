@@ -6,9 +6,9 @@
 @Analytics.internalName: #LOCAL
 
 define view entity ZI_DRS_JOB_HISTORY_FACT
-  as select from    zdrs_job_history     as JobHistoryAnalytics
-    association [0..1] to ZIR_DRS_JOB_CONFIG   as _JobConfig on $projection.JobUuid = _JobConfig.JobUuid
-    association [0..1] to ZI_DRS_FILE          as _File      on $projection.FileUuid = _File.FileUuid
+  as select from zdrs_job_history as JobHistoryAnalytics
+  association [0..1] to ZIR_DRS_JOB_CONFIG as _JobConfig on $projection.JobUuid = _JobConfig.JobUuid
+  association [0..1] to ZI_DRS_FILE        as _File      on $projection.FileUuid = _File.FileUuid
 {
   key JobHistoryAnalytics.job_hist_uuid                            as JobHistUuid,
       JobHistoryAnalytics.job_uuid                                 as JobUuid,
@@ -78,8 +78,8 @@ define view entity ZI_DRS_JOB_HISTORY_FACT
       _JobConfig.JobText                                           as JobText,
       _JobConfig.RunType                                           as RunType,
       _JobConfig.SubscrId                                          as SubscrId,
-      _File.FileName                                       as FileName,
-      _File.FileSizeDisplay                                as FileSizeDisplay,
-      _File.CreatedAt                                      as FileCreatedAt,
-      _File.CreatedBy                                      as FileCreatedBy
+      _File.FileName                                               as FileName,
+      _File.FileSizeDisplay                                        as FileSizeDisplay,
+      _File.CreatedAt                                              as FileCreatedAt,
+      _File.CreatedBy                                              as FileCreatedBy
 }

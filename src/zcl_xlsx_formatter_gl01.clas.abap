@@ -232,9 +232,8 @@ CLASS ZCL_XLSX_FORMATTER_GL01 IMPLEMENTATION.
       '<col min="3"  max="3"  width="12" customWidth="1"/>' &&
       '<col min="4"  max="4"  width="18" customWidth="1"/>' &&
       '<col min="5"  max="5"  width="18" customWidth="1"/>' &&
-      '<col min="6"  max="6"  width="18" customWidth="1"/>' &&
-      '<col min="7"  max="7"  width="12" customWidth="1"/>' &&
-      '<col min="8"  max="8"  width="30" customWidth="1"/>' &&
+      '<col min="6"  max="6"  width="12" customWidth="1"/>' &&
+      '<col min="7"  max="7"  width="30" customWidth="1"/>' &&
       '</cols>'.
 
     DATA LV_ROWS TYPE STRING.
@@ -284,9 +283,8 @@ CLASS ZCL_XLSX_FORMATTER_GL01 IMPLEMENTATION.
       '<c r="C7" t="inlineStr" s="3"><is><t>Period</t></is></c>'            &&
       '<c r="D7" t="inlineStr" s="3"><is><t>Credit</t></is></c>'            &&
       '<c r="E7" t="inlineStr" s="3"><is><t>Debit</t></is></c>'             &&
-      '<c r="F7" t="inlineStr" s="3"><is><t>Balance</t></is></c>'           &&
-      '<c r="G7" t="inlineStr" s="3"><is><t>Currency</t></is></c>'          &&
-      '<c r="H7" t="inlineStr" s="3"><is><t>Description</t></is></c>'       &&
+      '<c r="F7" t="inlineStr" s="3"><is><t>Currency</t></is></c>'          &&
+      '<c r="G7" t="inlineStr" s="3"><is><t>Description</t></is></c>'       &&
       '</row>'.
 
     TYPES: BEGIN OF TY_COL_MAP,
@@ -295,13 +293,12 @@ CLASS ZCL_XLSX_FORMATTER_GL01 IMPLEMENTATION.
            END OF TY_COL_MAP.
     TYPES TT_COL_MAP TYPE STANDARD TABLE OF TY_COL_MAP WITH DEFAULT KEY.
 
-    " Based on the image template rendering layout: No | G/L Account | Period | Credit | Debit | Balance | Currency | Description
+    " Based on the image template rendering layout: No | G/L Account | Period | Credit | Debit | Currency | Description
     DATA(LT_MAP) = VALUE TT_COL_MAP(
       ( FIELD = 'GLACCOUNT'      IS_NUM = ABAP_FALSE )
       ( FIELD = 'PERIOD'         IS_NUM = ABAP_FALSE )
       ( FIELD = 'CREDITAMOUNT'   IS_NUM = ABAP_TRUE  )
       ( FIELD = 'DEBITAMOUNT'    IS_NUM = ABAP_TRUE  )
-      ( FIELD = 'BALANCEAMOUNT'  IS_NUM = ABAP_TRUE  )
       ( FIELD = 'LOCALCURRENCY'  IS_NUM = ABAP_FALSE )
       ( FIELD = 'GLACCOUNTNAME'  IS_NUM = ABAP_FALSE )
     ).
@@ -333,7 +330,7 @@ CLASS ZCL_XLSX_FORMATTER_GL01 IMPLEMENTATION.
         IF LS_MAP-IS_NUM = ABAP_TRUE.
           LV_ROWS = LV_ROWS && |<c r="{ LV_CL }{ LV_ROW_NUM }" s="5"><v>{ LV_VAL_STR }</v></c>|.
         ELSE.
-          LV_TXT_STYLE = COND #( WHEN LV_COL_IDX = 7 THEN '8' ELSE '6' ).
+          LV_TXT_STYLE = COND #( WHEN LV_COL_IDX = 6 THEN '8' ELSE '6' ).
           LV_ROWS = LV_ROWS && |<c r="{ LV_CL }{ LV_ROW_NUM }" t="inlineStr" s="{ LV_TXT_STYLE }">| &&
                                |<is><t>{ LV_VAL_STR }</t></is></c>|.
         ENDIF.
@@ -348,7 +345,6 @@ CLASS ZCL_XLSX_FORMATTER_GL01 IMPLEMENTATION.
 
     DATA(LV_T1) = LV_TOT_START.
     DATA(LV_T2) = LV_TOT_START + 1.
-    DATA(LV_T3) = LV_TOT_START + 2.
 
     LV_ROWS = LV_ROWS &&
       |<row r="{ LV_T1 }" ht="18" customHeight="1">| &&
@@ -362,19 +358,13 @@ CLASS ZCL_XLSX_FORMATTER_GL01 IMPLEMENTATION.
       |<c r="B{ LV_T2 }" s="10"><f>SUM(D{ LV_DATA_FIRST }:D{ LV_DATA_LAST })</f></c>| &&
       '</row>'.
 
-    LV_ROWS = LV_ROWS &&
-      |<row r="{ LV_T3 }" ht="18" customHeight="1">| &&
-      |<c r="A{ LV_T3 }" t="inlineStr" s="9"><is><t>Total Balance:</t></is></c>| &&
-      |<c r="B{ LV_T3 }" s="10"><f>SUM(F{ LV_DATA_FIRST }:F{ LV_DATA_LAST })</f></c>| &&
-      '</row>'.
-
     DATA(LV_MERGES) =
       '<mergeCells count="5">' &&
-      '<mergeCell ref="A1:H1"/>' &&
-      '<mergeCell ref="A2:H2"/>' &&
-      '<mergeCell ref="A3:H3"/>' &&
-      '<mergeCell ref="A4:H4"/>' &&
-      '<mergeCell ref="A5:H5"/>' &&
+      '<mergeCell ref="A1:G1"/>' &&
+      '<mergeCell ref="A2:G2"/>' &&
+      '<mergeCell ref="A3:G3"/>' &&
+      '<mergeCell ref="A4:G4"/>' &&
+      '<mergeCell ref="A5:G5"/>' &&
       '</mergeCells>'.
 
     RV_XML =

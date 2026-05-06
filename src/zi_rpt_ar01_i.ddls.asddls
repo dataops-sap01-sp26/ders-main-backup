@@ -4,12 +4,11 @@
 
 define view entity ZI_RPT_AR01_I
   as select from ZI_RPT_AR01_BASE
-  
-  association to parent ZI_RPT_AR01 as _Header
-    on  $projection.Ledger       = _Header.Ledger
-    and $projection.SourceLedger = _Header.SourceLedger
-    and $projection.CompanyCode  = _Header.CompanyCode
-    and $projection.Customer     = _Header.Customer
+
+  association to parent ZI_RPT_AR01 as _Header on  $projection.Ledger       = _Header.Ledger
+                                               and $projection.SourceLedger = _Header.SourceLedger
+                                               and $projection.CompanyCode  = _Header.CompanyCode
+                                               and $projection.Customer     = _Header.Customer
 {
   key Ledger,
   key SourceLedger,

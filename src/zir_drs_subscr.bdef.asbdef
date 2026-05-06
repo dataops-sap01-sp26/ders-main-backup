@@ -33,8 +33,6 @@ early numbering
   // System fields (managed automatically)
   field ( readonly )
   Status,
-  StatusText,
-  StatusCriticality,
   CreatedBy,
   CreatedAt,
   LastChangedBy,
@@ -68,19 +66,10 @@ early numbering
   }
 
   // ─────────────────────────────────────────────────────────────────────────────
-  // CUSTOM ACTIONS (US-E3-008, US-E3-009, US-E3-010)
+  // CUSTOM ACTIONS
   // ─────────────────────────────────────────────────────────────────────────────
-  // Copy Subscription with all parameters
-  action copySubscription result [1] $self;
-
-  // Pause - Update status (US-E3-008)
-  action pauseSubscription result [1] $self;
-
-  // Resume - Update status (US-E3-009)
-  action resumeSubscription result [1] $self;
-
-  // Create Report Parameters - reads ReportId and creates in correct table
-  // GL01 → zdrs_param_gl01, AR01 → zdrs_param_ar01, etc.
+  // Create Report Parameters - reads ReportId and creates in correct child table
+  // GL01 -> zdrs_param_gl01, AR01 -> zdrs_param_ar01, etc.
   action createReportParams result [1] $self;
 
   //   Validations
@@ -193,7 +182,7 @@ authorization dependent by _Subscription
   {
     create;
     update;
-    field CompanyCode , KeyDate, CustomerFrom, CustomerTo;
+    field CompanyCode, KeyDate, CustomerFrom, CustomerTo;
   }
 
   // ─────────────────────────────────────────────────────────────────────────────
@@ -237,7 +226,7 @@ authorization dependent by _Subscription
   {
     create;
     update;
-    field CompanyCode , FiscalYear, CustomerFrom, CustomerTo;
+    field CompanyCode, FiscalYear, CustomerFrom, CustomerTo;
   }
 
   // ─────────────────────────────────────────────────────────────────────────────
@@ -282,7 +271,7 @@ authorization dependent by _Subscription
   {
     create;
     update;
-    field CompanyCode , KeyDate, CustomerFrom, CustomerTo;
+    field CompanyCode, KeyDate, CustomerFrom, CustomerTo;
   }
 
   // ─────────────────────────────────────────────────────────────────────────────

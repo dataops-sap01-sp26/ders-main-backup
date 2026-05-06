@@ -37,11 +37,11 @@ annotate view ZI_RPT_AP01 with
   @UI.selectionField: [{ position: 10 }]
   @UI.identification: [{ position: 10 }]
   Ledger;
-  
+
   @UI.selectionField: [{ position: 20 }]
   @UI.identification: [{ position: 20 }]
   SourceLedger;
-  
+
   @UI.selectionField: [{ position: 30 }]
   @UI.identification: [{ position: 30 }]
   @UI.lineItem: [{ position: 10 }]
@@ -77,7 +77,7 @@ annotate view ZI_RPT_AP01 with
   @UI.lineItem: [{ position: 60 }]
   @EndUserText.label: 'Max Days Overdue'
   MaxDaysOverdue;
-  
+
   @UI.identification: [{ position: 70 }]
   @UI.lineItem: [{ position: 70 }]
   @EndUserText.label: 'Net Due Date'

@@ -12,15 +12,15 @@ define view entity ZI_VH_DRS_FORMAT
 {
       @ObjectModel.text.element: ['FormatName']
       @UI.hidden: true
-      key format_id   as FormatId,
+  key format_id   as FormatId,
 
       @Search.defaultSearchElement: true
       @Semantics.text: true
-      format_name     as FormatName,
+      format_name as FormatName,
 
-      mime_type       as MimeType,
-      file_ext        as FileExtension,
-      sort_order      as SortOrder
+      mime_type   as MimeType,
+      file_ext    as FileExtension,
+      sort_order  as SortOrder
 }
 where
   is_active = 'X'

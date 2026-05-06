@@ -10,7 +10,7 @@ annotate view ZI_RPT_AR01_I with
   -------------------------------------------------------
   -- LINE ITEMS: Thêm type: #STANDARD để chặn điều hướng
   -------------------------------------------------------
-  
+
   @UI.lineItem: [{ position: 10, type: #STANDARD }]
   @EndUserText.label: 'Accounting Document'
   AccountingDocument;
@@ -40,13 +40,13 @@ annotate view ZI_RPT_AR01_I with
   -------------------------------------------------------
   @UI.hidden: true
   Ledger;
-  
+
   @UI.hidden: true
   SourceLedger;
-  
+
   @UI.hidden: true
   CompanyCode;
-  
+
   @UI.hidden: true
   Customer;
 

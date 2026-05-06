@@ -242,10 +242,7 @@ CLASS ZCL_XLSX_FORMATTER_AP02 IMPLEMENTATION.
       '<col min="5"  max="5"  width="14" customWidth="1"/>' &&
       '<col min="6"  max="6"  width="18" customWidth="1"/>' &&
       '<col min="7"  max="7"  width="18" customWidth="1"/>' &&
-      '<col min="8"  max="8"  width="18" customWidth="1"/>' &&
-      '<col min="9"  max="9"  width="18" customWidth="1"/>' &&
-      '<col min="10" max="10" width="18" customWidth="1"/>' &&
-      '<col min="11" max="11" width="12" customWidth="1"/>' &&
+      '<col min="8"  max="8"  width="12" customWidth="1"/>' &&
       '</cols>'.
 
     DATA LV_ROWS TYPE STRING.
@@ -294,12 +291,9 @@ CLASS ZCL_XLSX_FORMATTER_AP02 IMPLEMENTATION.
       '<c r="C7" t="inlineStr" s="3"><is><t>Supplier Name</t></is></c>'     &&
       '<c r="D7" t="inlineStr" s="3"><is><t>Address</t></is></c>'           &&
       '<c r="E7" t="inlineStr" s="3"><is><t>Posting Date</t></is></c>'      &&
-      '<c r="F7" t="inlineStr" s="3"><is><t>Opening Balance</t></is></c>'   &&
-      '<c r="G7" t="inlineStr" s="3"><is><t>Debit</t></is></c>'             &&
-      '<c r="H7" t="inlineStr" s="3"><is><t>Credit</t></is></c>'            &&
-      '<c r="I7" t="inlineStr" s="3"><is><t>Period Activity</t></is></c>'   &&
-      '<c r="J7" t="inlineStr" s="3"><is><t>Closing Balance</t></is></c>'   &&
-      '<c r="K7" t="inlineStr" s="3"><is><t>Currency</t></is></c>'          &&
+      '<c r="F7" t="inlineStr" s="3"><is><t>Debit</t></is></c>'             &&
+      '<c r="G7" t="inlineStr" s="3"><is><t>Credit</t></is></c>'            &&
+      '<c r="H7" t="inlineStr" s="3"><is><t>Currency</t></is></c>'          &&
       '</row>'.
 
     TYPES: BEGIN OF TY_COL_MAP,
@@ -313,11 +307,8 @@ CLASS ZCL_XLSX_FORMATTER_AP02 IMPLEMENTATION.
       ( FIELD = 'SUPPLIERNAME'   IS_NUM = ABAP_FALSE )
       ( FIELD = 'ADDRESS'        IS_NUM = ABAP_FALSE )
       ( FIELD = 'POSTINGDATE'    IS_NUM = ABAP_FALSE )
-      ( FIELD = 'OPENINGBALANCE' IS_NUM = ABAP_TRUE  )
       ( FIELD = 'DEBIT'          IS_NUM = ABAP_TRUE  )
       ( FIELD = 'CREDIT'         IS_NUM = ABAP_TRUE  )
-      ( FIELD = 'PERIODACTIVITY' IS_NUM = ABAP_TRUE  )
-      ( FIELD = 'CLOSINGBALANCE' IS_NUM = ABAP_TRUE  )
       ( FIELD = 'LOCALCURRENCY'  IS_NUM = ABAP_FALSE )
     ).
 
@@ -356,7 +347,7 @@ CLASS ZCL_XLSX_FORMATTER_AP02 IMPLEMENTATION.
         IF LS_MAP-IS_NUM = ABAP_TRUE.
           LV_ROWS = LV_ROWS && |<c r="{ LV_CL }{ LV_ROW_NUM }" s="5"><v>{ LV_VAL_STR }</v></c>|.
         ELSE.
-          LV_TXT_STYLE = COND #( WHEN LV_COL_IDX = 11 THEN '8' ELSE '6' ).
+          LV_TXT_STYLE = COND #( WHEN LV_COL_IDX = 8 THEN '8' ELSE '6' ).
           LV_ROWS = LV_ROWS && |<c r="{ LV_CL }{ LV_ROW_NUM }" t="inlineStr" s="{ LV_TXT_STYLE }">| &&
                                |<is><t>{ LV_VAL_STR }</t></is></c>|.
         ENDIF.
@@ -372,8 +363,6 @@ CLASS ZCL_XLSX_FORMATTER_AP02 IMPLEMENTATION.
     DATA(LV_T1) = LV_TOT_START.
     DATA(LV_T2) = LV_TOT_START + 1.
     DATA(LV_T3) = LV_TOT_START + 2.
-    DATA(LV_T4) = LV_TOT_START + 3.
-    DATA(LV_T5) = LV_TOT_START + 4.
 
     LV_ROWS = LV_ROWS &&
       |<row r="{ LV_T1 }" ht="18" customHeight="1">| &&
@@ -383,35 +372,23 @@ CLASS ZCL_XLSX_FORMATTER_AP02 IMPLEMENTATION.
 
     LV_ROWS = LV_ROWS &&
       |<row r="{ LV_T2 }" ht="18" customHeight="1">| &&
-      |<c r="A{ LV_T2 }" t="inlineStr" s="9"><is><t>Total Opening Balance:</t></is></c>| &&
+      |<c r="A{ LV_T2 }" t="inlineStr" s="9"><is><t>Total Debit:</t></is></c>| &&
       |<c r="B{ LV_T2 }" s="10"><f>SUM(F{ LV_DATA_FIRST }:F{ LV_DATA_LAST })</f></c>| &&
       '</row>'.
 
     LV_ROWS = LV_ROWS &&
       |<row r="{ LV_T3 }" ht="18" customHeight="1">| &&
-      |<c r="A{ LV_T3 }" t="inlineStr" s="9"><is><t>Total Debit:</t></is></c>| &&
+      |<c r="A{ LV_T3 }" t="inlineStr" s="9"><is><t>Total Credit:</t></is></c>| &&
       |<c r="B{ LV_T3 }" s="10"><f>SUM(G{ LV_DATA_FIRST }:G{ LV_DATA_LAST })</f></c>| &&
-      '</row>'.
-
-    LV_ROWS = LV_ROWS &&
-      |<row r="{ LV_T4 }" ht="18" customHeight="1">| &&
-      |<c r="A{ LV_T4 }" t="inlineStr" s="9"><is><t>Total Credit:</t></is></c>| &&
-      |<c r="B{ LV_T4 }" s="10"><f>SUM(H{ LV_DATA_FIRST }:H{ LV_DATA_LAST })</f></c>| &&
-      '</row>'.
-
-    LV_ROWS = LV_ROWS &&
-      |<row r="{ LV_T5 }" ht="18" customHeight="1">| &&
-      |<c r="A{ LV_T5 }" t="inlineStr" s="9"><is><t>Total Closing Balance:</t></is></c>| &&
-      |<c r="B{ LV_T5 }" s="10"><f>SUM(J{ LV_DATA_FIRST }:J{ LV_DATA_LAST })</f></c>| &&
       '</row>'.
 
     DATA(LV_MERGES) =
       '<mergeCells count="5">' &&
-      '<mergeCell ref="A1:K1"/>' &&
-      '<mergeCell ref="A2:K2"/>' &&
-      '<mergeCell ref="A3:K3"/>' &&
-      '<mergeCell ref="A4:K4"/>' &&
-      '<mergeCell ref="A5:K5"/>' &&
+      '<mergeCell ref="A1:H1"/>' &&
+      '<mergeCell ref="A2:H2"/>' &&
+      '<mergeCell ref="A3:H3"/>' &&
+      '<mergeCell ref="A4:H4"/>' &&
+      '<mergeCell ref="A5:H5"/>' &&
       '</mergeCells>'.
 
     RV_XML =

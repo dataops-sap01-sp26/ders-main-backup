@@ -3,13 +3,13 @@
 @Metadata.ignorePropagatedAnnotations: true
 @Metadata.allowExtensions: true
 
-define view entity ZI_RPT_AP02_I as select from ZI_RPT_AP02_BASE
-  
-  association to parent ZI_RPT_AP02 as _Header
-    on  $projection.CompanyCode = _Header.CompanyCode
-    and $projection.Supplier    = _Header.Supplier
-    and $projection.FiscalYear  = _Header.FiscalYear
-    and $projection.PostingDate = _Header.PostingDate
+define view entity ZI_RPT_AP02_I
+  as select from ZI_RPT_AP02_BASE
+
+  association to parent ZI_RPT_AP02 as _Header on  $projection.CompanyCode = _Header.CompanyCode
+                                               and $projection.Supplier    = _Header.Supplier
+                                               and $projection.FiscalYear  = _Header.FiscalYear
+                                               and $projection.PostingDate = _Header.PostingDate
 {
   key CompanyCode,
   key Supplier,
@@ -17,16 +17,16 @@ define view entity ZI_RPT_AP02_I as select from ZI_RPT_AP02_BASE
   key AccountingDocument,
   key AccountingDocumentItem,
       PostingDate,
-      
+
       @Semantics.amount.currencyCode: 'LocalCurrency'
       Debit,
-      
+
       @Semantics.amount.currencyCode: 'LocalCurrency'
       Credit,
-      
+
       @Semantics.amount.currencyCode: 'LocalCurrency'
       Amount,
-      
+
       LocalCurrency,
 
       /* Association */

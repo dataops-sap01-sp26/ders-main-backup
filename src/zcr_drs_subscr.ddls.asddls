@@ -25,43 +25,42 @@ define root view entity ZCR_DRS_SUBSCR
 
           EmailTo,
           EmailCc,
+          
           Status,
-          StatusText,
-          StatusCriticality,
 
           CreatedBy,
           CreatedAt,
           LastChangedBy,
           LastChangedAt,
           LocalLastChangedAt,
-          
-          @ObjectModel.virtualElement: true
-          @ObjectModel.virtualElementCalculatedBy: 'ABAP:ZCL_DRS_SUBSCR_HIDE'
-  virtual HideParamGL01    : abap_boolean,
 
           @ObjectModel.virtualElement: true
           @ObjectModel.virtualElementCalculatedBy: 'ABAP:ZCL_DRS_SUBSCR_HIDE'
-  virtual HideParamAR01    : abap_boolean,
+  virtual HideParamGL01 : abap_boolean,
 
           @ObjectModel.virtualElement: true
           @ObjectModel.virtualElementCalculatedBy: 'ABAP:ZCL_DRS_SUBSCR_HIDE'
-  virtual HideParamAR02    : abap_boolean,
+  virtual HideParamAR01 : abap_boolean,
 
           @ObjectModel.virtualElement: true
           @ObjectModel.virtualElementCalculatedBy: 'ABAP:ZCL_DRS_SUBSCR_HIDE'
-  virtual HideParamAR03    : abap_boolean,
+  virtual HideParamAR02 : abap_boolean,
 
           @ObjectModel.virtualElement: true
           @ObjectModel.virtualElementCalculatedBy: 'ABAP:ZCL_DRS_SUBSCR_HIDE'
-  virtual HideParamAP01    : abap_boolean,
+  virtual HideParamAR03 : abap_boolean,
 
           @ObjectModel.virtualElement: true
           @ObjectModel.virtualElementCalculatedBy: 'ABAP:ZCL_DRS_SUBSCR_HIDE'
-  virtual HideParamAP02    : abap_boolean,
+  virtual HideParamAP01 : abap_boolean,
 
           @ObjectModel.virtualElement: true
           @ObjectModel.virtualElementCalculatedBy: 'ABAP:ZCL_DRS_SUBSCR_HIDE'
-  virtual HideParamAP03    : abap_boolean,
+  virtual HideParamAP02 : abap_boolean,
+
+          @ObjectModel.virtualElement: true
+          @ObjectModel.virtualElementCalculatedBy: 'ABAP:ZCL_DRS_SUBSCR_HIDE'
+  virtual HideParamAP03 : abap_boolean,
 
 
 

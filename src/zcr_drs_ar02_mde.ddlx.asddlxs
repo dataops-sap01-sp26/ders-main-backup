@@ -61,11 +61,11 @@ annotate view ZI_RPT_AR02 with
   @UI.identification: [{ position: 30 }]
   @EndUserText.label: 'Local Currency'
   LocalCurrency;
-/*
-  @UI.lineItem: [{ position: 60 }]
-  @EndUserText.label: 'Opening Balance'
-  OpeningBalance;
-*/
+  /*
+    @UI.lineItem: [{ position: 60 }]
+    @EndUserText.label: 'Opening Balance'
+    OpeningBalance;
+  */
   @UI.lineItem: [{ position: 70 }]
   @EndUserText.label: 'Debit'
   Debit;
@@ -73,14 +73,14 @@ annotate view ZI_RPT_AR02 with
   @UI.lineItem: [{ position: 80 }]
   @EndUserText.label: 'Credit'
   Credit;
-/*
-  @UI.lineItem: [{ position: 90 }]
-  @EndUserText.label: 'Period Activity'
-  PeriodActivity;
+  /*
+    @UI.lineItem: [{ position: 90 }]
+    @EndUserText.label: 'Period Activity'
+    PeriodActivity;
 
-  @UI.lineItem: [{ position: 100 }]
-  @UI.identification: [{ position: 40 }]
-  @EndUserText.label: 'Closing Balance'
-  ClosingBalance;
-  */
+    @UI.lineItem: [{ position: 100 }]
+    @UI.identification: [{ position: 40 }]
+    @EndUserText.label: 'Closing Balance'
+    ClosingBalance;
+    */
 }

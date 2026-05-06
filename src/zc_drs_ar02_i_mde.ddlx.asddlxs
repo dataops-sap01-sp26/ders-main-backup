@@ -10,7 +10,7 @@ annotate view ZI_RPT_AR02_I with
   -------------------------------------------------------
   -- LINE ITEMS: Thêm type: #STANDARD để chặn điều hướng
   -------------------------------------------------------
-  
+
   @UI.lineItem: [{ position: 10, type: #STANDARD }]
   @EndUserText.label: 'Fiscal Year'
   FiscalYear;

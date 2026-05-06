@@ -8,18 +8,17 @@
   }
 }
 
-annotate entity ZC_DRS_PARAM_AP03
-    with 
+annotate entity ZC_DRS_PARAM_AP03 with
 {
-   @UI.facet: [
-      {
-        id: 'AP03ParamDetails',
-        purpose: #STANDARD,
-        type: #IDENTIFICATION_REFERENCE,
-        label: 'Parameter Details',
-        position: 10
-      }
-    ]
+  @UI.facet: [
+     {
+       id: 'AP03ParamDetails',
+       purpose: #STANDARD,
+       type: #IDENTIFICATION_REFERENCE,
+       label: 'Parameter Details',
+       position: 10
+     }
+   ]
 
   @UI.hidden: true
   SubscrUuid;
@@ -42,7 +41,7 @@ annotate entity ZC_DRS_PARAM_AP03
   }
   @EndUserText.label: 'Vendor From'
   VendorFrom;
-  
+
   @UI: {
     lineItem:       [ { position: 25, importance: #HIGH } ],
     identification: [ { position: 25 } ],
@@ -66,5 +65,5 @@ annotate entity ZC_DRS_PARAM_AP03
   }
   @EndUserText.label: 'Max Rows'
   MaxRows;
-    
+
 }

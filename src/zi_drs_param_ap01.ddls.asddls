@@ -9,17 +9,16 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 define view entity ZI_DRS_PARAM_AP01
   as select from zdrs_param_ap01
-  association to parent ZIR_DRS_SUBSCR as _Subscription
-      on $projection.SubscrUuid = _Subscription.SubscrUuid
-      and $projection.SubscrId = _Subscription.SubscrId
+  association to parent ZIR_DRS_SUBSCR as _Subscription on  $projection.SubscrUuid = _Subscription.SubscrUuid
+                                                        and $projection.SubscrId   = _Subscription.SubscrId
 {
-  key subscr_uuid    as SubscrUuid,
-  key subscr_id      as SubscrId,
-      company_code   as CompanyCode,
-      vendor_from    as VendorFrom,
-      vendor_to      as VendorTo,
-      key_date       as KeyDate,
-      max_rows       as MaxRows,
+  key subscr_uuid  as SubscrUuid,
+  key subscr_id    as SubscrId,
+      company_code as CompanyCode,
+      vendor_from  as VendorFrom,
+      vendor_to    as VendorTo,
+      key_date     as KeyDate,
+      max_rows     as MaxRows,
 
       /* Associations */
       _Subscription

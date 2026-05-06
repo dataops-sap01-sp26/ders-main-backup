@@ -3,7 +3,8 @@
 @Metadata.ignorePropagatedAnnotations: true
 
 define view entity ZI_RPT_AR01_H
-  with parameters p_key_date : abap.dats
+  with parameters
+    p_key_date : abap.dats
 
   as select from ZI_RPT_AR01_BASE
 {
@@ -11,27 +12,27 @@ define view entity ZI_RPT_AR01_H
   key SourceLedger,
   key CompanyCode,
   key Customer,
-  
-  max(CustomerName) as CustomerName,
 
-  max(NetDueDate) as NetDueDate,
-  
-  @Semantics.amount.currencyCode: 'LocalCurrency'
-  sum(OpenAmount) as TotalOpenAmount,
+      max(CustomerName) as CustomerName,
 
-  LocalCurrency,
+      max(NetDueDate)   as NetDueDate,
 
-  max(
-      case
-          when NetDueDate is initial
-               or NetDueDate >= $parameters.p_key_date
-          then 0
-          else dats_days_between(
-                  NetDueDate,
-                  $parameters.p_key_date
-               )
-      end
-  ) as MaxDaysOverdue
+      @Semantics.amount.currencyCode: 'LocalCurrency'
+      sum(OpenAmount)   as TotalOpenAmount,
+
+      LocalCurrency,
+
+      max(
+          case
+              when NetDueDate is initial
+                   or NetDueDate >= $parameters.p_key_date
+              then 0
+              else dats_days_between(
+                      NetDueDate,
+                      $parameters.p_key_date
+                   )
+          end
+      )                 as MaxDaysOverdue
 
 }
 group by

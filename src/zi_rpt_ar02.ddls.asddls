@@ -1,17 +1,16 @@
 @AccessControl.authorizationCheck: #NOT_REQUIRED
 @EndUserText.label: 'Project view for AR 02'
 @Metadata.ignorePropagatedAnnotations: true
-@Metadata.allowExtensions: true 
+@Metadata.allowExtensions: true
 
 
 define view entity ZI_RPT_AR02
   as select from ZI_RPT_AR02_BASE
-  
-  association [0..*] to ZI_RPT_AR02_I as _Items
-    on  $projection.CompanyCode = _Items.CompanyCode
-    and $projection.Customer    = _Items.Customer
-    and $projection.FiscalYear  = _Items.FiscalYear
-    and $projection.PostingDate = _Items.PostingDate
+
+  association [0..*] to ZI_RPT_AR02_I as _Items on  $projection.CompanyCode = _Items.CompanyCode
+                                                and $projection.Customer    = _Items.Customer
+                                                and $projection.FiscalYear  = _Items.FiscalYear
+                                                and $projection.PostingDate = _Items.PostingDate
 {
       @Search.defaultSearchElement: true
       @Consumption.filter: { mandatory: true, selectionType: #SINGLE }
@@ -34,28 +33,28 @@ define view entity ZI_RPT_AR02
       Address,
       LocalCurrency,
 
-/*    @Semantics.amount.currencyCode: 'LocalCurrency'
-      sum( OpeningBalance ) as OpeningBalance,
-*/
+      /*    @Semantics.amount.currencyCode: 'LocalCurrency'
+            sum( OpeningBalance ) as OpeningBalance,
+      */
       @Semantics.amount.currencyCode: 'LocalCurrency'
-      sum( Debit )          as Debit,
+      sum( Debit )  as Debit,
 
       @Semantics.amount.currencyCode: 'LocalCurrency'
-      sum( Credit )         as Credit,
+      sum( Credit ) as Credit,
 
-/*      @Semantics.amount.currencyCode: 'LocalCurrency'
-      sum( PeriodActivity ) as PeriodActivity,
-*/
-/*       @Semantics.amount.currencyCode: 'LocalCurrency'
-      sum( ClosingBalance ) as ClosingBalance,
-*/
+      /*      @Semantics.amount.currencyCode: 'LocalCurrency'
+            sum( PeriodActivity ) as PeriodActivity,
+      */
+      /*       @Semantics.amount.currencyCode: 'LocalCurrency'
+            sum( ClosingBalance ) as ClosingBalance,
+      */
       _Items
 }
 group by
-    CompanyCode,
-    Customer,
-    FiscalYear,
-    PostingDate,
-    CustomerName,
-    Address,
-    LocalCurrency
+  CompanyCode,
+  Customer,
+  FiscalYear,
+  PostingDate,
+  CustomerName,
+  Address,
+  LocalCurrency

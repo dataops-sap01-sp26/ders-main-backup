@@ -14,7 +14,7 @@ CLASS ZCL_REPORT_AP01 DEFINITION
 
     METHODS QUERY_DATA
       EXPORTING ER_DATA     TYPE REF TO DATA
-                ET_COL_META TYPE ZIF_FILE_FORMATTER=>TT_COL_META
+*                ET_COL_META TYPE ZIF_FILE_FORMATTER=>TT_COL_META
       RAISING   CX_APJ_RT.
 
     METHODS BUILD_COL_META
@@ -43,7 +43,7 @@ CLASS ZCL_REPORT_AP01 IMPLEMENTATION.
     DATA LT_COL_META TYPE ZIF_FILE_FORMATTER=>TT_COL_META.
 
     " 1. Fetch data
-    QUERY_DATA( IMPORTING ER_DATA = LR_DATA ET_COL_META = LT_COL_META ).
+    QUERY_DATA( IMPORTING ER_DATA = LR_DATA ).
 
     " 2. Resolve formatter — propagate error up if unresolvable
     DATA LO_FORMATTER TYPE REF TO ZIF_FILE_FORMATTER.
@@ -124,7 +124,7 @@ CLASS ZCL_REPORT_AP01 IMPLEMENTATION.
       INTO TABLE @DATA(LT_AP01)
       UP TO @LV_MAX ROWS.
 
-    IF SY-SUBRC <> 0.
+    IF SY-SUBRC <> 0 AND SY-SUBRC <> 4.
        " Message: Not found data for Report ID &1
       MESSAGE ID 'ZMSG_DRS_SP26_SAP01'
       TYPE 'E'
@@ -162,18 +162,7 @@ CLASS ZCL_REPORT_AP01 IMPLEMENTATION.
       IS_PARAMS        = MS_PARAMS
     ).
 
-    " Guard: factory returns unbound ref when:
-    "   (a) the report+format combo is not in ZDRS_FM_REGISTRY, or
-    "   (b) the registered class name has not been activated yet.
-    " Both are configuration errors — raise so the caller can react.
-    IF RO_FORMATTER IS NOT BOUND.
-      " Message: File formatter class is missing or inactive for Report ID &1
-      RAISE EXCEPTION TYPE CX_APJ_RT
-        MESSAGE ID 'ZMSG_DRS_SP26_SAP01'
-        TYPE 'E'
-        NUMBER '038'
-        WITH MS_PARAMS-REPORT_ID.
-    ENDIF.
+
   ENDMETHOD.
 
 ENDCLASS.

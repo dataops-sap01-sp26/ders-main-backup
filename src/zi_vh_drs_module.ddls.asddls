@@ -12,14 +12,14 @@ define view entity ZI_VH_DRS_MODULE
 {
       @ObjectModel.text.element: ['ModuleName']
       @UI.hidden: true
-      key module_id   as ModuleId,
+  key module_id   as ModuleId,
 
       @Search.defaultSearchElement: true
       @Semantics.text: true
-      module_name     as ModuleName,
+      module_name as ModuleName,
 
-      description     as Description,
-      sort_order      as SortOrder
+      description as Description,
+      sort_order  as SortOrder
 }
 where
   is_active = 'X'

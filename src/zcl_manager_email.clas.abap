@@ -97,9 +97,7 @@ CLASS ZCL_MANAGER_EMAIL IMPLEMENTATION.
           DATA(LO_RECIPIENT_CREATOR) = CL_CAM_ADDRESS_BCS=>CREATE_INTERNET_ADDRESS( LV_USER_EMAIL  ).
 
           LO_SEND_REQUEST->ADD_RECIPIENT( I_RECIPIENT = LO_RECIPIENT_CREATOR ).
-        ELSE.
-          " Xử lý ngoại lệ nếu user không có email trong SU01 (Tùy chọn)
-          " Có thể ghi log hoặc raise exception
+
         ENDIF.
 
         " Email To
@@ -222,7 +220,7 @@ CLASS ZCL_MANAGER_EMAIL IMPLEMENTATION.
 
         LO_DOCUMENT = CL_DOCUMENT_BCS=>CREATE_DOCUMENT(
               I_TYPE    = 'HTM'
-              I_SUBJECT = |[ERROR] DERS-Fiori: { IV_REPORT_ID } Export Failed|
+              I_SUBJECT = |[ERROR] DERS-Fiori: Report Export Failed|
               I_TEXT    = LT_BODY
             ).
 
@@ -248,8 +246,7 @@ CLASS ZCL_MANAGER_EMAIL IMPLEMENTATION.
         ENDIF.
 
       CATCH CX_BCS INTO LX_BCS.
-        " Ở đây nếu lỗi gửi mail thất bại thì bạn có thể log lại nếu cần
-        " Hoặc gọi class ZCL_JOB_LOG để ghi nhận lỗi gửi mail
+
     ENDTRY.
   ENDMETHOD.
 

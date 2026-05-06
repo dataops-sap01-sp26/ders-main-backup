@@ -6,13 +6,11 @@
 define view entity ZI_RPT_AP01_BASE
   as select from I_JournalEntryItem as Item
 
-  association [0..1] to I_Supplier as _Supplier
-    on $projection.Supplier = _Supplier.Supplier
+  association [0..1] to I_Supplier     as _Supplier     on  $projection.Supplier = _Supplier.Supplier
 
-  association [0..1] to I_JournalEntry as _JournalEntry
-    on  Item.CompanyCode        = _JournalEntry.CompanyCode
-    and Item.AccountingDocument = _JournalEntry.AccountingDocument
-    and Item.FiscalYear         = _JournalEntry.FiscalYear
+  association [0..1] to I_JournalEntry as _JournalEntry on  Item.CompanyCode        = _JournalEntry.CompanyCode
+                                                        and Item.AccountingDocument = _JournalEntry.AccountingDocument
+                                                        and Item.FiscalYear         = _JournalEntry.FiscalYear
 
 {
   key Item.Ledger,
@@ -23,24 +21,25 @@ define view entity ZI_RPT_AP01_BASE
   key Item.FiscalYear,
   key Item.LedgerGLLineItem,
 
-  Item.PostingDate,
-  Item.NetDueDate,
-  Item.ClearingDate,
+      Item.PostingDate,
+      Item.NetDueDate,
+      Item.ClearingDate,
 
-  _JournalEntry.AccountingDocumentType as DocumentType,
+      _JournalEntry.AccountingDocumentType as DocumentType,
 
-  _Supplier.SupplierName,
+      _Supplier.SupplierName,
 
-  @Semantics.amount.currencyCode: 'LocalCurrency'
-  case 
-      when Item.DebitCreditCode = 'H'
-      then - Item.AmountInCompanyCodeCurrency
-      else Item.AmountInCompanyCodeCurrency
-  end as OpenAmount,
+      @Semantics.amount.currencyCode: 'LocalCurrency'
+      case
+          when Item.DebitCreditCode = 'H'
+          then - Item.AmountInCompanyCodeCurrency
+          else Item.AmountInCompanyCodeCurrency
+      end                                  as OpenAmount,
 
-  Item.CompanyCodeCurrency as LocalCurrency,
-  Item.FinancialAccountType
+      Item.CompanyCodeCurrency             as LocalCurrency,
+      Item.FinancialAccountType
 
 }
-where Item.FinancialAccountType = 'K'
-  and Item.ClearingDate is initial
+where
+      Item.FinancialAccountType = 'K'
+  and Item.ClearingDate         is initial

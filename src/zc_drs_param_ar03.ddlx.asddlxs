@@ -7,8 +7,7 @@
     description: { value: 'CompanyCode' }
   }
 }
-annotate entity ZC_DRS_PARAM_AR03
-    with 
+annotate entity ZC_DRS_PARAM_AR03 with
 {
   @UI.facet: [
       {
@@ -41,11 +40,11 @@ annotate entity ZC_DRS_PARAM_AR03
   }
   @EndUserText.label: 'Customer From'
   CustomerFrom;
-  
-    @UI: {
-    lineItem:       [ { position: 25, importance: #HIGH } ],
-    identification: [ { position: 25 } ],
-    fieldGroup:     [ { qualifier: 'SubscriptionParams', position: 25 } ]
+
+  @UI: {
+  lineItem:       [ { position: 25, importance: #HIGH } ],
+  identification: [ { position: 25 } ],
+  fieldGroup:     [ { qualifier: 'SubscriptionParams', position: 25 } ]
   }
   @EndUserText.label: 'Customer To'
   CustomerTo;
@@ -65,5 +64,5 @@ annotate entity ZC_DRS_PARAM_AR03
   }
   @EndUserText.label: 'Max Rows'
   MaxRows;
-  
+
 }

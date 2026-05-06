@@ -8,7 +8,7 @@
 annotate view ZI_RPT_AP02_I with
 {
   -------------------------------------------------------
-  -- FACETS (Nếu bạn không định nghĩa Object Page cho Item, 
+  -- FACETS (Nếu bạn không định nghĩa Object Page cho Item,
   -- có thể bỏ phần Identification để gọn Metadata)
   -------------------------------------------------------
   @UI.facet: [
@@ -23,7 +23,7 @@ annotate view ZI_RPT_AP02_I with
   -------------------------------------------------------
   -- LINE ITEMS: Thêm type: #STANDARD để chặn Click
   -------------------------------------------------------
-  
+
   @UI.lineItem: [{ position: 10, type: #STANDARD }]
   @UI.identification: [{ position: 30 }]
   @EndUserText.label: 'Fiscal Year'

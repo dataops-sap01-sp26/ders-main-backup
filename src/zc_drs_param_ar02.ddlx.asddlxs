@@ -7,18 +7,17 @@
     description: { value: 'CompanyCode' }
   }
 }
-annotate entity ZC_DRS_PARAM_AR02
-    with 
+annotate entity ZC_DRS_PARAM_AR02 with
 {
-    @UI.facet: [
-      {
-        id: 'AR02ParamDetails',
-        purpose: #STANDARD,
-        type: #IDENTIFICATION_REFERENCE,
-        label: 'Parameter Details',
-        position: 10
-      }
-    ]
+  @UI.facet: [
+    {
+      id: 'AR02ParamDetails',
+      purpose: #STANDARD,
+      type: #IDENTIFICATION_REFERENCE,
+      label: 'Parameter Details',
+      position: 10
+    }
+  ]
 
   @UI.hidden: true
   SubscrUuid;
@@ -41,46 +40,46 @@ annotate entity ZC_DRS_PARAM_AR02
   }
   @EndUserText.label: 'Customer From'
   CustomerFrom;
-  
-    @UI: {
-    lineItem:       [ { position: 25, importance: #HIGH } ],
-    identification: [ { position: 25 } ],
-    fieldGroup:     [ { qualifier: 'SubscriptionParams', position: 25 } ]
+
+  @UI: {
+  lineItem:       [ { position: 25, importance: #HIGH } ],
+  identification: [ { position: 25 } ],
+  fieldGroup:     [ { qualifier: 'SubscriptionParams', position: 25 } ]
   }
   @EndUserText.label: 'Customer To'
   CustomerTo;
 
-@UI: {
-    lineItem:       [ { position: 30, importance: #HIGH } ],
-    identification: [ { position: 30 } ],
-    fieldGroup:     [ { qualifier: 'SubscriptionParams', position: 30 } ]
-  }
+  @UI: {
+      lineItem:       [ { position: 30, importance: #HIGH } ],
+      identification: [ { position: 30 } ],
+      fieldGroup:     [ { qualifier: 'SubscriptionParams', position: 30 } ]
+    }
   @EndUserText.label: 'Fiscal Year'
   FiscalYear;
 
-//  @UI: {
-//    lineItem:       [ { position: 40, importance: #HIGH } ],
-//    identification: [ { position: 40 } ],
-//    fieldGroup:     [ { qualifier: 'SubscriptionParams', position: 40 } ]
-//  }
-//  @EndUserText.label: 'Fiscal Period'
-//  FiscalPeriod;
+  //  @UI: {
+  //    lineItem:       [ { position: 40, importance: #HIGH } ],
+  //    identification: [ { position: 40 } ],
+  //    fieldGroup:     [ { qualifier: 'SubscriptionParams', position: 40 } ]
+  //  }
+  //  @EndUserText.label: 'Fiscal Period'
+  //  FiscalPeriod;
 
-//  @UI: {
-//    lineItem:       [ { position: 50, importance: #HIGH } ],
-//    identification: [ { position: 50 } ],
-//    fieldGroup:     [ { qualifier: 'SubscriptionParams', position: 50 } ]
-//  }
-//  @EndUserText.label: 'Posting Date'
-//  PostingDate;
-//
-//  @UI: {
-//    lineItem:       [ { position: 60, importance: #MEDIUM } ],
-//    identification: [ { position: 60 } ],
-//    fieldGroup:     [ { qualifier: 'SubscriptionParams', position: 60 } ]
-//  }
-//  @EndUserText.label: 'Currency'
-//  Currency;
+  //  @UI: {
+  //    lineItem:       [ { position: 50, importance: #HIGH } ],
+  //    identification: [ { position: 50 } ],
+  //    fieldGroup:     [ { qualifier: 'SubscriptionParams', position: 50 } ]
+  //  }
+  //  @EndUserText.label: 'Posting Date'
+  //  PostingDate;
+  //
+  //  @UI: {
+  //    lineItem:       [ { position: 60, importance: #MEDIUM } ],
+  //    identification: [ { position: 60 } ],
+  //    fieldGroup:     [ { qualifier: 'SubscriptionParams', position: 60 } ]
+  //  }
+  //  @EndUserText.label: 'Currency'
+  //  Currency;
 
   @UI: {
   lineItem:       [ { position: 70, importance: #LOW } ],
@@ -89,5 +88,5 @@ annotate entity ZC_DRS_PARAM_AR02
   }
   @EndUserText.label: 'Max Rows'
   MaxRows;
-    
+
 }

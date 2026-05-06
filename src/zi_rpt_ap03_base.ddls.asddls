@@ -6,118 +6,116 @@
 define view entity ZI_RPT_AP03_BASE
   as select from I_JournalEntryItem
 
-  association [0..1] to I_Supplier as _Supplier
-      on $projection.Supplier = _Supplier.Supplier
+  association [0..1] to I_Supplier as _Supplier on $projection.Supplier = _Supplier.Supplier
 
 {
 
-    /* ===================== KEY ===================== */
-    key CompanyCode,
-    
-    key FiscalYear,
+      /* ===================== KEY ===================== */
+  key CompanyCode,
 
-    key AccountingDocument,
+  key FiscalYear,
 
-    key AccountingDocumentItem,
+  key AccountingDocument,
 
-    key Ledger,
+  key AccountingDocumentItem,
 
-    /* ===================== DIMENSION ===================== */
-    Supplier,
+  key Ledger,
 
-    _Supplier.SupplierName,
+      /* ===================== DIMENSION ===================== */
+      Supplier,
 
-    PostingDate,
+      _Supplier.SupplierName,
 
-    DocumentDate,
+      PostingDate,
 
-    NetDueDate,
+      DocumentDate,
 
-    AccountingDocumentType,
+      NetDueDate,
 
-    CompanyCodeCurrency as LocalCurrency,
+      AccountingDocumentType,
 
-    /* ===================== ORIGINAL AMOUNT ===================== */
-    @Semantics.amount.currencyCode: 'LocalCurrency'
-    @Aggregation.default: #SUM
-    cast( AmountInCompanyCodeCurrency as abap.dec(23,2) )
-        as OriginalAmount,
+      CompanyCodeCurrency                                   as LocalCurrency,
 
-    /* ===================== AGING DAYS ===================== */
-    cast(
-        dats_days_between( NetDueDate, $session.system_date )
-        as abap.int4
-    ) as AgingDays,
+      /* ===================== ORIGINAL AMOUNT ===================== */
+      @Semantics.amount.currencyCode: 'LocalCurrency'
+      @Aggregation.default: #SUM
+      cast( AmountInCompanyCodeCurrency as abap.dec(23,2) ) as OriginalAmount,
 
-    /* ===================== NOT DUE ===================== */
-    @Semantics.amount.currencyCode: 'LocalCurrency'
-    @Aggregation.default: #SUM
-    cast(
-        case
-            when NetDueDate is not null
-             and dats_days_between( NetDueDate, $session.system_date ) < 0
-            then cast( AmountInCompanyCodeCurrency as abap.dec(23,2) )
-            else cast( 0 as abap.dec(23,2) )
-        end
-        as abap.dec(23,2)
-    ) as Bucket_NotDue,
-    
-    /* ===================== BUCKET 0–30 ===================== */
-    @Semantics.amount.currencyCode: 'LocalCurrency'
-    @Aggregation.default: #SUM
-    cast(
-        case
-            when NetDueDate is not null
-             and dats_days_between( NetDueDate, $session.system_date ) between 0 and 30
-            then cast( AmountInCompanyCodeCurrency as abap.dec(23,2) )
-            else cast( 0 as abap.dec(23,2) )
-        end
-        as abap.dec(23,2)
-    ) as Bucket_0_30,
+      /* ===================== AGING DAYS ===================== */
+      cast(
+          dats_days_between( NetDueDate, $session.system_date )
+          as abap.int4
+      )                                                     as AgingDays,
 
-    /* ===================== BUCKET 31–60 ===================== */
-    @Semantics.amount.currencyCode: 'LocalCurrency'
-    @Aggregation.default: #SUM
-    cast(
-        case
-            when NetDueDate is not null
-             and dats_days_between( NetDueDate, $session.system_date ) between 31 and 60
-            then cast( AmountInCompanyCodeCurrency as abap.dec(23,2) )
-            else cast( 0 as abap.dec(23,2) )
-        end
-        as abap.dec(23,2)
-    ) as Bucket_31_60,
+      /* ===================== NOT DUE ===================== */
+      @Semantics.amount.currencyCode: 'LocalCurrency'
+      @Aggregation.default: #SUM
+      cast(
+          case
+              when NetDueDate is not null
+               and dats_days_between( NetDueDate, $session.system_date ) < 0
+              then cast( AmountInCompanyCodeCurrency as abap.dec(23,2) )
+              else cast( 0 as abap.dec(23,2) )
+          end
+          as abap.dec(23,2)
+      )                                                     as Bucket_NotDue,
 
-    /* ===================== BUCKET 61–90 ===================== */
-    @Semantics.amount.currencyCode: 'LocalCurrency'
-    @Aggregation.default: #SUM
-    cast(
-        case
-            when NetDueDate is not null
-             and dats_days_between( NetDueDate, $session.system_date ) between 61 and 90
-            then cast( AmountInCompanyCodeCurrency as abap.dec(23,2) )
-            else cast( 0 as abap.dec(23,2) )
-        end
-        as abap.dec(23,2)
-    ) as Bucket_61_90,
+      /* ===================== BUCKET 0–30 ===================== */
+      @Semantics.amount.currencyCode: 'LocalCurrency'
+      @Aggregation.default: #SUM
+      cast(
+          case
+              when NetDueDate is not null
+               and dats_days_between( NetDueDate, $session.system_date ) between 0 and 30
+              then cast( AmountInCompanyCodeCurrency as abap.dec(23,2) )
+              else cast( 0 as abap.dec(23,2) )
+          end
+          as abap.dec(23,2)
+      )                                                     as Bucket_0_30,
 
-    /* ===================== BUCKET > 90 ===================== */
-    @Semantics.amount.currencyCode: 'LocalCurrency'
-    @Aggregation.default: #SUM
-    cast(
-        case
-            when NetDueDate is not null
-             and dats_days_between( NetDueDate, $session.system_date ) > 90
-            then cast( AmountInCompanyCodeCurrency as abap.dec(23,2) )
-            else cast( 0 as abap.dec(23,2) )
-        end
-        as abap.dec(23,2)
-    ) as Bucket_Over_90
+      /* ===================== BUCKET 31–60 ===================== */
+      @Semantics.amount.currencyCode: 'LocalCurrency'
+      @Aggregation.default: #SUM
+      cast(
+          case
+              when NetDueDate is not null
+               and dats_days_between( NetDueDate, $session.system_date ) between 31 and 60
+              then cast( AmountInCompanyCodeCurrency as abap.dec(23,2) )
+              else cast( 0 as abap.dec(23,2) )
+          end
+          as abap.dec(23,2)
+      )                                                     as Bucket_31_60,
+
+      /* ===================== BUCKET 61–90 ===================== */
+      @Semantics.amount.currencyCode: 'LocalCurrency'
+      @Aggregation.default: #SUM
+      cast(
+          case
+              when NetDueDate is not null
+               and dats_days_between( NetDueDate, $session.system_date ) between 61 and 90
+              then cast( AmountInCompanyCodeCurrency as abap.dec(23,2) )
+              else cast( 0 as abap.dec(23,2) )
+          end
+          as abap.dec(23,2)
+      )                                                     as Bucket_61_90,
+
+      /* ===================== BUCKET > 90 ===================== */
+      @Semantics.amount.currencyCode: 'LocalCurrency'
+      @Aggregation.default: #SUM
+      cast(
+          case
+              when NetDueDate is not null
+               and dats_days_between( NetDueDate, $session.system_date ) > 90
+              then cast( AmountInCompanyCodeCurrency as abap.dec(23,2) )
+              else cast( 0 as abap.dec(23,2) )
+          end
+          as abap.dec(23,2)
+      )                                                     as Bucket_Over_90
 
 }
 
 where
-      Ledger = '0L'
-  and Supplier is not null
-  and FinancialAccountType = 'K'
+      Ledger                     = '0L'
+  and Supplier                   is not null
+  and FinancialAccountType       = 'K'
   and ClearingAccountingDocument is initial

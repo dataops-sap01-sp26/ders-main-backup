@@ -190,10 +190,14 @@ annotate entity ZCR_DRS_SUBSCR with
   @EndUserText.label: 'Created At'
   CreatedAt;
 
-  @UI.hidden: true
+  @UI.fieldGroup: [ { qualifier: 'AdminData', position: 30 } ]
+  @EndUserText.label: 'Changed By'
   LastChangedBy;
-  @UI.hidden: true
+  
+  @UI.fieldGroup: [ { qualifier: 'AdminData', position: 40 } ]
+  @EndUserText.label: 'Changed At'
   LastChangedAt;
+  
   @UI.hidden: true
   LocalLastChangedAt;
 }

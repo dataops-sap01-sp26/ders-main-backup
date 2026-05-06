@@ -21,7 +21,7 @@ define view entity ZC_DRS_PARAM_AP01
       entity: { name: 'I_SupplierCompany', element: 'Supplier' },
       additionalBinding: [{
         localElement: 'CompanyCode',
-        element: 'CompanyCode',      
+        element: 'CompanyCode',
         usage: #FILTER_AND_RESULT
       }]
       }]
@@ -30,8 +30,8 @@ define view entity ZC_DRS_PARAM_AP01
       @Consumption.valueHelpDefinition: [{
       entity: { name: 'I_SupplierCompany', element: 'Supplier' },
       additionalBinding: [{
-        localElement: 'CompanyCode', 
-        element: 'CompanyCode',      
+        localElement: 'CompanyCode',
+        element: 'CompanyCode',
         usage: #FILTER_AND_RESULT
       }]
       }]

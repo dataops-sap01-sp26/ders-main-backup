@@ -132,7 +132,7 @@ annotate entity ZCR_DRS_JOB_CONFIG with
     useForValidation: true
   }]
   RunType;
-  
+
   @UI.hidden: true
   SubscrUuid;
 

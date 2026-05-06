@@ -114,6 +114,11 @@ CLASS ZCL_TEMPLATE_EMAIL IMPLEMENTATION.
         LV_SCHEDULE_INFO = 'Periodic'.
     ENDCASE.
 
+    "Download Link
+    DATA(lv_base_url) = |https://s40.gb.ucc.cit.tum.de/sap/opu/odata4/sap/zui_drs_main_o4/srvd/sap/zsd_drs_main/0001/DrsFile|.
+
+    LV_DOWNLOAD_LINK = |{ lv_base_url }(FileUuid={ LS_FILE-FILE_UUID },IsActiveEntity=true)/FileContent|.
+
     " ==========================================
     " 3. XÂY DỰNG HTML NỘI DUNG EMAIL
     " ==========================================
@@ -140,7 +145,7 @@ CLASS ZCL_TEMPLATE_EMAIL IMPLEMENTATION.
     LV_HTML = LV_HTML &&
               |<div class="header">| &&
               |<h1>{ LS_SUBSCR-REPORT_ID } - { LS_SUBSCR-SUBSCR_NAME }</h1>| &&
-              |<p>Job ID: { LS_JOB-JOB_ID } \| Company Code: { LS_SUBSCR-BUKRS }</p>| &&
+              |<p>Job ID: { LS_JOB-JOB_ID }</p>| &&
               |<div class="status-badge">{ LV_STATUS_ICON } { LV_STATUS_TEXT_DISP }</div>| &&
               |</div><div class="content">|.
 
@@ -189,7 +194,6 @@ CLASS ZCL_TEMPLATE_EMAIL IMPLEMENTATION.
     LV_HTML = LV_HTML &&
               |<div class="footer">| &&
               |<p>This is an automated message from DERS-Fiori System. Created by: { LS_JOB-CREATED_BY }</p>| &&
-              |<p>Need help? <a href="https://sap.company.com/ders">Open Support Ticket</a></p>| &&
               |</div></div></body></html>|.
 
     RV_HTML = LV_HTML.
@@ -293,7 +297,6 @@ CLASS ZCL_TEMPLATE_EMAIL IMPLEMENTATION.
     LV_HTML = LV_HTML &&
               |<div class="footer">| &&
               |<p>This is an automated message from DERS-Fiori System. Created by: { LS_JOB-CREATED_BY }</p>| &&
-              |<p>Need help? <a href="https://sap.company.com/ders">Open Support Ticket</a></p>| &&
               |</div></div></body></html>|.
 
     RV_HTML = LV_HTML.

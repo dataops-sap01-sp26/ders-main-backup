@@ -10,7 +10,7 @@ annotate view ZC_RPT_GL01_I with
   -------------------------------------------------------
   -- LINE ITEMS: Thêm type: #STANDARD để chặn Click
   -------------------------------------------------------
-  
+
   @UI.lineItem: [{ position: 10, label: 'Co. Code', type: #STANDARD }]
   CompanyCode;
 

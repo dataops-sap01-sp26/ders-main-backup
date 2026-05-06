@@ -6,14 +6,15 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 // CHILD PROJECTION: AR02 Parameters - Composition child of Subscription
 // ═══════════════════════════════════════════════════════════════════════════════
-define view entity ZC_DRS_PARAM_AR03 as projection on ZI_DRS_PARAM_AR03
+define view entity ZC_DRS_PARAM_AR03
+  as projection on ZI_DRS_PARAM_AR03
 {
-    key SubscrUuid,
-    key SubscrId,
-    
-    @Consumption.valueHelpDefinition: [{
-        entity: { name: 'I_CompanyCode', element: 'CompanyCode' }
-      }]
+  key SubscrUuid,
+  key SubscrId,
+
+      @Consumption.valueHelpDefinition: [{
+          entity: { name: 'I_CompanyCode', element: 'CompanyCode' }
+        }]
       CompanyCode,
 
       @Consumption.valueHelpDefinition: [
@@ -41,9 +42,9 @@ define view entity ZC_DRS_PARAM_AR03 as projection on ZI_DRS_PARAM_AR03
                   }]
               }]
       CustomerTo,
-    
-    KeyDate,
-    MaxRows,
-    /* Associations */
-    _Subscription : redirected to parent ZCR_DRS_SUBSCR
+
+      KeyDate,
+      MaxRows,
+      /* Associations */
+      _Subscription : redirected to parent ZCR_DRS_SUBSCR
 }

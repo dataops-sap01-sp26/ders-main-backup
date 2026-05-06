@@ -3,7 +3,8 @@
 @EndUserText.label: 'Calendar ID Value Help'
 @Metadata.ignorePropagatedAnnotations: true
 @Search.searchable: true
-define view entity ZI_VH_DRS_CALENDAR_ID as select from tfacd
+define view entity ZI_VH_DRS_CALENDAR_ID
+  as select from tfacd
   association [0..*] to I_FactoryCalendarText as _Text on $projection.FactoryCalendar = _Text.FactoryCalendar
 {
       @ObjectModel.text.element: ['CalendarName']

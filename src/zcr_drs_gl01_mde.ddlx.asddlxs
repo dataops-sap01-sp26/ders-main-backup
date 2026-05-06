@@ -1,10 +1,10 @@
 @Metadata.layer: #CORE
 
-@UI.headerInfo: { 
-    typeName: 'GL Account Balance', 
-    typeNamePlural: 'GL Account Balances', 
+@UI.headerInfo: {
+    typeName: 'GL Account Balance',
+    typeNamePlural: 'GL Account Balances',
     title: { type: #STANDARD, value: 'GLAccount' },
-    description: { type: #STANDARD, value: 'GLAccountName' } 
+    description: { type: #STANDARD, value: 'GLAccountName' }
 }
 
 annotate view ZCR_RPT_GL01 with
@@ -12,7 +12,7 @@ annotate view ZCR_RPT_GL01 with
   -------------------------------------------------------
   -- FACETS
   -------------------------------------------------------
-  @UI.facet: [ 
+  @UI.facet: [
     { id: 'HeaderData', purpose: #HEADER, type: #FIELDGROUP_REFERENCE, label: 'Context Info', targetQualifier: 'HeaderGroup', position: 10 },
     { id: 'idIdentification', type: #IDENTIFICATION_REFERENCE, label: 'Account Details', position: 10 },
     { id: 'ItemsList', purpose: #STANDARD, type: #LINEITEM_REFERENCE, label: 'Journal Entry Details (Items)', position: 20, targetElement: '_Items' }
@@ -25,9 +25,9 @@ annotate view ZCR_RPT_GL01 with
   @UI.selectionField: [{ position: 10 }]
   @UI.identification: [{ position: 10 }]
   @UI.fieldGroup: [{ qualifier: 'HeaderGroup', position: 10, label: 'Year' }]
-  @Consumption.filter: { 
-      selectionType: #SINGLE, 
-      multipleSelections: false 
+  @Consumption.filter: {
+      selectionType: #SINGLE,
+      multipleSelections: false
   }
   FiscalYear;
 
@@ -35,9 +35,9 @@ annotate view ZCR_RPT_GL01 with
   @UI.selectionField: [{ position: 20 }]
   @UI.identification: [{ position: 20 }]
   @UI.fieldGroup: [{ qualifier: 'HeaderGroup', position: 20, label: 'Period' }]
-  @Consumption.filter: { 
-      selectionType: #SINGLE, 
-      multipleSelections: false 
+  @Consumption.filter: {
+      selectionType: #SINGLE,
+      multipleSelections: false
   }
   Period;
 
@@ -48,7 +48,7 @@ annotate view ZCR_RPT_GL01 with
   @Consumption.filter: {
     mandatory: true,
     selectionType: #SINGLE
-}
+  }
   CompanyCode;
 
   @UI.lineItem: [{ position: 40 }]

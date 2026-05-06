@@ -27,7 +27,7 @@
       type: #AS_CHART,
       qualifier: 'ChartDefault'
     }]
-  }, 
+  },
   {
     sortOrder: [{
       by: 'EndTimestamp',

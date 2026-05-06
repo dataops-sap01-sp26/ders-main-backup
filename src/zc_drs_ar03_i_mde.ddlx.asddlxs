@@ -10,7 +10,7 @@ annotate view ZI_RPT_AR03_I with
   -------------------------------------------------------
   -- LINE ITEMS: Sử dụng type: #STANDARD để chặn điều hướng
   -------------------------------------------------------
-  
+
   @UI.lineItem: [{ position: 5, type: #STANDARD }]
   @EndUserText.label: 'Accounting Document'
   AccountingDocument;

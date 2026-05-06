@@ -14,7 +14,7 @@ annotate view ZI_RPT_AR01 with
   -- FACETS (Cấu hình hiển thị trang Object Page)
   -------------------------------------------------------
   @UI.facet: [
-     
+
     {
         id: 'Summary',
         type: #IDENTIFICATION_REFERENCE,
@@ -29,15 +29,15 @@ annotate view ZI_RPT_AR01 with
         targetElement: '_Items' -- Trỏ đến composition _Items
     }
   ]
- 
+
   -------------------------------------------------------
   -- FIELD ANNOTATIONS
   -------------------------------------------------------
-  
+
   @UI.selectionField: [{ position: 10 }]
   @UI.identification: [{ position: 10 }]
   Ledger;
-  
+
   @UI.selectionField: [{ position: 20 }]
   @UI.identification: [{ position: 20 }]
   SourceLedger;
@@ -61,7 +61,7 @@ annotate view ZI_RPT_AR01 with
 
   @UI.lineItem: [{ position: 40 }]
   @UI.identification: [{ position: 40 }]
-  @UI.dataPoint: { title: 'Total Amount (Filtered)', visualization: #NUMBER } 
+  @UI.dataPoint: { title: 'Total Amount (Filtered)', visualization: #NUMBER }
   @EndUserText.label: 'Total Open Amount'
   TotalOpenAmount;
 
@@ -74,7 +74,7 @@ annotate view ZI_RPT_AR01 with
   @UI.identification: [{ position: 60 }]
   @EndUserText.label: 'Max Days Overdue'
   MaxDaysOverdue;
-  
+
   @UI.lineItem: [{ position: 70 }]
   @UI.identification: [{ position: 70 }]
   @EndUserText.label: 'Net Due Date'

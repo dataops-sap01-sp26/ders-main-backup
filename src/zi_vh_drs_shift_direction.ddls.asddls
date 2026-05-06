@@ -11,6 +11,6 @@
 define view entity ZI_VH_DRS_SHIFT_DIRECTION
   as select from zdrs_shiftdir_vt
 {
-  key value         as Value,
+  key value          as Value,
       shift_dir_text as ShiftDirectionText
 }

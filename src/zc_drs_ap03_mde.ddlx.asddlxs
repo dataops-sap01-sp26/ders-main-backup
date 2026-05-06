@@ -9,7 +9,7 @@
 
 @UI.presentationVariant: [{
     sortOrder: [{ by: 'Bucket_Over_90', direction: #DESC }],
-    visualizations: [{ type: #AS_LINEITEM }] 
+    visualizations: [{ type: #AS_LINEITEM }]
 }]
 
 annotate view ZI_RPT_AP03 with
@@ -46,7 +46,7 @@ annotate view ZI_RPT_AP03 with
   @UI.identification: [{ position: 30 }]
   @EndUserText.label: 'Currency'
   LocalCurrency;
-    
+
   @UI.lineItem: [{ position: 40 }]
   @UI.identification: [{ position: 40 }]
   @EndUserText.label: 'Total Payables'
@@ -71,7 +71,7 @@ annotate view ZI_RPT_AP03 with
   @UI.lineItem: [{ position: 90 }]
   @EndUserText.label: 'Over 90 Days'
   Bucket_Over_90;
-  
+
   @UI.hidden: true
   NetDueDate;
 }

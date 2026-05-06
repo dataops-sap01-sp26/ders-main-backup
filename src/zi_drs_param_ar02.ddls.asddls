@@ -12,16 +12,16 @@ define view entity ZI_DRS_PARAM_AR02
   association to parent ZIR_DRS_SUBSCR as _Subscription on  $projection.SubscrUuid = _Subscription.SubscrUuid
                                                         and $projection.SubscrId   = _Subscription.SubscrId
 {
-  key subscr_uuid    as SubscrUuid,
-  key subscr_id      as SubscrId,
-      company_code   as CompanyCode,
-      customer_from  as CustomerFrom,
-      customer_to    as CustomerTo,
-      fiscal_year    as FiscalYear,
-      fiscal_period  as FiscalPeriod,
-      posting_date   as PostingDate,
-      currency       as Currency,
-      max_rows       as MaxRows,
+  key subscr_uuid   as SubscrUuid,
+  key subscr_id     as SubscrId,
+      company_code  as CompanyCode,
+      customer_from as CustomerFrom,
+      customer_to   as CustomerTo,
+      fiscal_year   as FiscalYear,
+      fiscal_period as FiscalPeriod,
+      posting_date  as PostingDate,
+      currency      as Currency,
+      max_rows      as MaxRows,
 
       /* Associations */
       _Subscription

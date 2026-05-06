@@ -20,9 +20,6 @@ define behavior for ZCR_DRS_SUBSCR alias Subscription
   use action Prepare;
 
   // Custom actions
-  use action copySubscription;
-  use action pauseSubscription;
-  use action resumeSubscription;
   use action createReportParams;
 
   // Composition child - ParamGL01
@@ -33,8 +30,6 @@ define behavior for ZCR_DRS_SUBSCR alias Subscription
   use association _ParamAP01 { create; with draft; }
   use association _ParamAP02 { create; with draft; }
   use association _ParamAP03 { create; with draft; }
-//  use association _Customers { create; with draft; }
-//  use association _Vendors { create; with draft; }
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
